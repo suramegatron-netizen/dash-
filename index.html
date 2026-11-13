@@ -8,7 +8,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Центр">
+<meta name="apple-mobile-web-app-title" content="Командный центр">
 <meta name="theme-color" content="#0b0d14">
 <link rel="icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAxODAgMTgwJz48cmVjdCB3aWR0aD0nMTgwJyBoZWlnaHQ9JzE4MCcgcng9JzQwJyBmaWxsPScjMGIwZDE0Jy8+PGNpcmNsZSBjeD0nOTAnIGN5PSc5MCcgcj0nNTQnIGZpbGw9J25vbmUnIHN0cm9rZT0nIzJiZDRjOCcgc3Ryb2tlLXdpZHRoPScxMCcgc3Ryb2tlLWRhc2hhcnJheT0nMjUwIDkwJyBzdHJva2UtbGluZWNhcD0ncm91bmQnIHRyYW5zZm9ybT0ncm90YXRlKC05MCA5MCA5MCknLz48Y2lyY2xlIGN4PSc5MCcgY3k9JzkwJyByPScxNicgZmlsbD0nI2ZmOGEzZCcvPjwvc3ZnPg==">
 <link rel="apple-touch-icon" href="icon.png">
@@ -530,9 +530,25 @@ body{font-variant-numeric:tabular-nums}
 /* v68: iPhone home-screen app, room for status bar */
 @media (max-width:980px){.shell{padding-top:calc(20px + env(safe-area-inset-top))}}
 
+/* v69: launch splash, only in iPhone home-screen app */
+#splash{position:fixed;inset:0;z-index:100;display:grid;place-items:center;background:#0b0d14;transition:opacity .55s ease}
+:root[data-theme="light"] #splash{background:#ffffff}
+#splash.out{opacity:0;pointer-events:none}
+#splash .sp-in{display:flex;flex-direction:column;align-items:center;gap:18px;animation:spIn .6s cubic-bezier(.2,.8,.2,1) both}
+#splash svg{width:96px;height:96px;border-radius:22px;box-shadow:0 12px 40px rgba(0,0,0,.25)}
+#splash .spin{transform-origin:90px 90px;animation:spSpin 1.6s linear infinite}
+#splash .sp-t{font-family:var(--font-display);font-weight:700;font-size:22px;letter-spacing:-.01em;color:#f2f4f8}
+:root[data-theme="light"] #splash .sp-t{color:#111827}
+:root.sp-on body{overflow:hidden}
+@keyframes spIn{from{opacity:0;transform:scale(.92)}to{opacity:1;transform:none}}
+@keyframes spSpin{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){#splash .spin,#splash .sp-in{animation:none}}
+
 </style>
 </head>
 <body>
+<div id="splash" aria-hidden="true"><div class="sp-in"><svg viewBox='0 0 180 180' aria-hidden='true'><rect width='180' height='180' rx='40' fill='#0b0d14'/><g class='spin'><circle cx='90' cy='90' r='54' fill='none' stroke='#2bd4c8' stroke-width='10' stroke-dasharray='250 90' stroke-linecap='round' transform='rotate(-90 90 90)'/></g><circle cx='90' cy='90' r='16' fill='#ff8a3d'/></svg><div class="sp-t">Командный центр</div></div></div>
+<script>(function(){var r=document.documentElement,sa=navigator.standalone===true||(window.matchMedia&&matchMedia('(display-mode: standalone)').matches),el=document.getElementById('splash');if(!sa){el.parentNode.removeChild(el);return;}var h=new Date().getHours();if(!r.getAttribute('data-theme'))r.setAttribute('data-theme',(h>=5&&h<17)?'light':'dark');r.classList.add('sp-on');var t0=Date.now(),done=false;window.splashDone=function(){if(done)return;done=true;var w=Math.max(0,700-(Date.now()-t0));setTimeout(function(){el.classList.add('out');setTimeout(function(){r.classList.remove('sp-on');if(el.parentNode)el.parentNode.removeChild(el);},600);},w);};setTimeout(window.splashDone,2600);})();</script>
 <div class="scene" id="scene" aria-hidden="true"><div class="grid"></div><i class="a"></i><i class="v"></i><i class="n"></i><canvas id="stars"></canvas></div>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
@@ -723,7 +739,7 @@ function parseSheet(values){var tasks=[],order=[],priRow=null,lastRow=1;
     if(/^\d+$/.test(num)){lastRow=row;var state=/^сдел/i.test(st)?'Сделать':/^жд/i.test(st)?'Ждем':'';tasks.push({row:row,n:+num,title:name,step:step,actual:act,state:state,active:act==='Да'});}
     else if(!num&&/^\s*\d+(\s*;\s*\d+)*\s*;?\s*$/.test(step)){priRow=row;order=step.split(';').map(function(x){return +x.trim()}).filter(function(x){return x});}});
   return {tasks:tasks,order:order,priRow:priRow,lastRow:lastRow};}
-function srcState(id,cls,txt){var el=$('#'+id);el.className='src '+cls;el.lastChild.textContent=txt;}
+function srcState(id,cls,txt){var el=$('#'+id);el.className='src '+cls;el.lastChild.textContent=txt;if(id==='src-sheet'&&cls!=='wait'&&window.splashDone)window.splashDone();}
 var DB_SHEET='_db',DB_RANGE=DB_SHEET+'!A1:B2000',GAS_KEY='dash.gas',CACHE_KEY='dash.cache';
 var T={mode:null,busy:0,timer:null,pollMs:45000};
 var GAS_DEFAULT='';
