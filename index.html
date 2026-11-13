@@ -588,6 +588,9 @@ body{font-variant-numeric:tabular-nums}
 @keyframes spBg{to{transform:translate(4%,3%) scale(1.08)}}
 @media (prefers-reduced-motion:reduce){#splash *{animation-duration:.01s!important;animation-delay:0s!important}}
 
+/* v74: phone — KPI label 4px (≈1 мм) left */
+@media (max-width:480px){.kpi .top{gap:6px}.kpi .top .label{letter-spacing:.05em}}
+
 </style>
 </head>
 <body>
