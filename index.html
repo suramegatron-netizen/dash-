@@ -527,6 +527,9 @@ body{font-variant-numeric:tabular-nums}
 .scene .a,.scene .v{opacity:calc(var(--light-opacity)*1.25)}
 .scene .n{opacity:calc(var(--light-opacity)*.55)}
 
+/* v68: iPhone home-screen app, room for status bar */
+@media (max-width:980px){.shell{padding-top:calc(20px + env(safe-area-inset-top))}}
+
 </style>
 </head>
 <body>
