@@ -775,6 +775,34 @@ b.late{color:var(--crit);font-weight:600}
 .pup .frow{margin:2px 0}
 .pup .hd .small{flex-basis:100%;order:3;margin-top:-4px}.pup .hd .h2{flex:1}
 
+/* v92 форма ученика */
+.fdlg.ff-pup{width:min(560px,calc(100vw - 32px))}
+.ff-pup .pprice{margin:-2px 2px 0;min-height:0}.ff-pup .pprice b{color:var(--ink);font-weight:800}
+.ff-pup .plbl{font-family:var(--font-display);font-weight:800;font-size:15px;letter-spacing:-.01em;margin:8px 2px -2px}
+.ff-pup .plbl .small{font-family:inherit;font-weight:500;font-size:12px}
+.ff-pup .prows{display:flex;flex-direction:column;gap:8px}
+.ff-pup .psl{border-radius:18px;padding:6px;border:1px solid transparent;transition:background .25s,border-color .25s}
+.ff-pup .psl.bad{background:color-mix(in srgb,var(--crit) 12%,transparent);border-color:color-mix(in srgb,var(--crit) 45%,transparent)}
+.ff-pup .psl.ok{background:color-mix(in srgb,var(--ok) 9%,transparent);border-color:color-mix(in srgb,var(--ok) 30%,transparent)}
+.ff-pup .pline{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr) 46px;gap:8px;align-items:center}
+.ff-pup .pline .ph{position:relative;display:block;min-width:0}
+.ff-pup .pline .ph input{width:100%;-webkit-appearance:none;appearance:none;text-align:left}
+.ff-pup .pline .ph::before{content:attr(data-ph);position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--ink-muted);opacity:.75;font-size:14px;pointer-events:none}
+.ff-pup .pline .ph.has::before{display:none}
+.ff-pup .pline .ph:not(.has) input::-webkit-datetime-edit{color:transparent}
+.ff-pup .px{height:46px;width:46px;border-radius:16px;border:1px solid var(--glass-border);background:var(--glass);color:var(--ink-muted);font-size:22px;line-height:1;cursor:pointer;transition:color .2s,transform .2s}
+.ff-pup .px:hover{color:var(--ink);transform:translateY(-1px)}
+.ff-pup .pmsg{font-size:12.5px;line-height:1.35;margin:6px 6px 2px;color:var(--ink-muted)}
+.ff-pup .psl.bad .pmsg{color:var(--crit);font-weight:600}
+.ff-pup .psl.ok .pmsg{color:var(--ok)}
+.ff-pup .padd{align-self:flex-start}
+.ff-pup .pfree{display:flex;flex-direction:column;gap:6px;padding:10px 12px;border-radius:18px;background:var(--glass);border:1px solid var(--glass-border)}
+.ff-pup .pfd{display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+.ff-pup .pfn{width:26px;font-weight:800;font-size:13px;text-transform:uppercase;color:var(--ink-muted)}
+.ff-pup .pch{font:inherit;font-size:13px;font-weight:600;padding:5px 10px;border-radius:999px;border:1px solid color-mix(in srgb,var(--ok) 40%,transparent);background:color-mix(in srgb,var(--ok) 12%,transparent);color:var(--ink);cursor:pointer;transition:transform .2s,background .2s}
+.ff-pup .pch:hover{transform:translateY(-1px);background:color-mix(in srgb,var(--ok) 22%,transparent)}
+@media (max-width:480px){.ff-pup .pline{grid-template-columns:minmax(0,1.3fr) minmax(0,1fr) 42px;gap:6px}.ff-pup .pline select,.ff-pup .pline input{padding:0 10px!important;font-size:14px!important}.ff-pup .px{width:42px}.ff-pup .psl{padding:5px}}
+
 </style>
 </head>
 <body>
@@ -1105,12 +1133,13 @@ function buildDay(dt,bare){var d=dt||now(),wd=d.getDay(),weekend=(wd===0||wd===6
       else add(a,b,'uni','Семинар · '+c[2],'дела института · '+c[4]+(c[5]?' · '+c[5]:''),'');
       var nx=cls[i+1];if(nx&&tm(nx[0])-b>=20)add(b,tm(nx[0]),mainType,'Окно между парами · '+mainTitle,'','конец: следующая пара');});
     var last=tm(cls[cls.length-1][1]);add(last,last+st.commuteMin,'road','Дорога домой',st.commuteMin+' мин');cur=last+st.commuteMin;wentOut=true;}
-  var tut=weekend?[]:((st.tutors&&st.tutors[wd])||[]);
-  tut.forEach(function(t){var a=tm(t[0]),far=!!t[3],online=t[2].indexOf('онлайн')>=0,rd=tRoad(t),tnm=String(t[2]).replace(/\s*·.*$/,''),lv=a-rd,pmT=online?0:(wentOut?10:+st.prepMin);
+  var tut=(st.tutors&&st.tutors[wd])||[];
+  tut.forEach(function(t,ti){var a=tm(t[0]),far=!!t[3],online=t[2].indexOf('онлайн')>=0,rd=tRoad(t),tnm=String(t[2]).replace(/\s*·.*$/,''),lv=a-rd,pmT=online?0:(wentOut?10:+st.prepMin);
     if(lv-pmT-cur>=15)add(cur,lv-pmT,mainType,mainTitle,weekend?'':'до выхода на занятие','конец: '+(online?'пора на онлайн-занятие':'пора собираться: '+tnm));if(pmT){add(Math.max(cur,lv-pmT),Math.max(cur,lv),'prep','Сборы',pmL(pmT));if(B.length&&B[B.length-1].type==='prep'){B[B.length-1].dest='к ученику · '+tnm;B[B.length-1].roadMin=rd;}wentOut=true;}
-    var rT=open?'work':(weekend||a>=19*60?'home':'biz'),rS=(open?'рабочие':rT==='home'?'домашние':'бизнес')+' задачи с телефона';if(lv<a){if(far){add(Math.max(cur,lv),a,rT,'Дорога · '+tnm+' · можно работать',rS,'конец: занятие');B[B.length-1].onroad=true;}else add(Math.max(cur,lv),a,'road','Дорога к ученику',t[2]);}
+    var rT=weekend?'home':(open?'work':(a>=19*60?'home':'biz')),rS=(rT==='work'?'рабочие':rT==='home'?'домашние':'бизнес')+' задачи с телефона';if(lv<a){if(far){add(Math.max(cur,lv),a,rT,'Дорога · '+tnm+' · можно работать',rS,'конец: занятие');B[B.length-1].onroad=true;}else add(Math.max(cur,lv),a,'road','Дорога к ученику',t[2]);}
     add(Math.max(cur,a),a+t[1],'tutor','Занятие · '+t[2],(+t[5]||st.lessonPrice)+' ₽','');cur=a+t[1];
-    if(far){add(cur,cur+rd,rT,'Дорога домой · можно работать',rS,'конец: дома');B[B.length-1].onroad=true;cur+=rd;}});
+    if(far){add(cur,cur+rd,rT,'Дорога домой · можно работать',rS,'конец: дома');B[B.length-1].onroad=true;cur+=rd;}
+    else if(!online&&rd>0){var nx=tut[ti+1];if(!nx||tm(nx[0])-tRoad(nx)-10>=cur+rd){add(cur,cur+rd,'road','Дорога домой',rd+' мин');cur+=rd;}}});
   var evn=(weekend||!open)?Math.max(cur,19*60):sleep;if(cur<sleep){if(evn>cur){if(weekend){add(cur,sleep,'home','Дом','домашние дела · до сна','конец: сон');evn=sleep;}else add(cur,Math.min(evn,sleep),'work','Основная работа, пока все задачи не «ждём», потом дом и бизнес','','конец: домашние дела');}if(evn<sleep)add(evn,sleep,'home','Дом','домашние дела · до сна','конец: сон');}
 
   /* fill gaps so every minute between alarm and sleep has a block */
@@ -1156,7 +1185,7 @@ function scheduleTasks(){var placed={},today=realKey(),rn=realNow().getHours()*6
   return placed;}
 var CHORES=[{a:21*60,b:21*60+10,title:'Закинуть стирку'},{a:22*60,b:22*60+10,title:'Вытащить стирку'}];
 function choreDone(title,k){return ((S.events[k||todayKey()]||{}).items||[]).some(function(e){return e.kind==='done'&&e.title===title})}
-function applyChores(B){var out=B.slice();CHORES.forEach(function(c){var i=-1;for(var j=0;j<out.length;j++){if(c.a>=out[j].a&&c.a<out[j].b){i=j;break;}}if(i<0)return;var b=out[i];if(!((b.type==='work'||b.type==='biz'||b.type==='home')&&!b.office))return;var parts=[];if(c.a>b.a)parts.push(Object.assign({},b,{b:c.a,why:'конец: '+c.title.toLowerCase()}));parts.push({a:c.a,b:Math.min(c.b,b.b),type:'chore',title:c.title,sub:'дом · 10 минут',why:'',chore:true});if(b.b>c.b)parts.push(Object.assign({},b,{a:c.b}));out.splice.apply(out,[i,1].concat(parts));});return out;}
+function applyChores(B){var out=B.slice();CHORES.forEach(function(c){var i=-1;for(var j=0;j<out.length;j++){if(c.a>=out[j].a&&c.a<out[j].b){i=j;break;}}if(i<0)return;var ok=function(x){return (x.type==='work'||x.type==='biz'||x.type==='home')&&!x.office&&!x.onroad};if(!ok(out[i])){if(out[i].type!=='road'&&out[i].type!=='tutor'&&out[i].type!=='prep')return;var k2=-1;for(var j2=i+1;j2<out.length&&out[j2].a<c.a+60;j2++){if(ok(out[j2])){k2=j2;break;}}if(k2<0)return;i=k2;c={a:out[i].a,b:out[i].a+(c.b-c.a),title:c.title};}var b=out[i];var parts=[];if(c.a>b.a)parts.push(Object.assign({},b,{b:c.a,why:'конец: '+c.title.toLowerCase()}));parts.push({a:c.a,b:Math.min(c.b,b.b),type:'chore',title:c.title,sub:'дом · 10 минут',why:'',chore:true});if(b.b>c.b)parts.push(Object.assign({},b,{a:c.b}));out.splice.apply(out,[i,1].concat(parts));});return out;}
 function toggleChore(title){var d=todayKey(),items=((S.events[d]||{}).items||[]),e=items.filter(function(x){return x.kind==='done'&&x.title===title})[0];if(e){eventDel(d,e.ts);toast('«'+title+'»: отметка снята');}else{logEvent('home',title,'done');toast('«'+title+'» сделано');}}
 function manualTask(tid){if(!tid)return null;if(tid.charAt(0)==='w'&&!S.tasks[tid]){var n=+tid.slice(1),w=workOpen().filter(function(x){return x.n===n})[0];if(!w)return null;var m=S.wmeta[String(n)]||{};return {id:tid,dir:'work',title:w.title,step:w.step,work:w,mode:m.mode,dur:+m.dur||0,road:+m.road||0,stops:m.stops||[],back:+m.back||0,take:m.take||'',due:m.due||'',dueT:m.dueT||''};}var t=S.tasks[tid];return (t&&t.state==='Сделать')?t:null;}
 function applyManual(B,k){var M=(((S.plans[k]||{}).manual)||[]).slice().sort(function(x,y){return x.a-y.a});if(!M.length)return B;var out=[];M=M.map(function(m){var tk=manualTask(m.tid);if(!tk||!taskRoad(tk))return m;var early=B.some(function(x){return (x.type==='prep'||x.type==='road'||x.office||x.onroad)&&x.a<m.a})||M.some(function(o){var ot=manualTask(o.tid);return o!==m&&o.a<m.a&&ot&&taskRoad(ot)});var pr=early?10:+S.settings.prepMin;return Object.assign({},m,{b:m.a+taskSpan(tk)-10+pr,prep:pr});});
@@ -1352,7 +1381,7 @@ function openTaskMenu(ev,x,y){closeMenu();var id=ev.dataset.task,title=(ev.query
 document.addEventListener('pointerdown',function(e){if(tmenu&&!e.target.closest('.tmenu'))closeMenu();},true);
 function wakeLimit(k){var d=new Date(k+'T12:00:00'),wd=d.getDay(),weekend=(wd===0||wd===6),st=S.settings,cls=(S.sched[k]||[]).slice().sort(),minPrep=10;
   if(cls.length){var first=tm(cls[0][0]);return {t:first-st.commuteMin-minPrep-st.wakeMin,at:first,what:(cls[0][3]==='lec'?'лекция':'семинар')+' (сборы и дорога в вуз)'};}
-  var tut=weekend?[]:((st.tutors&&st.tutors[wd])||[]);if(tut.length){var t=tut[0],a=tm(t[0]),far=!!t[3],online=t[2].indexOf('онлайн')>=0,lv=a-tRoad(t);return {t:lv-(online?0:minPrep)-st.wakeMin,at:a,what:'занятие · '+t[2]+(far?' (дальняя дорога)':'')};}
+  var tut=(st.tutors&&st.tutors[wd])||[];if(tut.length){var t=tut[0],a=tm(t[0]),far=!!t[3],online=t[2].indexOf('онлайн')>=0,lv=a-tRoad(t);return {t:lv-(online?0:minPrep)-st.wakeMin,at:a,what:'занятие · '+t[2]+(far?' (дальняя дорога)':'')};}
   return {t:tm(st.sleep)-st.wakeMin,at:null,what:''};}
 $('#tlbody').addEventListener('click',function(e){var ev=e.target.closest('.ev[data-wake]');if(!ev)return;var k=todayKey();if(k<realKey()){toast('Этот день уже прошёл');return;}var cur=(S.days[k]&&S.days[k].wake)||S.settings.alarm,lim=wakeLimit(k),dn=k===realKey()?'сегодня':k.slice(8,10)+'.'+k.slice(5,7);ask({title:'Во сколько встаёшь '+dn+'?',text:'Не позже '+fm(lim.t)+(lim.at?' — в '+fm(lim.at)+' '+lim.what:'')+'. Только на этот день, остальные дни '+S.settings.alarm,input:true,value:cur,placeholder:'ЧЧ:ММ',ok:'Поставить'}).then(function(v){if(!v||!/^\d{1,2}:\d{2}$/.test(v.trim()))return;v=v.trim();if(v.length===4)v='0'+v;if(tm(v)>lim.t){toast('Нельзя: '+(lim.at?'в '+fm(lim.at)+' '+lim.what+', ':'')+'самое позднее пробуждение '+fm(lim.t));return;}var d=Object.assign({d:k},S.days[k]||{},{wake:v});delete d.ready;S.days[k]=d;S.placed=scheduleTasks();renderAll();dbSet('days/'+k,d).catch(function(){});toast((k===realKey()?'Сегодня':k.slice(8,10)+'.'+k.slice(5,7))+' пробуждение в '+v);});});
 (function(){var tl=$('#tlbody'),lp=null,sx=0,sy=0;tl.addEventListener('pointerdown',function(e){var ev=e.target.closest('.ev[data-gap],.ev[data-manual]');if(!ev||e.pointerType==='mouse'||!S.planEdit)return;sx=e.clientX;sy=e.clientY;clearTimeout(lp);lp=setTimeout(function(){lp=null;planMenuAt(ev,sx,sy);if(navigator.vibrate)navigator.vibrate(10);},550);});
@@ -1550,7 +1579,7 @@ function salDate(mk,d){var k=mDay(mk,d),wd=pdk(k).getDay();if(wd===6)k=addK(k,-1
 function salOccs(mk){var st=fset(),days=(st.salDays||[10,25]).slice().sort(function(a,b){return a-b}),n=days.length,got=0,out=[];
   days.forEach(function(D,i){var d=salDate(mk,D),occ='sal@'+d,op=fOpFind(occ),exp;if(i===0)exp=+st.firstGuess||Math.round(st.salary/n);else exp=Math.max(0,Math.round((+st.salary-got)/(n-i)));
     if(op){got+=+op.sum||0;}else got+=exp;out.push({d:d,occ:occ,sum:op?+op.sum:exp,got:!!op,op:op,title:'Зарплата',src:'salary',part:i+1});});return out;}
-function lessonsOn(k){var wd=pdk(k).getDay();if(wd===0||wd===6)return [];return ((S.settings.tutors||{})[wd]||[]);}
+function lessonsOn(k){var wd=pdk(k).getDay();return ((S.settings.tutors||{})[wd]||[]);}
 function lessonsLogged(k){return (((S.events[k]||{}).items)||[]).filter(function(e){return e.kind==='lesson'});}
 function fIncomes(a,b){var t=todayKey(),st=fset(),out=[],price=+S.settings.lessonPrice||1500,pct=(+st.lessonPct||80)/100,start=st.start||'2000-01-01';
   for(var mk=a.slice(0,7);mk<=b.slice(0,7);mk=mAdd(mk,1)){salOccs(mk).forEach(function(s){if(s.got||s.d<start)return;var late=s.d<t,d=late?t:s.d;if(d<a||d>b)return;out.push({d:d,orig:s.d,late:late,sum:s.sum,title:'Зарплата'+(s.part?' · '+s.part+'-я часть':''),src:'salary',occ:s.occ});});}
@@ -1594,7 +1623,7 @@ function finCompute(){var t=todayKey(),st=fset(),cap=fCap(),N0=cap.net,sals=[];
   var close=null;if(cap.debt>0||N0<0){for(var j=days.length-1;j>=0;j--){if(days[j].N<0)break;close=days[j].k;}if(close&&days[0].N>=0)close=t;}
   var nextInc=incs.filter(function(x){return x.src==='salary'})[0]||null;
   /* monthly picture for "ожидает финансирования" */
-  var price=+S.settings.lessonPrice||1500,pct=(+st.lessonPct||80)/100,wk=0,wkSum=0;[1,2,3,4,5].forEach(function(w){((S.settings.tutors||{})[w]||[]).forEach(function(l){wk++;wkSum+=+l[5]||price;});});
+  var price=+S.settings.lessonPrice||1500,pct=(+st.lessonPct||80)/100,wk=0,wkSum=0;[0,1,2,3,4,5,6].forEach(function(w){((S.settings.tutors||{})[w]||[]).forEach(function(l){wk++;wkSum+=+l[5]||price;});});
   var incM=(+st.salary||0)+wkSum*pct*52/12,fixM=0;fItems().forEach(function(it){if(it.status==='wait'||it.grp==='pers')return;if(it.freq==='month'||it.freq==='any')fixM+=+it.sum||0;else if(it.freq==='every')fixM+=(+it.sum||0)*30.4/Math.max(1,+it.every||14);if(it.perTrip)fixM+=(+it.perTrip)*(+S.settings.officeTarget||3)*52/12;});
   var persM=(+st.persBase||1000)*30.4,surplus=incM-fixM-persM;
   var m={t:t,cap:cap,N0:N0,next:next,end:end,hz:hz,exps:exps,incs:incs,spent:spent,n:n,M:M,L:L,Lp:Lp,left:left,days:days,minN:minN,minK:minK,close:close,nextInc:nextInc,incM:incM,fixM:fixM,persM:persM,surplus:surplus,wkLessons:wk,price:price,pct:pct};
@@ -1852,26 +1881,78 @@ $('#fin-day').addEventListener('click',dayForm);$('#fin-exp').addEventListener('
 window.__finModel=function(){return finModel()};
 
 /* ---------- Ученики и расписание (v91) ---------- */
-var WDN=['','пн','вт','ср','чт','пт'],WDF=['','Понедельник','Вторник','Среда','Четверг','Пятница'];
-function pupils(){var st=S.settings;if(st.pupils&&st.pupils.length)return st.pupils.filter(function(p){return !p.deleted});var map={},order=[];
+var WDN=['вс','пн','вт','ср','чт','пт','сб'],WDF=['Воскресенье','Понедельник','Вторник','Среда','Четверг','Пятница','Суббота'],WORD=[1,2,3,4,5,6,0];
+var PH={online:[11*60,23*60],offline:[13*60,22*60]};
+function pPrice(p){return Math.round((+p.rate||0)*(+p.dur||60)/60);}
+function pNorm(p){var q=Object.assign({},p);if(!Array.isArray(q.slots)){var o=q.slots||{};q.slots=Object.keys(o).filter(function(k){return o[k]}).map(function(k){return {wd:+k,time:o[k]}});}
+  q.slots=q.slots.filter(function(s){return s&&s.time}).map(function(s){return {wd:+s.wd,time:s.time}});
+  if(!q.rate)q.rate=Math.round((+q.price||+S.settings.lessonPrice||1500)*60/(+q.dur||60));q.price=pPrice(q);return q;}
+function pupils(){var st=S.settings;if(st.pupils&&st.pupils.length)return st.pupils.filter(function(p){return !p.deleted}).map(pNorm);var map={},order=[];
   function add(src,paused){Object.keys(src||{}).forEach(function(wd){(src[wd]||[]).forEach(function(t){var raw=String(t[2]||''),nm=raw.replace(/\s*·.*$/,''),on=raw.indexOf('онлайн')>=0,p=map[nm];
-    if(!p){p=map[nm]={id:'p'+order.length+Date.now().toString(36),name:nm,mode:on?'online':'offline',road:tRoad(t),dur:+t[1]||60,price:+t[5]||+st.lessonPrice||1500,slots:{},paused:paused,created:Date.now()};order.push(p);}p.slots[wd]=t[0];});});}
-  add(st.tutors,false);add(st.tutorsPaused,true);return order;}
-function pupilsToTutors(L){var T={1:[],2:[],3:[],4:[],5:[]};L.forEach(function(p){if(p.paused||p.deleted)return;Object.keys(p.slots||{}).forEach(function(wd){if(!p.slots[wd]||!T[wd])return;
-  T[wd].push([p.slots[wd],+p.dur||60,p.name+(p.mode==='online'?' · онлайн':''),p.mode!=='online'&&+p.road>=45?1:0,p.mode==='online'?0:(+p.road||0),+p.price||+S.settings.lessonPrice||1500]);});});
+    if(!p){p=map[nm]={id:'p-'+nm,name:nm,mode:on?'online':'offline',road:tRoad(t),dur:+t[1]||60,price:+t[5]||+st.lessonPrice||1500,slots:[],paused:paused,created:Date.now()};order.push(p);}p.slots.push({wd:+wd,time:t[0]});});});}
+  add(st.tutors,false);add(st.tutorsPaused,true);return order.map(pNorm);}
+function pupilsToTutors(L){var T={0:[],1:[],2:[],3:[],4:[],5:[],6:[]};L.forEach(function(p){if(p.paused||p.deleted)return;p=pNorm(p);p.slots.forEach(function(s){if(!T[s.wd])return;
+  T[s.wd].push([s.time,+p.dur||60,p.name+(p.mode==='online'?' · онлайн':''),p.mode!=='online'&&+p.road>=45?1:0,p.mode==='online'?0:(+p.road||0),p.price||+S.settings.lessonPrice||1500]);});});
   Object.keys(T).forEach(function(k){T[k].sort(function(a,b){return a[0]<b[0]?-1:1})});return T;}
-function pupilsSave(L){saveSettings({pupils:L,tutors:pupilsToTutors(L),tutorsPaused:{}});}
-function slotText(p){var g={};Object.keys(p.slots||{}).sort().forEach(function(wd){if(!p.slots[wd])return;(g[p.slots[wd]]=g[p.slots[wd]]||[]).push(WDN[wd]);});var ks=Object.keys(g);return ks.length?ks.map(function(t){return g[t].join(', ')+' '+t}).join(' · '):'дни не выбраны';}
-function pupilsHtml(){var L=pupils(),act=L.filter(function(p){return !p.paused}),per=0;act.forEach(function(p){Object.keys(p.slots||{}).forEach(function(w){if(p.slots[w])per++})});
+function pupilsSave(L){L=L.map(pNorm);saveSettings({pupils:L,tutors:pupilsToTutors(L),tutorsPaused:{}});}
+function slotSort(a,b){return WORD.indexOf(a.wd)-WORD.indexOf(b.wd)||(a.time<b.time?-1:1)}
+function slotText(p){var g={},ord=[];p.slots.slice().sort(slotSort).forEach(function(s){if(!g[s.time]){g[s.time]=[];ord.push(s.time);}if(g[s.time].indexOf(WDN[s.wd])<0)g[s.time].push(WDN[s.wd]);});return ord.length?ord.map(function(t){return g[t].join(', ')+' '+t}).join(' · '):'дни не выбраны';}
+function pupilsHtml(){var L=pupils(),act=L.filter(function(p){return !p.paused}),per=0;act.forEach(function(p){per+=p.slots.length});
   return '<div class="inc pup"><div class="hd"><span class="h2" style="font-size:16px">Ученики и расписание</span><span class="small">'+act.length+' '+plural(act.length,'ученик','ученика','учеников')+' · '+per+' '+plural(per,'занятие','занятия','занятий')+' в неделю</span><button class="btn sm" data-pnew="1">+ Ученик</button></div>'
-    +(L.length?L.map(function(p,i){var sel=S.pupSel===p.id;return '<div class="frow'+(p.paused?' wait':'')+(sel?' sel':'')+'" data-pid="'+p.id+'" style="--i:'+i+'"><span class="pt" style="--c:var(--wait)"></span><div class="t"><span class="body">'+esc(p.name)+'</span><span class="small">'+slotText(p)+' · '+(p.mode==='online'?'онлайн':'очно, дорога '+(+p.road||0)+' мин')+' · '+(+p.dur||60)+' мин</span>'
-      +(sel?'<div class="acts"><button data-pa="edit">править</button><button data-pa="pause">'+(p.paused?'вернуть':'на паузу')+'</button><button data-pa="del" class="del">удалить</button></div>':'')+'</div><div class="right"><span class="amt">'+rubN(+p.price||1500)+' ₽</span><span class="chip '+(p.paused?'c-wait':'c-ok')+'">'+(p.paused?'на паузе':'занимается')+'</span></div></div>'}).join(''):'<div class="empty">Пока никого. Нажми «+ Ученик».</div>')+'</div>';}
-function pupilForm(p){var isNew=!p;p=p||{mode:'offline',road:30,dur:60,price:+S.settings.lessonPrice||1500,slots:{}};var f=[{k:'name',label:'Имя ученика',value:p.name||''},{k:'mode',type:'select',value:p.mode,opts:[['offline','Очно, надо ехать'],['online','Онлайн']]},{k:'road',type:'number',label:'Дорога в одну сторону, мин',unit:'мин дороги',step:5,value:p.road||'',show:'mode=offline'},{k:'dur',type:'number',label:'Длительность занятия, мин',unit:'мин занятие',step:5,value:p.dur||60},{k:'price',type:'number',label:'Цена занятия, ₽',unit:'₽ за занятие',step:100,value:p.price||''}];
-  for(var w=1;w<=5;w++)f.push({k:'s'+w,type:'time',label:WDF[w]+': время, если занимаетесь',value:(p.slots||{})[w]||''});
-  fForm({title:isNew?'Новый ученик':'Ученик: '+p.name,text:'Выбери время в те дни, когда есть занятие. Пустой день — занятий нет. Ученик сразу попадёт в план дня и в ожидаемый доход.',fields:f,ok:isNew?'Добавить':'Сохранить',
-    check:function(r){if(!r.name)return 'Напиши имя';if(![1,2,3,4,5].some(function(w){return r['s'+w]}))return 'Выбери хотя бы один день и время';},
-    save:function(r){var sl={};for(var w=1;w<=5;w++)if(r['s'+w])sl[w]=r['s'+w];var n=Object.assign({},p,{name:r.name,mode:r.mode,road:r.mode==='online'?0:+r.road||0,dur:+r.dur||60,price:+r.price||+S.settings.lessonPrice||1500,slots:sl,updated:Date.now()});var L=pupils().slice();
-      if(isNew){n.id='p'+Date.now().toString(36);n.created=Date.now();n.paused=false;L.push(n);}else L=L.map(function(x){return x.id===p.id?n:x});pupilsSave(L);toast(isNew?'Ученик добавлен: '+n.name:'Сохранено');}});}
+    +(L.length?L.map(function(p,i){var sel=S.pupSel===p.id;return '<div class="frow'+(p.paused?' wait':'')+(sel?' sel':'')+'" data-pid="'+p.id+'" style="--i:'+i+'"><span class="pt" style="--c:var(--wait)"></span><div class="t"><span class="body">'+esc(p.name)+'</span><span class="small">'+slotText(p)+' · '+(p.mode==='online'?'онлайн':'очно, дорога '+(+p.road||0)+' мин')+' · '+(+p.dur||60)+' мин · ставка '+rubN(p.rate)+' ₽/ч</span>'
+      +(sel?'<div class="acts"><button data-pa="edit">править</button><button data-pa="pause">'+(p.paused?'вернуть':'на паузу')+'</button><button data-pa="del" class="del">удалить</button></div>':'')+'</div><div class="right"><span class="amt">'+rubN(p.price)+' ₽</span><span class="chip '+(p.paused?'c-wait':'c-ok')+'">'+(p.paused?'на паузе':'занимается')+'</span></div></div>'}).join(''):'<div class="empty">Пока никого. Нажми «+ Ученик».</div>')+'</div>';}
+/* ---- проверка пересечений: пары (с дорогой), другие ученики (с дорогой), сборы, сон, часы занятий ---- */
+function pWin(mode,road,a,dur){return mode==='online'?{a:a,b:a+dur,out:false}:{a:a-road,b:a+dur+road,out:true};}
+function pDates(wd){var out=[],d=pdk(realKey());for(var i=0;i<28;i++){var x=addDays(d,i);if(x.getDay()===wd)out.push(key(x));}return out;}
+function pDayItems(k,wd,exceptId,rows,me){var st=S.settings,it=[],cls=(S.sched[k]||[]).slice().sort();
+  if(cls.length){var f=tm(cls[0][0]),l=tm(cls[cls.length-1][1]);it.push({a:f-st.commuteMin,b:l+st.commuteMin,out:true,what:'пары',uni:1});}
+  pupils().forEach(function(p){if(p.paused||p.id===exceptId)return;p.slots.forEach(function(s){if(s.wd!==wd)return;var w=pWin(p.mode,+p.road||0,tm(s.time),+p.dur||60);w.what=p.name+' '+s.time;it.push(w);});});
+  (rows||[]).forEach(function(s){if(s.wd!==wd||!s.time)return;var w=pWin(me.mode,me.road,tm(s.time),me.dur);w.what='его же занятие '+s.time;it.push(w);});return it;}
+function pCheck(me,s,rows){if(!s.time)return null;var a=tm(s.time),b=a+me.dur,h=PH[me.mode],st=S.settings,on=me.mode==='online';
+  if(a<h[0])return (on?'Онлайн':'Очно')+' — начинать не раньше '+fm(h[0]);if(b>h[1])return (on?'Онлайн':'Очно')+' — заканчивать не позже '+fm(h[1])+' (сейчас конец в '+fm(b)+')';
+  var nw=pWin(me.mode,me.road,a,me.dur),sl=tm(st.sleep);if(nw.b>sl)return 'Вернёшься домой в '+fm(nw.b)+' — позже отбоя '+st.sleep;
+  var bad=[],seen={},ud=[];pDates(s.wd).forEach(function(k){var L=pDayItems(k,s.wd,me.id,rows,me);nw.me=1;L.push(nw);L.sort(function(x,y){return x.a-y.a});var firstOut=true;
+    L.forEach(function(x){x.prep=x.out?(firstOut?+st.prepMin:10):0;if(x.out)firstOut=false;});
+    L.forEach(function(x){if(x.me)return;if(x.a-x.prep<nw.b&&nw.a-nw.prep<x.b){if(x.uni){ud.push(k.slice(8,10)+'.'+k.slice(5,7));return;}if(seen[x.what])return;seen[x.what]=1;bad.push(x.what);}});});
+  if(ud.length)bad.unshift('пары '+ud.join(', '));if(!bad.length)return null;return 'Пересекается'+(me.mode==='online'?'':' (с дорогой и сборами)')+': '+bad.join(' · ');}
+function pFree(me,rows){var out={};WORD.forEach(function(wd){var h=PH[me.mode],R=[],cur=null;for(var t=h[0];t+me.dur<=h[1];t+=15){var ok=!pCheck(me,{wd:wd,time:fm(t)},rows);
+    if(ok){if(cur&&cur[1]===t-15)cur[1]=t;else{cur=[t,t];R.push(cur);}}}out[wd]=R;});return out;}
+function pupilForm(p){var isNew=!p;p=p?pNorm(p):{mode:'offline',road:30,dur:60,rate:+S.settings.lessonPrice||1500,slots:[]};var rows=p.slots.length?p.slots.slice().sort(slotSort):[{wd:1,time:''}];
+  var d=$('#fdlg'),v=$('#fdlgv');
+  d.innerHTML='<div class="h2">'+(isNew?'Новый ученик':'Ученик: '+esc(p.name))+'</div><div class="small">Занятия закреплены в расписании, как пары. Дашборд сам проверит, чтобы время не пересеклось с парами, другими учениками и сном, и подскажет, где свободно.</div>'
+    +'<div class="form ff"><div class="fr">'+uf('',!!p.name,'<input data-k="name" placeholder="Имя ученика" value="'+esc(p.name||'')+'">')+'</div>'
+    +'<div class="fr"><select data-k="mode"><option value="offline"'+(p.mode!=='online'?' selected':'')+'>Очно, надо ехать</option><option value="online"'+(p.mode==='online'?' selected':'')+'>Онлайн</option></select></div>'
+    +'<div class="fr" data-show="mode=offline">'+uf('мин дороги',true,'<input data-k="road" type="number" inputmode="decimal" min="0" step="5" placeholder="Дорога в одну сторону, мин" value="'+(p.mode==='online'?'':(+p.road||''))+'">')+'</div>'
+    +'<div class="fr">'+uf('мин занятие',true,'<input data-k="dur" type="number" inputmode="decimal" min="15" step="5" placeholder="Длительность занятия, мин" value="'+(+p.dur||60)+'">')+'</div>'
+    +'<div class="fr">'+uf('₽ в час',true,'<input data-k="rate" type="number" inputmode="decimal" min="0" step="100" placeholder="Ставка в час, ₽" value="'+(+p.rate||'')+'">')+'</div>'
+    +'<div class="pprice small"></div><div class="plbl">Дни и время занятий</div><div class="prows"></div><button class="btn sm padd" type="button">+ Ещё день</button>'
+    +'<div class="plbl">Свободно для занятия <span class="small">· на 4 недели вперёд, с дорогой и сборами</span></div><div class="pfree"></div></div>'
+    +'<div class="dlg-b"><button class="btn" data-b="no">Отмена</button><button class="btn primary" data-b="ok">'+(isNew?'Добавить':'Сохранить')+'</button></div>';
+  d.classList.add('ff-pup','on');v.classList.add('on');
+  function me(){var r={};$$('#fdlg [data-k]').forEach(function(e){r[e.dataset.k]=e.value.trim()});return {id:p.id,name:r.name,mode:r.mode,road:r.mode==='online'?0:(+r.road||0),dur:Math.max(15,+r.dur||60),rate:+r.rate||0};}
+  function others(i){return rows.filter(function(x,j){return j!==i})}
+  function draw(full){var m=me(),pr=pPrice(m);$('#fdlg .pprice').innerHTML=m.rate?'Занятие '+m.dur+' мин = <b>'+rubN(pr)+' ₽</b>':'';
+    $('#fdlg [data-show]').style.display=m.mode==='offline'?'':'none';
+    if(full!==false)$('#fdlg .prows').innerHTML=rows.map(function(s,i){return '<div class="psl" data-i="'+i+'"><div class="pline"><select data-wd>'+WORD.map(function(w){return '<option value="'+w+'"'+(w===s.wd?' selected':'')+'>'+WDF[w]+'</option>'}).join('')+'</select>'
+      +'<span class="ph'+(s.time?' has':'')+'" data-ph="Время"><input type="time" data-tm value="'+(s.time||'')+'"></span><button class="px" type="button" title="Убрать день" aria-label="Убрать день">×</button></div><div class="pmsg"></div></div>'}).join('');
+    $$('#fdlg .psl').forEach(function(el){var i=+el.dataset.i,s=rows[i],e=pCheck(m,s,others(i)),mg=el.querySelector('.pmsg');el.classList.toggle('bad',!!e);el.classList.toggle('ok',!e&&!!s.time);
+      mg.textContent=e?e:s.time?'Свободно все 4 недели · занятие до '+fm(tm(s.time)+m.dur):'';mg.style.display=mg.textContent?'':'none';});
+    var F=pFree(m,rows);$('#fdlg .pfree').innerHTML=WORD.map(function(w){var R=F[w];return '<div class="pfd"><span class="pfn">'+WDN[w]+'</span>'+(R.length?R.map(function(r){return '<button type="button" class="pch" data-fw="'+w+'" data-ft="'+fm(r[0])+'">'+(r[0]===r[1]?'в '+fm(r[0]):fm(r[0])+'–'+fm(r[1]))+'</button>'}).join(''):'<span class="small">нет окна</span>')+'</div>'}).join('')
+      +'<div class="small" style="margin-top:6px">Время на кнопке — когда можно начать занятие. Нажми — день и начало встанут в строку выше.</div>';}
+  function close(){d.classList.remove('on','ff-pup');v.classList.remove('on');d.onclick=null;v.onclick=null;d.oninput=null;d.onchange=null;document.removeEventListener('keydown',kd,true);}
+  function kd(e){if(e.key==='Escape'){e.preventDefault();e.stopPropagation();close();}else if(e.key==='Enter'&&e.target.tagName==='INPUT'){e.preventDefault();ok();}}
+  function ok(){var m=me();if(!m.name){toast('Напиши имя');return;}if(!m.rate){toast('Укажи ставку в час');return;}var R=rows.filter(function(s){return s.time});if(!R.length){toast('Выбери хотя бы один день и время');return;}
+    for(var i=0;i<rows.length;i++){if(!rows[i].time)continue;var e=pCheck(m,rows[i],others(i));if(e){toast(WDF[rows[i].wd]+' '+rows[i].time+': '+e);return;}}
+    close();var n=Object.assign({},p,{name:m.name,mode:m.mode,road:m.road,dur:m.dur,rate:m.rate,slots:R.slice().sort(slotSort),updated:Date.now()});n.price=pPrice(n);var L=pupils().slice();
+    if(isNew){n.id='p'+Date.now().toString(36);n.created=Date.now();n.paused=false;L.push(n);}else L=L.map(function(x){return x.id===p.id?n:x});pupilsSave(L);toast(isNew?'Ученик добавлен: '+n.name:'Сохранено');}
+  d.oninput=function(e){var t=e.target,w=t.parentNode;if(w&&(w.classList.contains('uf')||w.classList.contains('ph')))w.classList.toggle('has',!!t.value);
+    var sr=t.closest('.psl');if(sr){var i=+sr.dataset.i;if(t.matches('[data-wd]'))rows[i].wd=+t.value;if(t.matches('[data-tm]'))rows[i].time=t.value;draw(false);return;}draw(false);};
+  d.onchange=function(e){var sr=e.target.closest('.psl');if(sr){var i=+sr.dataset.i;if(e.target.matches('[data-tm]'))rows[i].time=e.target.value;if(e.target.matches('[data-wd]'))rows[i].wd=+e.target.value;}draw(false);};
+  d.onclick=function(e){var b=e.target.closest('[data-b]');if(b){if(b.dataset.b==='ok')ok();else close();return;}
+    if(e.target.closest('.padd')){var used=rows.map(function(s){return s.wd});rows.push({wd:WORD.filter(function(w){return used.indexOf(w)<0})[0]||1,time:''});draw();return;}
+    var x=e.target.closest('.px');if(x){rows.splice(+x.closest('.psl').dataset.i,1);if(!rows.length)rows.push({wd:1,time:''});draw();return;}
+    var c=e.target.closest('.pch');if(c){var w=+c.dataset.fw,t=c.dataset.ft,j=rows.findIndex(function(s){return !s.time});if(j<0){rows.push({wd:w,time:t});}else rows[j]={wd:w,time:t};draw();toast(WDF[w]+', '+t+' — подставил');}};
+  v.onclick=close;document.addEventListener('keydown',kd,true);draw();setTimeout(function(){var f=d.querySelector('input');if(f&&f.focus&&isNew)f.focus();},80);}
 $('#sheet').addEventListener('click',function(e){if(curDir!=='tutor')return;if(e.target.closest('[data-pnew]')){e.stopPropagation();pupilForm(null);return;}
   var pa=e.target.closest('[data-pa]');if(pa){e.stopPropagation();var row=pa.closest('[data-pid]'),L=pupils().slice(),p=L.filter(function(x){return x.id===row.dataset.pid})[0];if(!p)return;var a=pa.dataset.pa;
     if(a==='edit')pupilForm(p);else if(a==='pause'){L=L.map(function(x){return x.id===p.id?Object.assign({},x,{paused:!x.paused,updated:Date.now()}):x});pupilsSave(L);toast(p.paused?p.name+': занятия снова в расписании':p.name+': на паузе');}
