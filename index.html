@@ -875,7 +875,7 @@ function hideBanner(){$('#banner').style.display='none'}
 function dbTasks(dir){return Object.keys(S.tasks).map(function(k){return S.tasks[k]}).filter(function(t){return t.dir===dir&&t.state!=='Удалено'}).sort(function(a,b){return (a.order||0)-(b.order||0)||(a.created||0)-(b.created||0)})}
 function overdue(t){if(!(t&&t.due&&t.state==='Сделать'))return 0;if(t.due<todayKey())return Math.round((new Date(todayKey()+'T12:00:00')-new Date(t.due+'T12:00:00'))/86400000);if(t.due===todayKey()&&t.dueT&&nowMin()>=tm(t.dueT))return 0.5;return 0;}
 var RANK={work:0,tutor:1,home:2,biz:3,uni:4};function lateGrp(t){return (t.dir==='biz'||t.dir==='uni')&&!(t.due&&t.due<=realKey())?1:0}function prioCmp(a,b){var ga=lateGrp(a),gb=lateGrp(b);if(ga!==gb)return ga-gb;var ad=!!a.due,bd=!!b.due;if(ad!==bd)return ad?-1:1;if(ad){var tk0=realKey(),ao=a.due<tk0,bo=b.due<tk0;if(ao!==bo)return ao?1:-1;var ka=a.due+' '+(a.dueT||'24:00'),kb=b.due+' '+(b.dueT||'24:00');if(ka!==kb)return ka<kb?-1:1;}var ra=RANK[a.dir]==null?9:RANK[a.dir],rb=RANK[b.dir]==null?9:RANK[b.dir];if(ra!==rb)return ra-rb;return (a.order||0)-(b.order||0)||(a.created||0)-(b.created||0)}
-function priorityTasks(){var out=[];Object.keys(S.tasks).forEach(function(k){var t=S.tasks[k];if(t&&t.state==='Сделать'&&t.dir!=='work')out.push(t)});return out.sort(prioCmp)}
+function priorityTasks(){var out=[];Object.keys(S.tasks).forEach(function(k){var t=S.tasks[k];if(t&&t.state==='Сделать'&&t.dir!=='work'&&!(t.mode==='offline'&&+t.dur>0))out.push(t)});return out.sort(prioCmp)}
 function dueText(t){var o=overdue(t);if(o===0.5)return 'срок был сегодня до '+t.dueT;if(o)return 'просрочено '+o+' дн.';if(t.due===todayKey())return 'срок сегодня'+(t.dueT?' до '+t.dueT:'');if(t.due)return 'до '+t.due.slice(8,10)+'.'+t.due.slice(5,7)+(t.dueT?' '+t.dueT:'');return '';}
 function openTasks(dir){return dbTasks(dir).filter(function(t){return t.state==='Сделать'}).sort(function(a,b){var oa=overdue(a),ob=overdue(b);if(!!oa!==!!ob)return oa?-1:1;if(a.due&&b.due&&a.due!==b.due)return a.due<b.due?-1:1;if(!!a.due!==!!b.due)return a.due?-1:1;return (a.order||0)-(b.order||0)||(a.created||0)-(b.created||0)})}
 function taskSave(t){S.tasks[t.id]=t;renderAll();return dbSet('tasks/'+t.id,t).catch(function(e){toast('Не сохранилось: '+(e.code||'ошибка'))});}
@@ -913,7 +913,7 @@ function setMode(){if(S.mcp)T.mode='mcp';else T.mode=gasUrl()?'gas':null;if(T.mo
 /* ================= planner ================= */
 function buildDay(dt,bare){var d=dt||now(),wd=d.getDay(),weekend=(wd===0||wd===6),k=key(d),cls=(S.sched[k]||[]).slice().sort(),st=S.settings,B=[];
   var alarm=tm((S.days[k]&&S.days[k].wake)||st.alarm),ready=(S.days[k]&&S.days[k].ready!=null)?+S.days[k].ready:null,start=ready!=null?Math.max(alarm,ready):alarm+ +st.wakeMin,sleep=tm(st.sleep),open=workOpen().length>0;
-  var mainType=weekend?'biz':'work',mainTitle=weekend?'Дом, потом бизнес':'Основная работа';
+  var mainType=weekend?'home':'work',mainTitle=weekend?'Дом':'Основная работа';
   function add(a,b,type,title,sub,why){if(b>a)B.push({a:a,b:b,type:type,title:title,sub:sub||'',why:why||''})}
   add(alarm,start,'rest',ready!=null?'Пробуждение '+fm(alarm)+' · готов с '+fm(start):'Пробуждение '+fm(alarm),'нажми, чтобы поменять на сегодня','задачи с '+fm(start));B[B.length-1].wake=true;
   var cur=start,op=(!weekend)?officePlan():null,visited=!!S.visits[k],offDay=op&&(op.pick.indexOf(k)>=0||visited);var offAt=S.plans[k]&&S.plans[k].officeAt!=null?+S.plans[k].officeAt:null;
@@ -933,10 +933,10 @@ function buildDay(dt,bare){var d=dt||now(),wd=d.getDay(),weekend=(wd===0||wd===6
   var tut=weekend?[]:((st.tutors&&st.tutors[wd])||[]);
   tut.forEach(function(t){var a=tm(t[0]),far=!!t[3],online=t[2].indexOf('онлайн')>=0,lv=a-(far?st.alisaRoad:(online?0:30));
     if(lv-cur>=15)add(cur,lv,mainType,mainTitle,weekend?'':'до выхода на занятие','конец: пора '+(far?'выезжать к Алисе':online?'на онлайн-занятие':'идти к ученику'));
-    var rT=open?'work':(a>=19*60?'home':'biz'),rS=(open?'рабочие':rT==='home'?'домашние':'бизнес')+' задачи с телефона';if(lv<a){if(far){add(Math.max(cur,lv),a,rT,'Дорога к Алисе · можно работать',rS,'конец: занятие');B[B.length-1].onroad=true;}else add(Math.max(cur,lv),a,'road','Дорога к ученику',t[2]);}
+    var rT=open?'work':(weekend||a>=19*60?'home':'biz'),rS=(open?'рабочие':rT==='home'?'домашние':'бизнес')+' задачи с телефона';if(lv<a){if(far){add(Math.max(cur,lv),a,rT,'Дорога к Алисе · можно работать',rS,'конец: занятие');B[B.length-1].onroad=true;}else add(Math.max(cur,lv),a,'road','Дорога к ученику',t[2]);}
     add(Math.max(cur,a),a+t[1],'tutor','Занятие · '+t[2],st.lessonPrice+' ₽','');cur=a+t[1];
     if(far){add(cur,cur+st.alisaRoad,rT,'Дорога от Алисы · можно работать',rS,'конец: дома');B[B.length-1].onroad=true;cur+=st.alisaRoad;}});
-  var evn=(weekend||!open)?Math.max(cur,19*60):sleep;if(cur<sleep){if(evn>cur){if(weekend)add(cur,Math.min(evn,sleep),'biz','Дом, потом бизнес','сначала домашние задачи','конец: вечерний дом');else add(cur,Math.min(evn,sleep),'work','Основная работа, пока все задачи не «ждём», потом дом и бизнес','','конец: домашние дела');}if(evn<sleep)add(evn,sleep,'home','Дом','домашние дела · до сна','конец: сон');}
+  var evn=(weekend||!open)?Math.max(cur,19*60):sleep;if(cur<sleep){if(evn>cur){if(weekend){add(cur,sleep,'home','Дом','домашние дела · до сна','конец: сон');evn=sleep;}else add(cur,Math.min(evn,sleep),'work','Основная работа, пока все задачи не «ждём», потом дом и бизнес','','конец: домашние дела');}if(evn<sleep)add(evn,sleep,'home','Дом','домашние дела · до сна','конец: сон');}
 
   /* fill gaps so every minute between alarm and sleep has a block */
   B.sort(function(x,y){return x.a-y.a});var F=[];for(var gi=0;gi<B.length;gi++){var pb=F[F.length-1],nb=B[gi];if(pb&&nb.a>pb.b){var cl=(pb.type==='lec'||pb.type==='uni'||nb.type==='lec'||nb.type==='uni');F.push({a:pb.b,b:nb.a,type:cl?'uni':mainType,brk:cl,title:cl?'Перерыв между парами':mainTitle,sub:cl?'дела института, короткое окно':'окно',why:'конец: '+nb.title.toLowerCase().slice(0,40)});}
@@ -952,7 +952,7 @@ function taskRoad(t){return (t&&t.mode==='offline'&&+t.road>0)?+t.road:0}
 function taskSpan(t){var r=taskRoad(t);return taskDur(t)+(r?10+2*r:0)}
 function wkDue(d){if(!d)return false;var wd=new Date(d+'T12:00:00').getDay();return wd===0||wd===6}
 function scheduleTasks(){var placed={},today=realKey(),rn=realNow().getHours()*60+realNow().getMinutes(),dayCache={};S.noOffice={};function dayB(k){var ck=k+(S.noOffice[k]?'!':'');if(!dayCache[ck])dayCache[ck]=flexWindows(buildDay(new Date(k+'T12:00:00'),true));return dayCache[ck];}
-  var list=[],workWhite=!workOpen().length;Object.keys(S.tasks).forEach(function(id){var t=S.tasks[id];if(!t||t.state!=='Сделать'||t.dir==='work')return;if(t.mode==='offline'&&+t.dur>0&&t.dir!=='home')list.push(t);else if(t.due)list.push(Object.assign({},t,{dur:+t.dur>0?+t.dur:45,soft:true}));});
+  var list=[],workWhite=!workOpen().length;Object.keys(S.tasks).forEach(function(id){var t=S.tasks[id];if(!t||t.state!=='Сделать'||t.dir==='work')return;if(t.mode==='offline'&&+t.dur>0)list.push(t);else if(t.due)list.push(Object.assign({},t,{dur:+t.dur>0?+t.dur:45,soft:true}));});
   monthlyTasks().forEach(function(t){list.push(t)});
   workSorted().forEach(function(w,i){var m=S.wmeta[String(w.n)];if(m&&m.mode==='offline'&&+m.dur>0)list.push({id:'w'+w.n,dir:'work',title:w.title,step:w.step,dur:+m.dur,mode:m.mode,road:+m.road||0,due:m.due||'',dueT:m.dueT||'',order:i,work:w});});
   var man={};Object.keys(S.plans).forEach(function(k){if(k>=today)((S.plans[k]||{}).manual||[]).forEach(function(m){if(m.tid)man[m.tid]=1})});list=list.filter(function(t){return !man[t.id]});
@@ -1127,7 +1127,7 @@ function periodEvents(mode,prev){var out=[],d=now();function items(k){return ((S
 function dailyCounts(n,f){var out=[];for(var i=n-1;i>=0;i--){var k=key(addDays(now(),-i));out.push(((S.events[k]||{}).items||[]).filter(f).length);}return out;}
 function spark(id,arr){var max=Math.max.apply(null,arr.concat([1]));$('#'+id).setAttribute('d',arr.map(function(v,i){return (i?'L':'M')+(i*80/(arr.length-1))+' '+(22-v/max*20)}).join(' '));}
 function bizWindow(B){var n=nowMin(),o=workOpen().length;if(B.weekend)return 'Выходной: весь день бизнес, рабочих задач нет.';
-  var slots=B.filter(function(b){return b.b>n&&(b.type==='biz'||b.type==='work')});if(!slots.length)return 'Сегодня окна для бизнеса уже нет. Завтра найду сама.';
+  var slots=B.filter(function(b){return b.b>n&&(b.type==='biz'||b.type==='work'||b.type==='home')});if(!slots.length)return 'Сегодня окна для бизнеса уже нет. Завтра найду сама.';
   var b=slots[0];if(o===0)return 'Работа белая. Окно для бизнеса: '+fm(Math.max(n,b.a))+'–'+fm(b.b)+(b.why?' ('+b.why.replace('конец: ','')+')':'')+'.';
   return 'Ближайшее окно для бизнеса: '+fm(Math.max(n,b.a))+'–'+fm(b.b)+', как только '+o+' рабочих задач станут «ждём». Скажу, когда можно.';}
 var dragSkip=false;
