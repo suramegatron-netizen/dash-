@@ -803,6 +803,8 @@ b.late{color:var(--crit);font-weight:600}
 .ff-pup .pch:hover{transform:translateY(-1px);background:color-mix(in srgb,var(--ok) 22%,transparent)}
 @media (max-width:480px){.ff-pup .pline{grid-template-columns:minmax(0,1.3fr) minmax(0,1fr) 42px;gap:6px}.ff-pup .pline select,.ff-pup .pline input{padding:0 10px!important;font-size:14px!important}.ff-pup .px{width:42px}.ff-pup .psl{padding:5px}}
 
+.pup .hd.inc-tg{padding:4px 0;margin-bottom:0}.pup .hd .chev{margin-left:2px;align-self:center}.pup .inc-body{margin-top:8px}
+
 </style>
 </head>
 <body>
@@ -1897,10 +1899,11 @@ function pupilsToTutors(L){var T={0:[],1:[],2:[],3:[],4:[],5:[],6:[]};L.forEach(
 function pupilsSave(L){L=L.map(pNorm);saveSettings({pupils:L,tutors:pupilsToTutors(L),tutorsPaused:{}});}
 function slotSort(a,b){return WORD.indexOf(a.wd)-WORD.indexOf(b.wd)||(a.time<b.time?-1:1)}
 function slotText(p){var g={},ord=[];p.slots.slice().sort(slotSort).forEach(function(s){if(!g[s.time]){g[s.time]=[];ord.push(s.time);}if(g[s.time].indexOf(WDN[s.wd])<0)g[s.time].push(WDN[s.wd]);});return ord.length?ord.map(function(t){return g[t].join(', ')+' '+t}).join(' · '):'дни не выбраны';}
+var pupOpen=false;
 function pupilsHtml(){var L=pupils(),act=L.filter(function(p){return !p.paused}),per=0;act.forEach(function(p){per+=p.slots.length});
-  return '<div class="inc pup"><div class="hd"><span class="h2" style="font-size:16px">Ученики и расписание</span><span class="small">'+act.length+' '+plural(act.length,'ученик','ученика','учеников')+' · '+per+' '+plural(per,'занятие','занятия','занятий')+' в неделю</span><button class="btn sm" data-pnew="1">+ Ученик</button></div>'
+  return '<div class="inc pup'+(pupOpen?' open':'')+'"><div class="hd inc-tg" data-pup-toggle title="'+(pupOpen?'Свернуть':'Развернуть')+'"><span class="h2" style="font-size:16px">Ученики и расписание</span><span class="small">'+act.length+' '+plural(act.length,'ученик','ученика','учеников')+' · '+per+' '+plural(per,'занятие','занятия','занятий')+' в неделю</span><button class="btn sm" data-pnew="1">+ Ученик</button><span class="chev" aria-hidden="true"></span></div><div class="inc-body">'
     +(L.length?L.map(function(p,i){var sel=S.pupSel===p.id;return '<div class="frow'+(p.paused?' wait':'')+(sel?' sel':'')+'" data-pid="'+p.id+'" style="--i:'+i+'"><span class="pt" style="--c:var(--wait)"></span><div class="t"><span class="body">'+esc(p.name)+'</span><span class="small">'+slotText(p)+' · '+(p.mode==='online'?'онлайн':'очно, дорога '+(+p.road||0)+' мин')+' · '+(+p.dur||60)+' мин · ставка '+rubN(p.rate)+' ₽/ч</span>'
-      +(sel?'<div class="acts"><button data-pa="edit">править</button><button data-pa="pause">'+(p.paused?'вернуть':'на паузу')+'</button><button data-pa="del" class="del">удалить</button></div>':'')+'</div><div class="right"><span class="amt">'+rubN(p.price)+' ₽</span><span class="chip '+(p.paused?'c-wait':'c-ok')+'">'+(p.paused?'на паузе':'занимается')+'</span></div></div>'}).join(''):'<div class="empty">Пока никого. Нажми «+ Ученик».</div>')+'</div>';}
+      +(sel?'<div class="acts"><button data-pa="edit">править</button><button data-pa="pause">'+(p.paused?'вернуть':'на паузу')+'</button><button data-pa="del" class="del">удалить</button></div>':'')+'</div><div class="right"><span class="amt">'+rubN(p.price)+' ₽</span><span class="chip '+(p.paused?'c-wait':'c-ok')+'">'+(p.paused?'на паузе':'занимается')+'</span></div></div>'}).join(''):'<div class="empty">Пока никого. Нажми «+ Ученик».</div>')+'</div></div>';}
 /* ---- проверка пересечений: пары (с дорогой), другие ученики (с дорогой), сборы, сон, часы занятий ---- */
 function pWin(mode,road,a,dur){return mode==='online'?{a:a,b:a+dur,out:false}:{a:a-road,b:a+dur+road,out:true};}
 function pDates(wd){var out=[],d=pdk(realKey());for(var i=0;i<28;i++){var x=addDays(d,i);if(x.getDay()===wd)out.push(key(x));}return out;}
@@ -1954,6 +1957,7 @@ function pupilForm(p){var isNew=!p;p=p?pNorm(p):{mode:'offline',road:30,dur:60,r
     var c=e.target.closest('.pch');if(c){var w=+c.dataset.fw,t=c.dataset.ft,j=rows.findIndex(function(s){return !s.time});if(j<0){rows.push({wd:w,time:t});}else rows[j]={wd:w,time:t};draw();toast(WDF[w]+', '+t+' — подставил');}};
   v.onclick=close;document.addEventListener('keydown',kd,true);draw();setTimeout(function(){var f=d.querySelector('input');if(f&&f.focus&&isNew)f.focus();},80);}
 $('#sheet').addEventListener('click',function(e){if(curDir!=='tutor')return;if(e.target.closest('[data-pnew]')){e.stopPropagation();pupilForm(null);return;}
+  if(e.target.closest('[data-pup-toggle]')){e.stopPropagation();pupOpen=!pupOpen;renderSheet();return;}
   var pa=e.target.closest('[data-pa]');if(pa){e.stopPropagation();var row=pa.closest('[data-pid]'),L=pupils().slice(),p=L.filter(function(x){return x.id===row.dataset.pid})[0];if(!p)return;var a=pa.dataset.pa;
     if(a==='edit')pupilForm(p);else if(a==='pause'){L=L.map(function(x){return x.id===p.id?Object.assign({},x,{paused:!x.paused,updated:Date.now()}):x});pupilsSave(L);toast(p.paused?p.name+': занятия снова в расписании':p.name+': на паузе');}
     else if(a==='del')ask({title:'Удалить ученика «'+p.name+'»?',text:'Он пропадёт из расписания и плана. Записи о прошлых занятиях останутся.',ok:'Удалить'}).then(function(y){if(!y)return;pupilsSave(pupils().filter(function(x){return x.id!==p.id}));S.pupSel=null;renderSheet();toast('Удалено');});return;}
