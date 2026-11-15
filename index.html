@@ -839,6 +839,16 @@ b.late{color:var(--crit);font-weight:600}
 .prj .pgs .gcard{background:var(--glass)}
 .row .small b.prjt{color:var(--neon);font-weight:700}
 
+/* v104 свернуть/развернуть проект и группу */
+.grp .hctl{display:flex;align-items:center;gap:6px}
+.grp .tgc{width:32px;height:32px;border-radius:50%;border:1px solid var(--glass-border);background:var(--glass);display:grid;place-items:center;cursor:pointer;transition:transform .2s,background .2s;padding:0}
+.grp .tgc:hover{transform:translateY(-1px);background:var(--bg-100)}
+.grp .tgc i{width:9px;height:9px;border-right:1.6px solid var(--ink-muted);border-bottom:1.6px solid var(--ink-muted);transform:rotate(-135deg) translate(-2px,-2px);transition:transform .25s}
+.grp .col>.frow .tgc i{transform:rotate(45deg) translate(-2px,-2px)}
+.grp .pcard.col>.pgs,.grp .gcard.col>.gms{display:none}
+.grp .hctl .btn{white-space:nowrap}
+@media (max-width:480px){.grp .frow .right{flex-wrap:wrap;gap:8px}.grp .frow .chip{white-space:nowrap}.grp .hctl{margin-left:auto}}
+
 </style>
 </head>
 <body>
@@ -2059,13 +2069,13 @@ function grpSub(gid){var g=grpOf(gid);if(!g)return 'бизнес · группа
 
 /* ---- блок «Группы» в разделе «Бизнес» ---- */
 var grpOpen=true;
-function groupCard(g,i){var M=gAll(g.id),n=M.filter(function(p){return !p.paused}).length,sel=S.grpSel===g.id,pct=Math.min(100,Math.round(n/g.cap*100)),t=todayKey(),mk0=t.slice(0,7);
+function groupCard(g,i){var gcol=!!(S.grpCol||{})[g.id],M=gAll(g.id),n=M.filter(function(p){return !p.paused}).length,sel=S.grpSel===g.id,pct=Math.min(100,Math.round(n/g.cap*100)),t=todayKey(),mk0=t.slice(0,7);
   var st=g.paused?['c-wait','на паузе']:n>=g.cap?['c-ok','набрана']:n?['c-act','идёт набор']:['c-wait','ждёт первого ученика'];
   var head='<div class="frow ghead'+(g.paused?' wait':'')+(sel?' sel':'')+'" data-gid="'+g.id+'" style="--i:'+i+'"><span class="pt" style="--c:var(--neon)"></span><div class="t"><span class="body">Группа «'+esc(g.name)+'»</span>'
     +'<span class="small">'+slotText(g)+' · '+(g.mode==='online'?'онлайн':'очно, дорога '+g.road+' мин')+' · '+g.dur+' мин · '+(g.price?rubN(g.price)+' ₽ за занятие с ученика':'цена не указана')+'</span>'
     +'<div class="gbar" aria-hidden="true"><i style="width:'+pct+'%"></i></div>'
-    +(sel?'<div class="acts"><button data-ga="add">+ ученик</button><button data-ga="edit">править</button><button data-ga="pause">'+(g.paused?'вернуть':'на паузу')+'</button><button data-ga="del" class="del">удалить</button></div>':'')
-    +'</div><div class="right"><span class="amt">'+n+' из '+g.cap+'</span><span class="chip '+st[0]+'">'+st[1]+'</span></div></div>';
+    +(sel?'<div class="acts"><button data-ga="edit">править</button><button data-ga="pause">'+(g.paused?'вернуть':'на паузу')+'</button><button data-ga="del" class="del">удалить</button></div>':'')
+    +'</div><div class="right"><span class="amt">'+n+' из '+g.cap+'</span><span class="chip '+st[0]+'">'+st[1]+'</span><div class="hctl"><button class="btn sm" data-ga="add">+ Ученик</button><button class="tgc" type="button" data-gc title="'+(gcol?'Развернуть':'Свернуть')+'" aria-label="'+(gcol?'Развернуть':'Свернуть')+'"><i></i></button></div></div></div>';
   var mem=M.length?M.map(function(p,j){var j0=gJoined(p),mk=j0.slice(0,7)>mk0?j0.slice(0,7):mk0,x=gPay(g,p,mk)||{n:0,sum:0,d:t,mk:mk},paid=x.occ&&fOpFind(x.occ),late=!paid&&x.sum&&x.d<t,ms=S.gmSel===p.id;
       var chip=p.paused?['c-wait','на паузе']:paid?['c-ok','оплачено']:!x.sum?['c-wait','нет занятий']:late?['c-crit','ждём оплату']:x.d===t?['c-act','оплата сегодня']:['c-wait','оплата '+ddmm(x.d)];
       return '<div class="frow gm'+(p.paused?' wait':'')+(ms?' sel':'')+'" data-gmid="'+p.id+'" data-g="'+g.id+'" style="--i:'+(i+j+1)+'"><span class="pt" style="--c:var(--neon)"></span><div class="t"><span class="body">'+esc(p.name)+'</span>'
@@ -2073,7 +2083,7 @@ function groupCard(g,i){var M=gAll(g.id),n=M.filter(function(p){return !p.paused
         +(ms?'<div class="acts">'+(!paid&&x.sum&&!p.paused?'<button data-gm="paid">оплатил</button>':'')+'<button data-gm="edit">править</button><button data-gm="pause">'+(p.paused?'вернуть':'на паузу')+'</button><button data-gm="del" class="del">удалить</button></div>':'')
         +'</div><div class="right"><span class="amt">'+rubN(x.sum)+' ₽</span><span class="chip '+chip[0]+'">'+chip[1]+'</span></div></div>';}).join('')
     :'<div class="small gnote">Пока никого. Занятия группы появятся в плане дня, как только придёт первый ученик.</div>';
-  return '<div class="gcard" style="--i:'+i+'">'+head+'<div class="gms">'+mem+'</div></div>';}
+  return '<div class="gcard'+(gcol?' col':'')+'" style="--i:'+i+'">'+head+'<div class="gms">'+mem+'</div></div>';}
 function groupsHtml(){var G=groups(),tot=0,full=0;G.forEach(function(g){if(!g.paused){tot+=gMembers(g.id).length;full+=g.cap;}});
   return '<div class="inc pup grp'+(grpOpen?' open':'')+'"><div class="hd inc-tg" data-grp-toggle title="'+(grpOpen?'Свернуть':'Развернуть')+'"><span class="h2" style="font-size:16px">Группы</span><span class="small">'
     +(G.length?G.length+' '+plural(G.length,'группа','группы','групп')+' · набрано '+tot+' из '+full:'клиенты, которые занимаются в группе')+'</span><button class="btn sm" data-gnew="1">+ Группа</button><span class="chev" aria-hidden="true"></span></div><div class="inc-body">'
@@ -2154,6 +2164,7 @@ function groupForm(g,pre){var isNew=!g;g=g?gNorm(g):Object.assign({name:'',mode:
   fdlgOpen(html,ok,draw,rows);}
 
 $('#sheet').addEventListener('click',function(e){if(curDir!=='biz')return;
+  var gc=e.target.closest('[data-gc]');if(gc){e.stopPropagation();var gid0=gc.closest('[data-gid]').dataset.gid;S.grpCol=S.grpCol||{};S.grpCol[gid0]=!S.grpCol[gid0];renderSheet();return;}
   if(e.target.closest('[data-gnew]')){e.stopPropagation();groupForm(null);return;}
   if(e.target.closest('[data-grp-toggle]')){e.stopPropagation();grpOpen=!grpOpen;renderSheet();return;}
   var gm=e.target.closest('[data-gm]');if(gm){e.stopPropagation();var row=gm.closest('[data-gmid]'),p=pupils().filter(function(x){return x.id===row.dataset.gmid})[0],g=grpOf(row.dataset.g);if(!p||!g)return;var a=gm.dataset.gm;
@@ -2177,12 +2188,12 @@ function projSel(cur,withNone){var P=projects();if(!P.length)return '';return '<
 var prjOpen=true;
 function projectCard(pr,i){var G=groups().filter(function(g){return gProj(g)===pr.id}),tot=0,full=0,mon=0,mk=todayKey().slice(0,7);
   G.forEach(function(g){if(g.paused)return;var M=gMembers(g.id);tot+=M.length;full+=g.cap;M.forEach(function(p){var x=gPay(g,p,mk);if(x)mon+=x.sum;});});
-  var nT=dbTasks('biz').filter(function(t){return t.project===pr.id&&t.state!=='Сделано'}).length,sel=S.prjSel===pr.id;
+  var nT=dbTasks('biz').filter(function(t){return t.project===pr.id&&t.state!=='Сделано'}).length,sel=S.prjSel===pr.id,pcol=!!(S.prjCol||{})[pr.id];
   var head='<div class="frow phead'+(sel?' sel':'')+'" data-prid="'+pr.id+'" style="--i:'+i+'"><span class="pt" style="--c:var(--neon)"></span><div class="t"><span class="body">'+esc(pr.name)+'</span>'
     +'<span class="small">'+(pr.note?esc(pr.note)+' · ':'')+G.length+' '+plural(G.length,'группа','группы','групп')+(full?' · набрано '+tot+' из '+full:'')+(nT?' · '+nT+' '+plural(nT,'задача','задачи','задач'):'')+'</span>'
-    +(sel?'<div class="acts"><button data-pra="grp">+ группа</button><button data-pra="edit">править</button><button data-pra="del" class="del">удалить</button></div>':'')
-    +'</div><div class="right"><span class="amt">'+rubN(mon)+' ₽</span><span class="small">в '+mNameIn(mk)+'</span></div></div>';
-  return '<div class="pcard" style="--i:'+i+'">'+head+'<div class="pgs">'+(G.length?G.map(groupCard).join(''):'<div class="small gnote">Групп пока нет. Нажми на проект → «+ группа».</div>')+'</div></div>';}
+    +(sel?'<div class="acts"><button data-pra="edit">править</button><button data-pra="del" class="del">удалить</button></div>':'')
+    +'</div><div class="right"><span class="amt">'+rubN(mon)+' ₽</span><span class="small">в '+mNameIn(mk)+'</span><div class="hctl"><button class="btn sm" data-pra="grp">+ Группа</button><button class="tgc" type="button" data-prc title="'+(pcol?'Развернуть':'Свернуть')+'" aria-label="'+(pcol?'Развернуть':'Свернуть')+'"><i></i></button></div></div></div>';
+  return '<div class="pcard'+(pcol?' col':'')+'" style="--i:'+i+'">'+head+'<div class="pgs">'+(G.length?G.map(groupCard).join(''):'<div class="small gnote">Групп пока нет. Нажми «+ Группа».</div>')+'</div></div>';}
 function projectsHtml(){var P=projects(),orph=groups().filter(function(g){return !gProj(g)});
   return '<div class="inc pup grp prj'+(prjOpen?' open':'')+'"><div class="hd inc-tg" data-prj-toggle title="'+(prjOpen?'Свернуть':'Развернуть')+'"><span class="h2" style="font-size:16px">Проекты</span><span class="small">'
     +(P.length?P.length+' '+plural(P.length,'проект','проекта','проектов')+' · '+P.map(function(p){return esc(p.name)}).join(', '):'направления бизнеса')+'</span><button class="btn sm" data-prnew="1">+ Проект</button><span class="chev" aria-hidden="true"></span></div><div class="inc-body">'
@@ -2195,6 +2206,7 @@ function projectForm(pr){fForm({title:pr?'Проект «'+pr.name+'»':'Нов�
 $('#sheet').addEventListener('click',function(e){if(curDir!=='biz')return;
   if(e.target.closest('[data-prnew]')){e.stopPropagation();projectForm(null);return;}
   if(e.target.closest('[data-prj-toggle]')){e.stopPropagation();prjOpen=!prjOpen;renderSheet();return;}
+  var pc=e.target.closest('[data-prc]');if(pc){e.stopPropagation();var pid0=pc.closest('[data-prid]').dataset.prid;S.prjCol=S.prjCol||{};S.prjCol[pid0]=!S.prjCol[pid0];renderSheet();return;}
   var pa=e.target.closest('[data-pra]');if(pa){e.stopPropagation();var pr=projOf(pa.closest('[data-prid]').dataset.prid);if(!pr)return;var a=pa.dataset.pra;
     if(a==='grp')groupForm(null,{project:pr.id});else if(a==='edit')projectForm(pr);
     else if(a==='del'){var nG=groups().filter(function(g){return gProj(g)===pr.id}).length;if(nG){toast('В проекте '+nG+' '+plural(nG,'группа','группы','групп')+'. Сначала удали или перенеси их в другой проект');return;}
