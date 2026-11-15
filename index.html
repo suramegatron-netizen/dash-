@@ -766,6 +766,10 @@ b.late{color:var(--crit);font-weight:600}
 .sg{display:inline-grid;place-items:center;width:20px;height:20px;border-radius:50%;font-style:normal;font-weight:800;font-size:14px;line-height:1;color:#fff;flex:none}
 .sg.plus{background:var(--ok);box-shadow:0 0 10px color-mix(in srgb,var(--ok) 60%,transparent)}
 .sg.minus{background:var(--act);box-shadow:0 0 10px color-mix(in srgb,var(--act) 60%,transparent)}
+.sg{position:relative;font-size:0!important;color:transparent!important}
+.sg::before,.sg::after{content:"";position:absolute;left:50%;top:50%;width:10px;height:2px;border-radius:2px;background:#fff;transform:translate(-50%,-50%)}
+.sg.plus::after{width:2px;height:10px}
+.sg.minus::after{display:none}
 
 </style>
 </head>
