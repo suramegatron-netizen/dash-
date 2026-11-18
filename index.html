@@ -2024,17 +2024,17 @@ function pupilsHtml(){var L=pupils().filter(function(p){return p.fmt!=='group'})
 function pWin(mode,road,a,dur){return mode==='online'?{a:a,b:a+dur,out:false}:{a:a-road,b:a+dur+road,out:true};}
 function pDates(wd){var out=[],d=pdk(realKey());for(var i=0;i<28;i++){var x=addDays(d,i);if(x.getDay()===wd)out.push(key(x));}return out;}
 function pDayItems(k,wd,exceptId,rows,me){var st=S.settings,it=[],cls=(S.sched[k]||[]).slice().sort();
-  if(cls.length){var f=tm(cls[0][0]),l=tm(cls[cls.length-1][1]);it.push({a:f-st.commuteMin,b:l+st.commuteMin,out:true,what:'пары',uni:1});}
-  pupils().forEach(function(p){if(p.paused||p.id===exceptId)return;p.slots.forEach(function(s){if(s.wd!==wd)return;var w=pWin(p.mode,+p.road||0,tm(s.time),+p.dur||60);w.what=p.name+' '+s.time;it.push(w);});});
-  groups().forEach(function(g){if(g.paused||g.id===exceptId)return;g.slots.forEach(function(s){if(s.wd!==wd)return;var w=pWin(g.mode,g.road,tm(s.time),g.dur);w.what='группа «'+g.name+'» '+s.time;it.push(w);});});
+  if(cls.length){var f=tm(cls[0][0]),l=tm(cls[cls.length-1][1]);it.push({a:f-st.commuteMin,b:l+st.commuteMin,cb:l,out:true,what:'пары',uni:1});}
+  pupils().forEach(function(p){if(p.paused||p.id===exceptId)return;p.slots.forEach(function(s){if(s.wd!==wd)return;var w=pWin(p.mode,+p.road||0,tm(s.time),+p.dur||60);w.ca=tm(s.time);w.cb=w.ca+(+p.dur||60);w.pup=1;w.what=p.name+' '+s.time;it.push(w);});});
+  groups().forEach(function(g){if(g.paused||g.id===exceptId)return;g.slots.forEach(function(s){if(s.wd!==wd)return;var w=pWin(g.mode,g.road,tm(s.time),g.dur);w.ca=tm(s.time);w.cb=w.ca+g.dur;w.pup=1;w.what='группа «'+g.name+'» '+s.time;it.push(w);});});
   fixedFor(k).forEach(function(f){var tk=manualTask(f.tid);if(!tk)return;var fw=fxWin(fxMeOf(tk,{dur:f.b-f.a}),f.fixAt);it.push({a:fw.s,b:fw.e,out:fw.out,what:'«'+tk.title+'» '+fm(f.fixAt)});});
-  (rows||[]).forEach(function(s){if(s.wd!==wd||!s.time)return;var w=pWin(me.mode,me.road,tm(s.time),me.dur);w.what='его же занятие '+s.time;it.push(w);});return it;}
+  (rows||[]).forEach(function(s){if(s.wd!==wd||!s.time)return;var w=pWin(me.mode,me.road,tm(s.time),me.dur);w.ca=tm(s.time);w.cb=w.ca+me.dur;w.pup=1;w.what='его же занятие '+s.time;it.push(w);});return it;}
 function pCheck(me,s,rows){if(!s.time)return null;var a=tm(s.time),b=a+me.dur,h=PH[me.mode],st=S.settings,on=me.mode==='online';
   if(a<h[0])return (on?'Онлайн':'Очно')+' — начинать не раньше '+fm(h[0]);if(b>h[1])return (on?'Онлайн':'Очно')+' — заканчивать не позже '+fm(h[1])+' (сейчас конец в '+fm(b)+')';
   var nw=pWin(me.mode,me.road,a,me.dur),sl=tm(st.sleep);if(nw.b>sl)return 'Вернёшься домой в '+fm(nw.b)+' — позже отбоя '+st.sleep;
-  var bad=[],seen={},ud=[];pDates(s.wd).forEach(function(k){var L=pDayItems(k,s.wd,me.id,rows,me);nw.me=1;L.push(nw);L.sort(function(x,y){return x.a-y.a});var firstOut=true;
+  var bad=[],seen={},ud=[];pDates(s.wd).forEach(function(k){var L=pDayItems(k,s.wd,me.id,rows,me);nw.me=1;nw.pup=1;nw.ca=a;nw.cb=b;L.push(nw);L.sort(function(x,y){return x.a-y.a});var firstOut=true;
     L.forEach(function(x){x.prep=x.out?(firstOut?+st.prepMin:10):0;if(x.out)firstOut=false;});
-    L.forEach(function(x){if(x.me)return;if(x.a-x.prep<nw.b&&nw.a-nw.prep<x.b){if(x.uni){ud.push(k.slice(8,10)+'.'+k.slice(5,7));return;}if(seen[x.what])return;seen[x.what]=1;bad.push(x.what);}});});
+    L.forEach(function(x){if(x.me)return;var hit=(x.pup&&x.out&&nw.out)?(x.ca<nw.cb&&nw.ca<x.cb):(x.uni&&nw.out&&nw.a>=x.a)?(nw.a<x.cb):(x.a-x.prep<nw.b&&nw.a-nw.prep<x.b);if(hit){if(x.uni){ud.push(k.slice(8,10)+'.'+k.slice(5,7));return;}if(seen[x.what])return;seen[x.what]=1;bad.push(x.what);}});});
   if(ud.length)bad.unshift('пары '+ud.join(', '));if(!bad.length)return null;return 'Пересекается'+(me.mode==='online'?'':' (с дорогой и сборами)')+': '+bad.join(' · ');}
 function pFree(me,rows){var out={};WORD.forEach(function(wd){var h=PH[me.mode],R=[],cur=null;for(var t=h[0];t+me.dur<=h[1];t+=15){var ok=!pCheck(me,{wd:wd,time:fm(t)},rows);
     if(ok){if(cur&&cur[1]===t-15)cur[1]=t;else{cur=[t,t];R.push(cur);}}}out[wd]=R;});return out;}
