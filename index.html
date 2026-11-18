@@ -2068,8 +2068,8 @@ function groupsSave(G){S.settings.groups=G.map(gNorm);saveSettings({groups:S.set
 function grpSub(gid){var g=grpOf(gid);if(!g)return 'бизнес · группа';return 'бизнес · группа · набрано '+gMembers(gid).length+' из '+g.cap;}
 
 /* ---- блок «Группы» в разделе «Бизнес» ---- */
-var grpOpen=true;
-function groupCard(g,i){var gcol=!!(S.grpCol||{})[g.id],M=gAll(g.id),n=M.filter(function(p){return !p.paused}).length,sel=S.grpSel===g.id,pct=Math.min(100,Math.round(n/g.cap*100)),t=todayKey(),mk0=t.slice(0,7);
+var grpOpen=false;
+function groupCard(g,i){var gcol=!(S.grpOp||{})[g.id],M=gAll(g.id),n=M.filter(function(p){return !p.paused}).length,sel=S.grpSel===g.id,pct=Math.min(100,Math.round(n/g.cap*100)),t=todayKey(),mk0=t.slice(0,7);
   var st=g.paused?['c-wait','на паузе']:n>=g.cap?['c-ok','набрана']:n?['c-act','идёт набор']:['c-wait','ждёт первого ученика'];
   var head='<div class="frow ghead'+(g.paused?' wait':'')+(sel?' sel':'')+'" data-gid="'+g.id+'" style="--i:'+i+'"><span class="pt" style="--c:var(--neon)"></span><div class="t"><span class="body">Группа «'+esc(g.name)+'»</span>'
     +'<span class="small">'+slotText(g)+' · '+(g.mode==='online'?'онлайн':'очно, дорога '+g.road+' мин')+' · '+g.dur+' мин · '+(g.price?rubN(g.price)+' ₽ за занятие с ученика':'цена не указана')+'</span>'
@@ -2164,7 +2164,7 @@ function groupForm(g,pre){var isNew=!g;g=g?gNorm(g):Object.assign({name:'',mode:
   fdlgOpen(html,ok,draw,rows);}
 
 $('#sheet').addEventListener('click',function(e){if(curDir!=='biz')return;
-  var gc=e.target.closest('[data-gc]');if(gc){e.stopPropagation();var gid0=gc.closest('[data-gid]').dataset.gid;S.grpCol=S.grpCol||{};S.grpCol[gid0]=!S.grpCol[gid0];renderSheet();return;}
+  var gc=e.target.closest('[data-gc]');if(gc){e.stopPropagation();var gid0=gc.closest('[data-gid]').dataset.gid;S.grpOp=S.grpOp||{};S.grpOp[gid0]=!S.grpOp[gid0];renderSheet();return;}
   if(e.target.closest('[data-gnew]')){e.stopPropagation();groupForm(null);return;}
   if(e.target.closest('[data-grp-toggle]')){e.stopPropagation();grpOpen=!grpOpen;renderSheet();return;}
   var gm=e.target.closest('[data-gm]');if(gm){e.stopPropagation();var row=gm.closest('[data-gmid]'),p=pupils().filter(function(x){return x.id===row.dataset.gmid})[0],g=grpOf(row.dataset.g);if(!p||!g)return;var a=gm.dataset.gm;
@@ -2185,10 +2185,10 @@ function projOf(id){return id?projects().filter(function(x){return x.id===id})[0
 function gProj(g){return projOf(g.project)?g.project:((projects()[0]||{}).id||'');}
 function projectsSave(L){S.settings.projects=L;saveSettings({projects:L});}
 function projSel(cur,withNone){var P=projects();if(!P.length)return '';return '<div class="fr"><select data-k="project" id="f-proj">'+(withNone?'<option value="">Проект: без проекта</option>':'')+P.map(function(p){return '<option value="'+p.id+'"'+(p.id===cur?' selected':'')+'>Проект: '+esc(p.name)+'</option>'}).join('')+'</select></div>';}
-var prjOpen=true;
+var prjOpen=false;
 function projectCard(pr,i){var G=groups().filter(function(g){return gProj(g)===pr.id}),tot=0,full=0,mon=0,mk=todayKey().slice(0,7);
   G.forEach(function(g){if(g.paused)return;var M=gMembers(g.id);tot+=M.length;full+=g.cap;M.forEach(function(p){var x=gPay(g,p,mk);if(x)mon+=x.sum;});});
-  var nT=dbTasks('biz').filter(function(t){return t.project===pr.id&&t.state!=='Сделано'}).length,sel=S.prjSel===pr.id,pcol=!!(S.prjCol||{})[pr.id];
+  var nT=dbTasks('biz').filter(function(t){return t.project===pr.id&&t.state!=='Сделано'}).length,sel=S.prjSel===pr.id,pcol=!(S.prjOp||{})[pr.id];
   var head='<div class="frow phead'+(sel?' sel':'')+'" data-prid="'+pr.id+'" style="--i:'+i+'"><span class="pt" style="--c:var(--neon)"></span><div class="t"><span class="body">'+esc(pr.name)+'</span>'
     +'<span class="small">'+(pr.note?esc(pr.note)+' · ':'')+G.length+' '+plural(G.length,'группа','группы','групп')+(full?' · набрано '+tot+' из '+full:'')+(nT?' · '+nT+' '+plural(nT,'задача','задачи','задач'):'')+'</span>'
     +(sel?'<div class="acts"><button data-pra="edit">править</button><button data-pra="del" class="del">удалить</button></div>':'')
@@ -2206,7 +2206,7 @@ function projectForm(pr){fForm({title:pr?'Проект «'+pr.name+'»':'Нов�
 $('#sheet').addEventListener('click',function(e){if(curDir!=='biz')return;
   if(e.target.closest('[data-prnew]')){e.stopPropagation();projectForm(null);return;}
   if(e.target.closest('[data-prj-toggle]')){e.stopPropagation();prjOpen=!prjOpen;renderSheet();return;}
-  var pc=e.target.closest('[data-prc]');if(pc){e.stopPropagation();var pid0=pc.closest('[data-prid]').dataset.prid;S.prjCol=S.prjCol||{};S.prjCol[pid0]=!S.prjCol[pid0];renderSheet();return;}
+  var pc=e.target.closest('[data-prc]');if(pc){e.stopPropagation();var pid0=pc.closest('[data-prid]').dataset.prid;S.prjOp=S.prjOp||{};S.prjOp[pid0]=!S.prjOp[pid0];renderSheet();return;}
   var pa=e.target.closest('[data-pra]');if(pa){e.stopPropagation();var pr=projOf(pa.closest('[data-prid]').dataset.prid);if(!pr)return;var a=pa.dataset.pra;
     if(a==='grp')groupForm(null,{project:pr.id});else if(a==='edit')projectForm(pr);
     else if(a==='del'){var nG=groups().filter(function(g){return gProj(g)===pr.id}).length;if(nG){toast('В проекте '+nG+' '+plural(nG,'группа','группы','групп')+'. Сначала удали или перенеси их в другой проект');return;}
