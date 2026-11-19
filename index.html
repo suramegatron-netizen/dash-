@@ -2302,16 +2302,25 @@ function pushAll(){var t0=now(),k0=todayKey(),k1=key(addDays(t0,1)),L=[];
   if(PUSH.test&&PUSH.test.t>Date.now()-10*60000)L.unshift({t:PUSH.test.t,title:'Проверка уведомлений',body:'Всё работает. Так будут приходить напоминания по плану дня.',test:1});
   var seen={};L=L.filter(function(x){if(seen[x.t+x.title])return false;seen[x.t+x.title]=1;return true}).sort(function(a,b){return a.t-b.t});
   return L.slice(0,80);}
-function pushSig(L){var s=PUSH.sub?PUSH.sub.endpoint:'';L.forEach(function(x){s+='|'+x.t+x.title+x.body});var h=0;for(var i=0;i<s.length;i++){h=(h*31+s.charCodeAt(i))|0;}return String(h);}
-function pushSync(force){if(!PUSH.on||!PUSH.sub||PUSH.busy||S.preview||!T.mode)return Promise.resolve();var L=pushAll(),sig=pushSig(L),row=(DB.rows[PUSH_KEY]||{}).v;
-  if(!force&&row&&row.sig===sig&&row.e===PUSH.sub.endpoint&&Date.now()-(+row.at||0)<10*3600000)return Promise.resolve();
-  PUSH.busy=true;var sub=PUSH.sub,aud=new URL(sub.endpoint).origin,nowS=Math.floor(Date.now()/1000),tok=[],cut=Date.now()-60000;
-  return pushVapid().then(function(){var win=[0,1,2,3,4].map(function(i){var f=(nowS+i*12*3600)*1000;return pushJwt(aud,nowS+i*12*3600+23*3600).then(function(j){tok.push({f:i?f:f-3600000,t:f+12*3600000,j:j})});});
-  var items=L.filter(function(x){return x.t>=cut});
-  var encs=items.map(function(x,i){return pushEncrypt(sub,JSON.stringify({title:x.title,body:x.body,tag:'cc'+x.t+'-'+i})).then(function(p){return {t:x.t,id:x.t+'-'+i,p:p}})});
-  return Promise.all(win).then(function(){return Promise.all(encs)});}).then(function(n){tok.sort(function(a,b){return a.f-b.f});return dbSet(PUSH_KEY,{e:sub.endpoint,k:pB64u(PUSH.vk.pub),tok:tok,n:n,sig:sig,at:Date.now()});})
-  .then(function(){PUSH.busy=false;},function(e){PUSH.busy=false;console.error('push sync',e);});}
-function pushKick(){if(!PUSH.on)return;clearTimeout(PUSH.timer);PUSH.timer=setTimeout(function(){pushSync(false)},4000);}
+function pushHash(s){var h=0;for(var i=0;i<s.length;i++){h=(h*31+s.charCodeAt(i))|0;}return (h>>>0).toString(36);}
+function pushSig(L,ep){var s=ep||'';L.forEach(function(x){s+='|'+x.t+x.title+x.body});return pushHash(s);}
+function pushPack(sub,L){var cut=Date.now()-60000;return Promise.all(L.filter(function(x){return x.t>=cut}).map(function(x){var id=x.t+'-'+pushHash(x.title);return pushEncrypt(sub,JSON.stringify({title:x.title,body:x.body,tag:'cc'+id})).then(function(p){return {t:x.t,id:id,p:p}})}));}
+/* телефон: свои ключи, подпись на 60 ч вперёд. Компьютер (без подписки): пересобирает тексты по сохранённым ключам телефона и его подписям. */
+function pushSync(force){if(PUSH.busy||S.preview||!T.mode||!(window.crypto&&crypto.subtle))return Promise.resolve();var row=(DB.rows[PUSH_KEY]||{}).v;
+  if(PUSH.on&&PUSH.sub){var sub=PUSH.sub,L=pushAll(),sig=pushSig(L,sub.endpoint);
+    if(!force&&row&&row.sig===sig&&row.e===sub.endpoint&&row.keys&&Date.now()-(+row.at||0)<10*3600000)return Promise.resolve();
+    PUSH.busy=true;var aud=new URL(sub.endpoint).origin,nowS=Math.floor(Date.now()/1000),tok=[];
+    return pushVapid().then(function(){var win=[0,1,2,3,4].map(function(i){var f=(nowS+i*12*3600)*1000;return pushJwt(aud,nowS+i*12*3600+23*3600).then(function(j){tok.push({f:i?f:f-3600000,t:f+12*3600000,j:j})});});
+      return Promise.all(win).then(function(){return pushPack(sub,L)});})
+    .then(function(n){tok.sort(function(a,b){return a.f-b.f});return dbSet(PUSH_KEY,{e:sub.endpoint,keys:sub.keys,k:pB64u(PUSH.vk.pub),tok:tok,n:n,sig:sig,at:Date.now(),by:'phone'});})
+    .then(function(){PUSH.busy=false;},function(e){PUSH.busy=false;console.error('push sync',e);});}
+  if(!row||!row.e||!row.keys||!row.tok||!row.tok.length)return Promise.resolve();
+  if(row.tok[row.tok.length-1].t<Date.now()+3600000)return Promise.resolve();
+  var L2=pushAll().filter(function(x){return !x.test}),sig2=pushSig(L2,row.e);if(row.sig===sig2)return Promise.resolve();
+  PUSH.busy=true;return pushPack({endpoint:row.e,keys:row.keys},L2).then(function(n){var t0=Date.now();n=((row.n||[]).filter(function(x){return x.t>=t0-60000&&x.t<=t0+90000})).concat(n.filter(function(x){return !(x.t>=t0-60000&&x.t<=t0+90000)}));n.sort(function(a,b){return a.t-b.t});
+    return dbSet(PUSH_KEY,Object.assign({},row,{n:n,sig:sig2,by:'other',at2:t0}));})
+  .then(function(){PUSH.busy=false;},function(e){PUSH.busy=false;console.error('push sync other',e);});}
+function pushKick(){var row=(DB.rows[PUSH_KEY]||{}).v;if(!PUSH.on&&!(row&&row.keys))return;clearTimeout(PUSH.timer);PUSH.timer=setTimeout(function(){pushSync(false)},4000);}
 function pushStat(){return tGet(DB_SHEET+'!D1:D1').then(function(v){var s=null;try{s=JSON.parse(((v||[])[0]||[])[0]||'null')}catch(e){}PUSH.stat=s;return s;},function(){return PUSH.stat;});}
 function pushBoot(){if(!PUSH_OK||Notification.permission!=='granted')return;
   pushEnsure().then(function(){return pushStat()}).then(function(s){if(s&&s.last&&(s.last.code===404||s.last.code===410)&&PUSH.sub&&s.last.e===PUSH.sub.endpoint.slice(-24))return pushRenew().then(function(){return pushSync(true)});return pushSync(false);})
