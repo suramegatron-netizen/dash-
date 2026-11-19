@@ -10,6 +10,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Command Centre">
 <meta name="theme-color" content="#0b0d14">
+<link rel="manifest" href="manifest.json">
 <link rel="icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAxODAgMTgwJz48cmVjdCB3aWR0aD0nMTgwJyBoZWlnaHQ9JzE4MCcgcng9JzQwJyBmaWxsPScjMGIwZDE0Jy8+PGNpcmNsZSBjeD0nOTAnIGN5PSc5MCcgcj0nNTQnIGZpbGw9J25vbmUnIHN0cm9rZT0nIzJiZDRjOCcgc3Ryb2tlLXdpZHRoPScxMCcgc3Ryb2tlLWRhc2hhcnJheT0nMjUwIDkwJyBzdHJva2UtbGluZWNhcD0ncm91bmQnIHRyYW5zZm9ybT0ncm90YXRlKC05MCA5MCA5MCknLz48Y2lyY2xlIGN4PSc5MCcgY3k9JzkwJyByPScxNicgZmlsbD0nI2ZmOGEzZCcvPjwvc3ZnPg==">
 <link rel="apple-touch-icon" href="icon.png">
 <link id="sp-img" rel="apple-touch-startup-image" media="screen and (device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="splash-dark.png">
@@ -630,6 +631,11 @@ body{font-variant-numeric:tabular-nums}
 
 /* v102 занятие группы в плане — цвет бизнеса */
 .ev.tutor.grp{border-left:3px solid var(--neon);background:color-mix(in srgb,var(--neon) 14%,var(--bg-200))}
+
+/* v108 уведомления */
+.set.pushset .pbtns{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+.set.pushset .pbtns .btn{white-space:nowrap}
+@media (max-width:560px){.set.pushset{grid-template-columns:1fr}.set.pushset .pbtns{justify-content:flex-start}}
 
 /* ===== Финансы (v85) ===== */
 :root{--f-pers:#ffc24b;--f-pers-soft:#ffc24b22}
@@ -1509,12 +1515,12 @@ function formHtml(t,isWork){t=t||{};if(isWork&&t.n!=null)t=Object.assign({},t,S.
   '<div class="fb"><button class="btn" id="f-cancel">Отмена</button><button class="btn primary" id="f-save">Сохранить</button></div></div>';}
 function renderSheet(){if(!curDir)return;var k=curDir;
   if(k==='settings'){$('#sh-title').textContent='Настройки дня';$('#sh-sum').textContent='Эти числа строят план. Меняются сразу.';$('#sh-tools').innerHTML='';$('#sh-form').innerHTML='';var st=S.settings;
-    $('#sh-rows').innerHTML=[['alarm','Будильник','время, на которое ставишь',st.alarm,'time'],['wakeMin','До первой задачи','минут после будильника (встать + прийти в себя)',st.wakeMin,'number'],['prepMin','Сборы в вуз','минут',st.prepMin,'number'],['commuteMin','Дорога до вуза','минут в одну сторону',st.commuteMin,'number'],['officeTarget','Офис в неделю','раз',st.officeTarget,'number'],['vTo','Восток 2: дорога туда','минут из дома',st.vTo,'number'],['vBack','Восток 2: обратно до Динамо','минут',st.vBack,'number'],['lTo','Ласточкино: дорога туда','минут из дома',st.lTo,'number'],['lBack','Ласточкино: обратно до Динамо','минут',st.lBack,'number'],['oStay','В офисе сидеть','минут',st.oStay,'number'],['dynamo','От Динамо','минут до дома, вуза, учеников',st.dynamo,'number'],['lessonPrice','Занятие','₽ за час',st.lessonPrice,'number'],['sleep','Конец задач','все задачи закрыты к',st.sleep,'time']].map(function(r){return '<div class="set"><div><span>'+r[1]+'</span><span class="small">'+r[2]+'</span></div><input data-k="'+r[0]+'" type="'+r[4]+'" value="'+esc(r[3])+'"></div>'}).join('')+
+    $('#sh-rows').innerHTML=pushRow()+[['alarm','Будильник','время, на которое ставишь',st.alarm,'time'],['wakeMin','До первой задачи','минут после будильника (встать + прийти в себя)',st.wakeMin,'number'],['prepMin','Сборы в вуз','минут',st.prepMin,'number'],['commuteMin','Дорога до вуза','минут в одну сторону',st.commuteMin,'number'],['officeTarget','Офис в неделю','раз',st.officeTarget,'number'],['vTo','Восток 2: дорога туда','минут из дома',st.vTo,'number'],['vBack','Восток 2: обратно до Динамо','минут',st.vBack,'number'],['lTo','Ласточкино: дорога туда','минут из дома',st.lTo,'number'],['lBack','Ласточкино: обратно до Динамо','минут',st.lBack,'number'],['oStay','В офисе сидеть','минут',st.oStay,'number'],['dynamo','От Динамо','минут до дома, вуза, учеников',st.dynamo,'number'],['lessonPrice','Занятие','₽ за час',st.lessonPrice,'number'],['sleep','Конец задач','все задачи закрыты к',st.sleep,'time']].map(function(r){return '<div class="set"><div><span>'+r[1]+'</span><span class="small">'+r[2]+'</span></div><input data-k="'+r[0]+'" type="'+r[4]+'" value="'+esc(r[3])+'"></div>'}).join('')+
     '<div class="set" style="grid-template-columns:1fr"><div><span>Адрес скрипта таблицы</span><span class="small">Уже вшит в файл. Менять только если пересоздадите скрипт в таблице (Расширения → Apps Script → Развернуть).</span><input id="gas-url" type="url" placeholder="https://script.google.com/macros/s/…/exec" value="'+esc(gasUrl())+'" style="width:100%;text-align:left;margin-top:8px"></div></div>'+
     '<div class="set"><div><span>Связь сейчас</span><span class="small">'+(T.mode==='mcp'?'через claude.ai, коннектор Google Sheets':T.mode==='gas'?'через скрипт таблицы':'нет связи')+'</span></div></div>'+
     '<div class="set"><div><span>Расписание учеников</span><span class="small">Меняется в разделе «Репетиторство» → «Ученики и расписание». Чтобы поменять, напиши мне в чате.</span></div></div>';
     $$('#sh-rows input[data-k]').forEach(function(inp){inp.addEventListener('change',function(){var p={};p[inp.dataset.k]=inp.type==='number'?+inp.value:inp.value;saveSettings(p);toast('Сохранено')});});
-    $('#gas-url').addEventListener('change',function(){var u=this.value.trim();if(u&&!/^https:\/\/script\.google\.com\/macros\/s\/.+\/exec$/.test(u)){toast('Похоже, это не адрес веб-приложения Apps Script');}setGasUrl(u);setMode();toast(u?'Адрес сохранён, подключаюсь…':'Адрес удалён');renderSheet();});return;}
+    $('#gas-url').addEventListener('change',function(){var u=this.value.trim();var km=/[#&]k=([A-Za-z0-9_-]{20,})/.exec(u);if(km)u='https://script.google.com/macros/s/'+km[1]+'/exec';if(u&&!/^https:\/\/script\.google\.com\/macros\/s\/.+\/exec$/.test(u)){toast('Похоже, это не адрес веб-приложения Apps Script');}setGasUrl(u);setMode();toast(u?'Адрес сохранён, подключаюсь…':'Адрес удалён');renderSheet();});pushWire();return;}
   if(k==='obl'){var L=oblList(),act=L.filter(function(o){return !o.done}),tot=oblTotal(),mx=Math.max.apply(null,act.map(function(o){return +o.sum||0}).concat([1]));$('#sh-title').textContent='Обязательства';$('#sh-sum').textContent=act.length?act.length+' открытых · '+tot.toLocaleString('ru-RU')+' ₽ всего':'Пока пусто. Добавь первое.';
     $('#sh-tools').innerHTML='<button class="btn primary" id="t-add">+ Обязательство</button>';
     var oform=function(o){o=o||{};return '<div class="form" id="oform"><input id="o-title" placeholder="Название" value="'+esc(o.title||'')+'"><div class="fr"><input id="o-sum" type="number" min="0" step="100" placeholder="Сумма, ₽" value="'+(o.sum||'')+'"></div><textarea id="o-note" placeholder="Описание">'+esc(o.note||'')+'</textarea><div class="fb"><button class="btn" id="o-cancel">Отмена</button><button class="btn primary" id="o-save">Сохранить</button></div></div>'};
@@ -1577,7 +1583,7 @@ function tick(){var d=now(),c=$('#clock');c.textContent=('0'+d.getHours()).slice
   var h=d.getHours(),s=h<5?'Доброй ночи,':h<12?'Доброе утро,':h<17?'Добрый день,':'Добрый вечер,',sp=$('#greet').querySelectorAll('span'),w=s.split(' ');sp[0].textContent=w[0];sp[1].textContent=w[1];
   var hm=h*60+d.getMinutes();[[tm('21:00'),'21:00 · Закинь стирку'],[tm('22:00'),'22:00 · Вытащи стирку'],[tm('22:30'),'22:30 · Итог дня: что сделано, что переносится']].forEach(function(m){if(hm===m[0]&&lastMark!==m[0]){lastMark=m[0];toast(m[1]);}});}
 var renderQueued=false;
-function renderAll(){if(renderQueued)return;renderQueued=true;requestAnimationFrame(function(){renderQueued=false;try{S.placed=scheduleTasks();renderFocus(false);if(!dragging)renderTimeline();renderCards();renderChart();try{finRender();}catch(fe){console.error(fe)}if(curDir&&!editing&&!(document.activeElement&&document.activeElement.closest&&document.activeElement.closest('#sheet input,#sheet textarea,#sheet select')))renderSheet();}catch(e){console.error(e);}});}
+function renderAll(){if(renderQueued)return;renderQueued=true;requestAnimationFrame(function(){renderQueued=false;try{S.placed=scheduleTasks();renderFocus(false);if(!dragging)renderTimeline();renderCards();renderChart();try{finRender();}catch(fe){console.error(fe)}try{pushKick();}catch(pe){}if(curDir&&!editing&&!(document.activeElement&&document.activeElement.closest&&document.activeElement.closest('#sheet input,#sheet textarea,#sheet select')))renderSheet();}catch(e){console.error(e);}});}
 function setPreview(dt){S.preview=dt;chState=null;tick();renderAll();renderFocus(true);}
 function pvShift(days,hours){var b=S.preview?new Date(S.preview):realNow();if(!S.preview)b.setMinutes(0,0,0);b.setDate(b.getDate()+days);b.setHours(b.getHours()+hours);setPreview(b);}
 function pvStep(dir){var b=S.preview?new Date(S.preview):realNow(),B=buildDay(b,false),n=b.getHours()*60+b.getMinutes(),pts=B.map(function(x){return x.a}).concat([B.sleep]),t=null;
@@ -2222,6 +2228,114 @@ $('#sheet').addEventListener('click',function(e){if(curDir!=='biz')return;
   if(e.target.closest('[data-gmid],[data-gid],[data-ga],[data-gm]'))return;
   var h=e.target.closest('[data-prid]');if(h&&!e.target.closest('button')){e.stopPropagation();S.prjSel=S.prjSel===h.dataset.prid?null:h.dataset.prid;S.grpSel=null;S.gmSel=null;renderSheet();}},true);
 
+
+/* ---- v108 уведомления на iPhone: план → зашифрованные уведомления в _db (push/ios) → Apps Script раз в минуту отправляет ---- */
+var PUSH={on:false,sub:null,vk:null,timer:null,busy:false,stat:null,test:null,err:''};
+var PUSH_LS='dash.vapid',PUSH_KEY='push/ios';
+var PUSH_OK=('serviceWorker' in navigator)&&('PushManager' in window)&&('Notification' in window)&&!!(window.crypto&&crypto.subtle)&&/github\.io$/.test(location.hostname);
+var penc=new TextEncoder();
+function pB64u(buf){var b=new Uint8Array(buf),s='';for(var i=0;i<b.length;i++)s+=String.fromCharCode(b[i]);return btoa(s).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');}
+function pB64(buf){var b=new Uint8Array(buf),s='';for(var i=0;i<b.length;i++)s+=String.fromCharCode(b[i]);return btoa(s);}
+function pUb64u(s){s=String(s).replace(/-/g,'+').replace(/_/g,'/');while(s.length%4)s+='=';var r=atob(s),b=new Uint8Array(r.length);for(var i=0;i<r.length;i++)b[i]=r.charCodeAt(i);return b;}
+function pCat(){var n=0,i,a=arguments;for(i=0;i<a.length;i++)n+=a[i].length;var o=new Uint8Array(n),p=0;for(i=0;i<a.length;i++){o.set(a[i],p);p+=a[i].length;}return o;}
+function pushVapid(){if(PUSH.vk)return Promise.resolve(PUSH.vk);var C=crypto.subtle,j=null;try{j=JSON.parse(localStorage.getItem(PUSH_LS)||'null')}catch(e){}
+  if(j&&j.priv&&j.pub)return C.importKey('jwk',j.priv,{name:'ECDSA',namedCurve:'P-256'},false,['sign']).then(function(k){PUSH.vk={pub:pUb64u(j.pub),priv:k};return PUSH.vk;});
+  return C.generateKey({name:'ECDSA',namedCurve:'P-256'},true,['sign','verify']).then(function(kp){return Promise.all([C.exportKey('jwk',kp.privateKey),C.exportKey('raw',kp.publicKey)]).then(function(r){var pub=new Uint8Array(r[1]);try{localStorage.setItem(PUSH_LS,JSON.stringify({priv:r[0],pub:pB64u(pub)}))}catch(e){}PUSH.vk={pub:pub,priv:kp.privateKey};return PUSH.vk;});});}
+function pushJwt(aud,exp){var h=pB64u(penc.encode(JSON.stringify({typ:'JWT',alg:'ES256'}))),p=pB64u(penc.encode(JSON.stringify({aud:aud,exp:exp,sub:'https://suramegatron-netizen.github.io/dash-/'}))),u=h+'.'+p;
+  return crypto.subtle.sign({name:'ECDSA',hash:'SHA-256'},PUSH.vk.priv,penc.encode(u)).then(function(s){return u+'.'+pB64u(s)});}
+function pHkdf(salt,ikm,info,len){var C=crypto.subtle;return C.importKey('raw',ikm,'HKDF',false,['deriveBits']).then(function(k){return C.deriveBits({name:'HKDF',hash:'SHA-256',salt:salt,info:info},k,len*8)}).then(function(b){return new Uint8Array(b)});}
+/* RFC 8291, aes128gcm */
+function pushEncrypt(sub,text){var C=crypto.subtle,ua=pUb64u(sub.keys.p256dh),auth=pUb64u(sub.keys.auth),salt=crypto.getRandomValues(new Uint8Array(16)),asPub,kp;
+  return C.generateKey({name:'ECDH',namedCurve:'P-256'},true,['deriveBits']).then(function(k){kp=k;return C.exportKey('raw',k.publicKey)})
+  .then(function(r){asPub=new Uint8Array(r);return C.importKey('raw',ua,{name:'ECDH',namedCurve:'P-256'},false,[])})
+  .then(function(uk){return C.deriveBits({name:'ECDH',public:uk},kp.privateKey,256)})
+  .then(function(sec){return pHkdf(auth,new Uint8Array(sec),pCat(penc.encode('WebPush: info\0'),ua,asPub),32)})
+  .then(function(ikm){return Promise.all([pHkdf(salt,ikm,penc.encode('Content-Encoding: aes128gcm\0'),16),pHkdf(salt,ikm,penc.encode('Content-Encoding: nonce\0'),12)])})
+  .then(function(r){return C.importKey('raw',r[0],'AES-GCM',false,['encrypt']).then(function(k){return C.encrypt({name:'AES-GCM',iv:r[1]},k,pCat(penc.encode(text),new Uint8Array([2])))})})
+  .then(function(ct){var h=new Uint8Array(21);h.set(salt,0);new DataView(h.buffer).setUint32(16,4096);h[20]=65;return pB64(pCat(h,asPub,new Uint8Array(ct)));});}
+function pushReg(){return navigator.serviceWorker.register('sw.js',{scope:'./'}).then(function(){return navigator.serviceWorker.ready});}
+function pushEnsure(){return Promise.all([pushReg(),pushVapid()]).then(function(r){var reg=r[0],vk=r[1];
+  return reg.pushManager.getSubscription().then(function(s){if(!s)return null;var ak=s.options&&s.options.applicationServerKey;if(ak&&pB64u(ak)===pB64u(vk.pub))return s;return s.unsubscribe().then(function(){return null},function(){return null});})
+  .then(function(s){return s||reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:vk.pub});});})
+  .then(function(s){PUSH.sub=s.toJSON();PUSH.on=true;PUSH.err='';return PUSH.sub;});}
+function pushRenew(){return pushReg().then(function(reg){return reg.pushManager.getSubscription()}).then(function(s){return s?s.unsubscribe():null}).then(function(){PUSH.sub=null;return pushEnsure();});}
+/* ---- тексты ---- */
+function pushItems(k,B){var out=[],base=new Date(k+'T00:00:00').getTime(),st=S.settings,al=tm(alarmOf(k).t),sl=tm(st.sleep),prevAct='',prevEnd=-1;
+  function put(send,title,body){if(send<al||send>=sl)return;out.push({t:base+send*60000,title:title,body:body});}
+  function soon(m,act,body,lead){put(m-5,fm(m)+' · '+act,(lead||'Через 5 минут.')+' '+body);}
+  function now_(b,act,body){if(act===prevAct&&b.a===prevEnd){prevEnd=b.b;return;}prevAct=act;prevEnd=b.b;put(b.a,fm(b.a)+' · '+act,body);}
+  function startWith(c){return c&&c.t&&!/^(Онлайн-задач нет|Задач нет|Задач по направлению нет|Таблица не подключена)$/.test(c.t)?'Начать с: «'+c.t+'». ':'';}
+  B.forEach(function(b,i){var nx=B[i+1],c=null,len=b.b-b.a;
+    if(b.wake||b.type==='rest'||b.brk)return;
+    if(b.office&&b.trip){var tr=b.trip,p1=b.a+tr.prep,p2=p1+tr.to,p3=p2+tr.stay,bk=tr.back+(tr.dyn||0);
+      soon(b.a,'Собираться в офис '+b.office,'Выйти в '+fm(p1)+', дорога '+tr.to+' мин.','Начать через 5 минут.');
+      soon(p1,'Выйти в офис '+b.office,'Дорога '+tr.to+' мин, на месте в '+fm(p2)+'.');
+      soon(p3,'Выйти из офиса','Дорога '+bk+' мин, '+(b.goUni?'дальше вуз.':'дома в '+fm(p3+bk)+'.'));prevAct='';return;}
+    if(b.type==='task'&&b.task&&taskRoad(b.task)){var tk=b.task,tq=b.a+(b.prep||10),f0=tripStops(tk)[0];
+      soon(b.a,'Собираться: '+tk.title,'Выйти в '+fm(tq)+(f0.to?', дорога '+f0.to+' мин':'')+'.'+(tk.take?' Взять с собой: '+tk.take+'.':''),'Начать через 5 минут.');
+      tripLegs(tk).forEach(function(lg){if(lg.k==='road')soon(tq,'Выйти: '+(lg.place||tk.title),'Дорога '+lg.m+' мин, на месте в '+fm(tq+lg.m)+'.'+(lg.note?' Цель: '+lg.note+'.':''));else if(lg.k==='back')soon(tq,'Выйти домой','Дорога '+lg.m+' мин, дома в '+fm(tq+lg.m)+'.');tq+=lg.m;});prevAct='';return;}
+    if(b.type==='prep'){var dest=b.dest?String(b.dest).replace(' · ',': '):'в вуз',rm=b.dest?b.roadMin:st.commuteMin;
+      soon(b.a,'Собираться '+dest,'Выйти в '+fm(b.b)+(rm?', дорога '+rm+' мин':'')+'.','Начать через 5 минут.');prevAct='';return;}
+    if(b.type==='road'||b.onroad){var t=String(b.title),act='Выйти',body='Дорога '+len+' мин.';
+      if(/^Дорога домой/.test(t)){act='Выйти домой';body='Дорога '+len+' мин, дома в '+fm(b.b)+'.';}
+      else if(/^Дорога в вуз/.test(t)){act='Выйти в вуз';body='Дорога '+len+' мин, на месте в '+fm(b.b)+'.';}
+      else if(/занятие группы/.test(t)){var gn=nx&&nx.type==='tutor'?nx.title.replace('Занятие · ','').replace(/ · .*$/,''):'';act='Выйти на занятие'+(gn?': '+gn:'');body='Дорога '+len+' мин, начало в '+fm(b.b)+'.';}
+      else if(/к ученику/.test(t)||/^Дорога · /.test(t)){var nm=/^Дорога · /.test(t)?t.split(' · ')[1]:String(b.sub||'').replace(/\s*·.*$/,'');act='Выйти к ученику: '+nm;body='Дорога '+len+' мин, занятие в '+fm(b.b)+'.';}
+      if(b.onroad)body+=' В дороге можно делать задачи с телефона.';
+      soon(b.a,act,body);prevAct='';return;}
+    try{c=focusFor0(b,B)}catch(e){c=null}
+    var till='До '+fm(b.b)+'.';
+    switch(b.type){
+      case 'tutor':var ln=b.title.replace('Занятие · ','');now_(b,(b.grp?'Занятие группы: ':'Занятие: ')+ln.replace(/^Группа /,''),till+' После занятия отметь «провёл».');break;
+      case 'uni':var tch=semTeacher(b);now_(b,'Семинар: '+b.title.replace('Семинар · ',''),till+' Узнай '+(tch?'у преподавателя ('+tch+') ':'')+'о баллах и аттестации.');break;
+      case 'lec':now_(b,'Лекция: '+b.title.replace('Лекция · ',''),(startWith(c)?'Параллельно: «'+c.t+'». ':'')+till);break;
+      case 'chore':now_(b,b.title,'Отметь «сделал», когда сделаешь.');break;
+      case 'task':var tk2=b.task;if(!tk2){now_(b,DIRS[b.dir]||b.title,startWith(c)+till);break;}now_(b,tk2.title,(tk2.work?'Работа':DIRS[tk2.dir]||'')+' · до '+fm(b.b)+'.'+(tk2.step?' '+tk2.step:''));break;
+      case 'work':if(b.office)break;now_(b,c&&c.dir&&c.dir!=='work'?DIRS[c.dir]:'Основная работа',startWith(c)+till);break;
+      case 'home':now_(b,c&&c.dir&&c.dir!=='home'?DIRS[c.dir]:'Домашние дела',startWith(c)+till);break;
+      case 'biz':now_(b,c&&c.dir?DIRS[c.dir]:'Бизнес',startWith(c)+till);break;
+      default:now_(b,b.title,till);}
+  });
+  return out;}
+function pushAll(){var t0=now(),k0=todayKey(),k1=key(addDays(t0,1)),L=[];
+  try{L=pushItems(k0,buildDay()).concat(pushItems(k1,buildDay(new Date(k1+'T12:00:00'))));}catch(e){console.error(e);}
+  if(PUSH.test&&PUSH.test.t>Date.now()-10*60000)L.unshift({t:PUSH.test.t,title:'Проверка уведомлений',body:'Всё работает. Так будут приходить напоминания по плану дня.',test:1});
+  var seen={};L=L.filter(function(x){if(seen[x.t+x.title])return false;seen[x.t+x.title]=1;return true}).sort(function(a,b){return a.t-b.t});
+  return L.slice(0,80);}
+function pushSig(L){var s=PUSH.sub?PUSH.sub.endpoint:'';L.forEach(function(x){s+='|'+x.t+x.title+x.body});var h=0;for(var i=0;i<s.length;i++){h=(h*31+s.charCodeAt(i))|0;}return String(h);}
+function pushSync(force){if(!PUSH.on||!PUSH.sub||PUSH.busy||S.preview||!T.mode)return Promise.resolve();var L=pushAll(),sig=pushSig(L),row=(DB.rows[PUSH_KEY]||{}).v;
+  if(!force&&row&&row.sig===sig&&row.e===PUSH.sub.endpoint&&Date.now()-(+row.at||0)<10*3600000)return Promise.resolve();
+  PUSH.busy=true;var sub=PUSH.sub,aud=new URL(sub.endpoint).origin,nowS=Math.floor(Date.now()/1000),tok=[],cut=Date.now()-60000;
+  return pushVapid().then(function(){var win=[0,1,2,3,4].map(function(i){var f=(nowS+i*12*3600)*1000;return pushJwt(aud,nowS+i*12*3600+23*3600).then(function(j){tok.push({f:i?f:f-3600000,t:f+12*3600000,j:j})});});
+  var items=L.filter(function(x){return x.t>=cut});
+  var encs=items.map(function(x,i){return pushEncrypt(sub,JSON.stringify({title:x.title,body:x.body,tag:'cc'+x.t+'-'+i})).then(function(p){return {t:x.t,id:x.t+'-'+i,p:p}})});
+  return Promise.all(win).then(function(){return Promise.all(encs)});}).then(function(n){tok.sort(function(a,b){return a.f-b.f});return dbSet(PUSH_KEY,{e:sub.endpoint,k:pB64u(PUSH.vk.pub),tok:tok,n:n,sig:sig,at:Date.now()});})
+  .then(function(){PUSH.busy=false;},function(e){PUSH.busy=false;console.error('push sync',e);});}
+function pushKick(){if(!PUSH.on)return;clearTimeout(PUSH.timer);PUSH.timer=setTimeout(function(){pushSync(false)},4000);}
+function pushStat(){return tGet(DB_SHEET+'!D1:D1').then(function(v){var s=null;try{s=JSON.parse(((v||[])[0]||[])[0]||'null')}catch(e){}PUSH.stat=s;return s;},function(){return PUSH.stat;});}
+function pushBoot(){if(!PUSH_OK||Notification.permission!=='granted')return;
+  pushEnsure().then(function(){return pushStat()}).then(function(s){if(s&&s.last&&(s.last.code===404||s.last.code===410)&&PUSH.sub&&s.last.e===PUSH.sub.endpoint.slice(-24))return pushRenew().then(function(){return pushSync(true)});return pushSync(false);})
+  .catch(function(e){PUSH.err=(e&&e.message)||'ошибка';console.error('push boot',e);});}
+function pushEnable(){if(!PUSH_OK){toast('Уведомления работают только в приложении на iPhone');return;}
+  Notification.requestPermission().then(function(p){if(p!=='granted'){PUSH.err='denied';renderSheet();toast('iPhone не разрешил уведомления');return;}
+    toast('Подключаю уведомления…');return pushEnsure().then(function(){PUSH.test={t:Date.now()+20000};return pushSync(true);}).then(function(){toast('Готово. Пробное уведомление придёт в течение 1–2 минут');renderSheet();});})
+  .catch(function(e){PUSH.err=(e&&e.message)||'ошибка';renderSheet();toast('Не получилось: '+PUSH.err);});}
+function pushTest(){if(!PUSH.on){pushEnable();return;}PUSH.test={t:Date.now()+20000};pushSync(true).then(function(){toast('Пробное уведомление придёт в течение 1–2 минут. Можно закрыть приложение');});}
+function pushOff(){pushReg().then(function(reg){return reg.pushManager.getSubscription()}).then(function(s){return s?s.unsubscribe():null}).then(function(){PUSH.on=false;PUSH.sub=null;return dbSet(PUSH_KEY,null);}).then(function(){toast('Уведомления выключены');renderSheet();},function(){toast('Не получилось выключить');});}
+function pushText(){if(!PUSH_OK)return 'Работают только в приложении Command Centre на iPhone (значок на экране «Домой»).';
+  if(Notification.permission==='denied'||PUSH.err==='denied')return 'Запрещены в настройках iPhone: Настройки → Уведомления → Command Centre → Допуск уведомлений.';
+  if(!PUSH.on)return 'Выключены. Нажми «Включить» и разреши уведомления.';
+  var s=PUSH.stat,t='Включены. Сборы и «выйти» за 5 минут, остальное в начало блока. С '+S.settings.sleep+' до будильника тишина.';
+  if(!s||!s.beat)return t+' Скрипт таблицы ещё не запущен: открой Apps Script и запусти setupPush.';
+  var hh=function(x){return new Date(x).toTimeString().slice(0,5)};
+  if(Date.now()-s.beat>45*60000)t+=' Скрипт таблицы молчит с '+hh(s.beat)+': проверь триггер в Apps Script.';
+  if(s.last&&s.last.at)t+=' Последнее отправлено в '+hh(s.last.at)+(s.last.code===201||s.last.code===200?' ✓':' · ошибка '+s.last.code)+'.';
+  return t;}
+function pushRow(){var b=!PUSH_OK?'':PUSH.on?'<button class="btn" data-push="test">Проверить</button><button class="btn" data-push="off">Выключить</button>':'<button class="btn primary" data-push="on">Включить</button>';
+  return '<div class="set pushset"><div><span>Уведомления на iPhone</span><span class="small" id="push-st">'+esc(pushText())+'</span></div><div class="pbtns">'+b+'</div></div>';}
+function pushWire(){$$('#sh-rows [data-push]').forEach(function(x){x.addEventListener('click',function(){var a=x.dataset.push;if(a==='on')pushEnable();else if(a==='test')pushTest();else if(a==='off')pushOff();});});
+  if(PUSH.on)pushStat().then(function(){var el=$('#push-st');if(el)el.textContent=pushText();});}
+setTimeout(pushBoot,2500);
 
 })();
 
