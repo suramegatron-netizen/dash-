@@ -15,7 +15,8 @@
 <link rel="apple-touch-icon" href="icon.png">
 <link id="sp-img" rel="apple-touch-startup-image" media="screen and (device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="splash-dark.png">
 
-<script>(function(){var r=document.documentElement,sa=navigator.standalone===true||(window.matchMedia&&matchMedia('(display-mode: standalone),(display-mode: fullscreen),(display-mode: minimal-ui)').matches)||/[#&]k=/.test(location.hash)||/[?&]splash/.test(location.search);if(!sa)return;var h=new Date().getHours(),th=(h>=5&&h<17)?'light':'dark';if(!r.getAttribute('data-theme'))r.setAttribute('data-theme',th);r.classList.add('sp-on');var li=document.getElementById('sp-img');if(li)li.setAttribute('href','splash-'+th+'.png');})()</script>
+<script>(function(){var r=document.documentElement;try{var L=JSON.parse(localStorage.getItem('kc-look')||'null');if(L)['font','bg','pat','date','hov','fly','xhov','open','ico'].forEach(function(k){if(typeof L[k]==='string'&&/^[a-z0-9]{1,12}$/.test(L[k]))r.setAttribute('data-'+k,L[k]);});}catch(e){}})()</script>
+<script>(function(){var r=document.documentElement,sa=navigator.standalone===true||(window.matchMedia&&matchMedia('(display-mode: standalone),(display-mode: fullscreen),(display-mode: minimal-ui)').matches)||/[#&]k=/.test(location.hash)||/[?&]splash/.test(location.search);if(!sa)return;var pt=function(dt){var h=dt.getHours();return (h>=5&&h<17)?'light':'dark';},th=pt(new Date());try{var man=localStorage.getItem('kc-theme'),at=+localStorage.getItem('kc-theme-at')||0;if((man==='light'||man==='dark')&&at&&pt(new Date(at))===th)th=man;}catch(e){}if(!r.getAttribute('data-theme'))r.setAttribute('data-theme',th);r.classList.add('sp-on');var li=document.getElementById('sp-img');if(li)li.setAttribute('href','splash-'+th+'.png');})()</script>
 <style>:root.sp-on .shell,:root.sp-on .scene,:root.sp-on .bottomrail{visibility:hidden!important}:root.sp-on{background:#090b12}:root.sp-on[data-theme="light"]{background:#eef0f5}</style>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Onest:wght@400;500;600;700&family=Nunito:wght@400;500;600;700;800&display=swap">
 <style>
@@ -886,49 +887,49 @@ html,body{touch-action:manipulation;-webkit-text-size-adjust:100%;text-size-adju
 
 /* фоны: только тёмная тема */
 :root[data-theme="dark"][data-bg]:not([data-bg="now"]) .scene i{display:none!important}
-:root[data-theme="dark"][data-bg="g3"] .scene{background:radial-gradient(120% 90% at 15% 0%,#33204f 0%,#161229 45%,#07070d 100%)}
-:root[data-theme="dark"][data-bg="g3b"] .scene{background:radial-gradient(120% 90% at 15% 0%,#2a2a5c 0%,#15162f 45%,#07080f 100%)}
-:root[data-theme="dark"][data-bg="g3c"] .scene{background:radial-gradient(120% 90% at 15% 0%,#3d1f4a 0%,#1a1226 45%,#080609 100%)}
-:root[data-theme="dark"][data-bg="d3"] .scene{background:radial-gradient(120% 80% at 20% 110%,#33204f 0%,#161229 48%,#07070d 100%)}
-:root[data-theme="dark"][data-bg="d3b"] .scene{background:radial-gradient(120% 80% at 20% 110%,#2a2a5c 0%,#15162f 48%,#07080f 100%)}
-:root[data-theme="dark"][data-bg="d3c"] .scene{background:radial-gradient(120% 80% at 20% 110%,#3d1f4a 0%,#1a1226 48%,#080609 100%)}
-:root[data-theme="dark"][data-bg="e3"] .scene{background:radial-gradient(90% 70% at 50% 55%,#24183a 0%,#120e20 55%,#07070d 100%)}
+:root[data-theme="dark"][data-bg="g3"] :is(.scene,#splash){background:radial-gradient(120% 90% at 15% 0%,#33204f 0%,#161229 45%,#07070d 100%)}
+:root[data-theme="dark"][data-bg="g3b"] :is(.scene,#splash){background:radial-gradient(120% 90% at 15% 0%,#2a2a5c 0%,#15162f 45%,#07080f 100%)}
+:root[data-theme="dark"][data-bg="g3c"] :is(.scene,#splash){background:radial-gradient(120% 90% at 15% 0%,#3d1f4a 0%,#1a1226 45%,#080609 100%)}
+:root[data-theme="dark"][data-bg="d3"] :is(.scene,#splash){background:radial-gradient(120% 80% at 20% 110%,#33204f 0%,#161229 48%,#07070d 100%)}
+:root[data-theme="dark"][data-bg="d3b"] :is(.scene,#splash){background:radial-gradient(120% 80% at 20% 110%,#2a2a5c 0%,#15162f 48%,#07080f 100%)}
+:root[data-theme="dark"][data-bg="d3c"] :is(.scene,#splash){background:radial-gradient(120% 80% at 20% 110%,#3d1f4a 0%,#1a1226 48%,#080609 100%)}
+:root[data-theme="dark"][data-bg="e3"] :is(.scene,#splash){background:radial-gradient(90% 70% at 50% 55%,#24183a 0%,#120e20 55%,#07070d 100%)}
 
 /* узоры */
 :root[data-pat="none"] #stars,:root[data-pat="bokeh"] #stars,:root[data-pat="glow"] #stars{display:none!important}
-.scene .pat{position:absolute;inset:0;z-index:2;pointer-events:none;display:none}
-.scene .pat span{position:absolute;will-change:transform}
+:is(.scene,#splash) .pat{position:absolute;inset:0;z-index:2;pointer-events:none;display:none}
+:is(.scene,#splash) .pat span{position:absolute;will-change:transform}
 @keyframes lkB1{0%{transform:translate3d(0,0,0)}33%{transform:translate3d(4.5vw,-3vh,0)}66%{transform:translate3d(-3vw,3.5vh,0)}100%{transform:translate3d(2.5vw,1.5vh,0)}}
-.scene .pat span:nth-child(1){left:calc(16% - 11vmax);top:calc(68% - 11vmax);width:22vmax;height:22vmax;background:radial-gradient(closest-side,#c4adff99,transparent 62%);animation:lkB1 8s ease-in-out infinite alternate}
-:root[data-theme="light"] .scene .pat span:nth-child(1){background:radial-gradient(closest-side,#b9a3ff80,transparent 62%)}
-:root[data-pat="glow"] .scene .pat span:nth-child(1){animation-duration:11s}
+:is(.scene,#splash) .pat span:nth-child(1){left:calc(16% - 11vmax);top:calc(68% - 11vmax);width:22vmax;height:22vmax;background:radial-gradient(closest-side,#c4adff99,transparent 62%);animation:lkB1 8s ease-in-out infinite alternate}
+:root[data-theme="light"] :is(.scene,#splash) .pat span:nth-child(1){background:radial-gradient(closest-side,#b9a3ff80,transparent 62%)}
+:root[data-pat="glow"] :is(.scene,#splash) .pat span:nth-child(1){animation-duration:11s}
 @keyframes lkB2{0%{transform:translate3d(0,0,0)}33%{transform:translate3d(-4vw,3vh,0)}66%{transform:translate3d(3vw,1.5vh,0)}100%{transform:translate3d(-2.5vw,-3.5vh,0)}}
-.scene .pat span:nth-child(2){left:calc(70% - 8vmax);top:calc(20% - 8vmax);width:16vmax;height:16vmax;background:radial-gradient(closest-side,#4fe3ff88,transparent 62%);animation:lkB2 8s ease-in-out infinite alternate}
-:root[data-theme="light"] .scene .pat span:nth-child(2){background:radial-gradient(closest-side,#7fdcf580,transparent 62%)}
-:root[data-pat="glow"] .scene .pat span:nth-child(2){animation-duration:11s}
+:is(.scene,#splash) .pat span:nth-child(2){left:calc(70% - 8vmax);top:calc(20% - 8vmax);width:16vmax;height:16vmax;background:radial-gradient(closest-side,#4fe3ff88,transparent 62%);animation:lkB2 8s ease-in-out infinite alternate}
+:root[data-theme="light"] :is(.scene,#splash) .pat span:nth-child(2){background:radial-gradient(closest-side,#7fdcf580,transparent 62%)}
+:root[data-pat="glow"] :is(.scene,#splash) .pat span:nth-child(2){animation-duration:11s}
 @keyframes lkB3{0%{transform:translate3d(0,0,0)}33%{transform:translate3d(-3vw,-2.5vh,0)}66%{transform:translate3d(4vw,-3vh,0)}100%{transform:translate3d(-1.5vw,3vh,0)}}
-.scene .pat span:nth-child(3){left:calc(86% - 6vmax);top:calc(74% - 6vmax);width:12vmax;height:12vmax;background:radial-gradient(closest-side,#ff9a4a88,transparent 62%);animation:lkB3 8s ease-in-out infinite alternate}
-:root[data-theme="light"] .scene .pat span:nth-child(3){background:radial-gradient(closest-side,#ffbf8f80,transparent 62%)}
-:root[data-pat="glow"] .scene .pat span:nth-child(3){animation-duration:11s}
+:is(.scene,#splash) .pat span:nth-child(3){left:calc(86% - 6vmax);top:calc(74% - 6vmax);width:12vmax;height:12vmax;background:radial-gradient(closest-side,#ff9a4a88,transparent 62%);animation:lkB3 8s ease-in-out infinite alternate}
+:root[data-theme="light"] :is(.scene,#splash) .pat span:nth-child(3){background:radial-gradient(closest-side,#ffbf8f80,transparent 62%)}
+:root[data-pat="glow"] :is(.scene,#splash) .pat span:nth-child(3){animation-duration:11s}
 @keyframes lkB4{0%{transform:translate3d(0,0,0)}33%{transform:translate3d(3vw,3.5vh,0)}66%{transform:translate3d(-2.5vw,-3vh,0)}100%{transform:translate3d(4vw,-1.5vh,0)}}
-.scene .pat span:nth-child(4){left:calc(42% - 5vmax);top:calc(28% - 5vmax);width:10vmax;height:10vmax;background:radial-gradient(closest-side,#ffffff44,transparent 62%);animation:lkB4 8s ease-in-out infinite alternate}
-:root[data-theme="light"] .scene .pat span:nth-child(4){background:radial-gradient(closest-side,#d9ccff66,transparent 62%)}
-:root[data-pat="glow"] .scene .pat span:nth-child(4){animation-duration:11s}
+:is(.scene,#splash) .pat span:nth-child(4){left:calc(42% - 5vmax);top:calc(28% - 5vmax);width:10vmax;height:10vmax;background:radial-gradient(closest-side,#ffffff44,transparent 62%);animation:lkB4 8s ease-in-out infinite alternate}
+:root[data-theme="light"] :is(.scene,#splash) .pat span:nth-child(4){background:radial-gradient(closest-side,#d9ccff66,transparent 62%)}
+:root[data-pat="glow"] :is(.scene,#splash) .pat span:nth-child(4){animation-duration:11s}
 @keyframes lkB5{0%{transform:translate3d(0,0,0)}33%{transform:translate3d(-4.5vw,-1.5vh,0)}66%{transform:translate3d(3vw,2.5vh,0)}100%{transform:translate3d(1.5vw,-3vh,0)}}
-.scene .pat span:nth-child(5){left:calc(60% - 4vmax);top:calc(88% - 4vmax);width:8vmax;height:8vmax;background:radial-gradient(closest-side,#ffffff33,transparent 62%);animation:lkB5 8s ease-in-out infinite alternate}
-:root[data-theme="light"] .scene .pat span:nth-child(5){background:radial-gradient(closest-side,#c9eefa66,transparent 62%)}
-:root[data-pat="glow"] .scene .pat span:nth-child(5){animation-duration:11s}
+:is(.scene,#splash) .pat span:nth-child(5){left:calc(60% - 4vmax);top:calc(88% - 4vmax);width:8vmax;height:8vmax;background:radial-gradient(closest-side,#ffffff33,transparent 62%);animation:lkB5 8s ease-in-out infinite alternate}
+:root[data-theme="light"] :is(.scene,#splash) .pat span:nth-child(5){background:radial-gradient(closest-side,#c9eefa66,transparent 62%)}
+:root[data-pat="glow"] :is(.scene,#splash) .pat span:nth-child(5){animation-duration:11s}
 @keyframes lkB6{0%{transform:translate3d(0,0,0)}33%{transform:translate3d(2.5vw,-3vh,0)}66%{transform:translate3d(-3vw,3vh,0)}100%{transform:translate3d(-1.5vw,-1.5vh,0)}}
-.scene .pat span:nth-child(6){left:calc(30% - 3vmax);top:calc(45% - 3vmax);width:6vmax;height:6vmax;background:radial-gradient(closest-side,#ff7a1a44,transparent 62%);animation:lkB6 8s ease-in-out infinite alternate}
-:root[data-theme="light"] .scene .pat span:nth-child(6){background:radial-gradient(closest-side,#ffcfa866,transparent 62%)}
-:root[data-pat="glow"] .scene .pat span:nth-child(6){animation-duration:11s}
-:root[data-pat="bokeh"] .scene .pat,:root[data-pat="glow"] .scene .pat{display:block}
-:root[data-pat="bokeh"] .scene .pat{opacity:.9}:root[data-pat="bokeh"] .scene .pat span{filter:blur(38px)}
-:root[data-pat="glow"] .scene .pat{opacity:.6}:root[data-pat="glow"] .scene .pat span{filter:blur(80px)}
-:root[data-theme="light"][data-pat="bokeh"] .scene .pat{opacity:.95}:root[data-theme="light"][data-pat="bokeh"] .scene .pat span{filter:blur(50px)}
-:root[data-theme="light"][data-pat="glow"] .scene .pat{opacity:.7}:root[data-theme="light"][data-pat="glow"] .scene .pat span{filter:blur(90px)}
+:is(.scene,#splash) .pat span:nth-child(6){left:calc(30% - 3vmax);top:calc(45% - 3vmax);width:6vmax;height:6vmax;background:radial-gradient(closest-side,#ff7a1a44,transparent 62%);animation:lkB6 8s ease-in-out infinite alternate}
+:root[data-theme="light"] :is(.scene,#splash) .pat span:nth-child(6){background:radial-gradient(closest-side,#ffcfa866,transparent 62%)}
+:root[data-pat="glow"] :is(.scene,#splash) .pat span:nth-child(6){animation-duration:11s}
+:root[data-pat="bokeh"] :is(.scene,#splash) .pat,:root[data-pat="glow"] :is(.scene,#splash) .pat{display:block}
+:root[data-pat="bokeh"] :is(.scene,#splash) .pat{opacity:.9}:root[data-pat="bokeh"] :is(.scene,#splash) .pat span{filter:blur(38px)}
+:root[data-pat="glow"] :is(.scene,#splash) .pat{opacity:.6}:root[data-pat="glow"] :is(.scene,#splash) .pat span{filter:blur(80px)}
+:root[data-theme="light"][data-pat="bokeh"] :is(.scene,#splash) .pat{opacity:.95}:root[data-theme="light"][data-pat="bokeh"] :is(.scene,#splash) .pat span{filter:blur(50px)}
+:root[data-theme="light"][data-pat="glow"] :is(.scene,#splash) .pat{opacity:.7}:root[data-theme="light"][data-pat="glow"] :is(.scene,#splash) .pat span{filter:blur(90px)}
 .scene.still .pat span{animation-play-state:paused}
-@media (prefers-reduced-motion:reduce){.scene .pat span{animation:none!important}}
+@media (prefers-reduced-motion:reduce){:is(.scene,#splash) .pat span{animation:none!important}}
 
 /* дата */
 :root[data-date]:not([data-date="now"]) .hdr>div:first-child>.label{display:inline-flex;align-items:center;gap:8px;position:relative;transition:color .3s}
@@ -1103,18 +1104,22 @@ html,body{touch-action:manipulation;-webkit-text-size-adjust:100%;text-size-adju
 /* в примерке на svg наборов «c»/«e» действовало базовое правило .ic → цвет всегда ink */
 :root[data-ico="c"] .nd-sc svg.lki,:root[data-ico="e"] .nd-sc svg.lki{color:var(--ink)}
 /* v112.5: боке двигает скрипт 15 раз в секунду — стеклянные карточки не пересчитывают размытие 60 раз в секунду */
-.scene .pat.js span{animation:none!important}
+ .scene .pat.js span{animation:none!important}
 .scene.jsd i{animation:none!important}
 /* v112.9: пятна фона без filter:blur — тот же размытый круг нарисован градиентом (профиль размытия по Гауссу, σ = 90px).
    Фильтр на огромном слое при каждом изменении масштаба перерисовывался заново — главный тормоз белой темы. */
 .scene.jsd i{filter:none!important;border-radius:0;margin:-270px;width:calc(60vmax + 540px);height:calc(60vmax + 540px);background:radial-gradient(circle closest-side,var(--bc) 0,var(--bc) calc(100% - 450px),color-mix(in srgb,var(--bc) 84%,transparent) calc(100% - 360px),color-mix(in srgb,var(--bc) 50%,transparent) calc(100% - 270px),color-mix(in srgb,var(--bc) 16%,transparent) calc(100% - 180px),color-mix(in srgb,var(--bc) 2.3%,transparent) calc(100% - 90px),transparent 100%)!important}
 .scene.jsd .a{--bc:var(--act)}.scene.jsd .v{--bc:var(--violet)}
 .scene.jsd .n{--bc:var(--neon);width:calc(40vmax + 540px);height:calc(40vmax + 540px)}
+/* v113: заставка в стиле «Внешнего вида»: выбранный фон (в тёмной теме), узор, шрифт */
+:root[data-theme="dark"][data-bg]:not([data-bg="now"]) #splash::before{display:none}
+#splash .pat{z-index:0}
+#splash .sp-in{z-index:1}
 
 </style>
 </head>
 <body>
-<div id="splash" aria-hidden="true"><i class="sbg"></i>
+<div id="splash" aria-hidden="true"><i class="sbg"></i><div class="pat"><span></span><span></span><span></span><span></span><span></span><span></span></div>
 <div class="sp-in"><div class="sp-glass"><svg viewBox="0 0 180 180"><defs><linearGradient id="spg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#4fe3ff"/><stop offset=".55" stop-color="#2bd4c8"/><stop offset="1" stop-color="#9b7bff"/></linearGradient></defs><circle class="sp-track" cx="90" cy="90" r="54"/><g class="sp-rot"><circle class="sp-ring g" cx="90" cy="90" r="54" transform="rotate(-90 90 90)"/><circle class="sp-ring" cx="90" cy="90" r="54" transform="rotate(-90 90 90)"/></g><circle class="sp-halo" cx="90" cy="90" r="16"/><circle class="sp-dot" cx="90" cy="90" r="16"/></svg></div>
 <div class="sp-t"><span>Command</span> <span>Centre</span></div></div></div>
 <script>(function(){var r=document.documentElement,el=document.getElementById('splash');if(!r.classList.contains('sp-on')){el.parentNode.removeChild(el);return;}
