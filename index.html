@@ -2887,17 +2887,17 @@ function lkScene(){var sc=$('#scene');if(!sc||reduce)return;var pat=$('.pat',sc)
    Программное нажатие больше не работает, поэтому поверх кнопки-результата лежит прозрачный label,
    связанный со скрытым переключателем: палец жмёт кнопку → настоящий тап по label → тик (способ библиотеки ios-haptics 3.3). */
 var HAP_IOS=/iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
-var HAP_TXT=['сделано','сделал','снять','оплачено','оплатил','пришла','остался','не остался','сохранить','записать','поставить','убрать из плана'];
+var HAP_TXT=['сделано','сделал','снять','оплачено','оплатил','пришла','остался','не остался','сохранить','записать','поставить','убрать из плана','в начало','я сегодня в офисе','снять ручные переносы'];
 function hapHit(b){if(!b||b.disabled)return false;var t='';b.childNodes.forEach(function(n){if(!(n.nodeType===1&&n.hasAttribute('data-hpt')))t+=n.textContent||'';});t=t.trim().toLowerCase();
-  return b.id==='dlg-ok'||/^(f|o|i)-save$/.test(b.id)||(b.dataset&&b.dataset.pe==='save')||!!(b.closest('#fc-btns')&&(b.dataset.act==='done'||b.dataset.act==='wait'))||HAP_TXT.indexOf(t)>=0;}
+  return (b.matches&&b.matches('.chip[data-a="cycle"]'))||b.id==='dlg-ok'||/^(f|o|i)-save$/.test(b.id)||(b.dataset&&b.dataset.pe==='save')||!!(b.closest('#fc-btns')&&(b.dataset.act==='done'||b.dataset.act==='wait'))||HAP_TXT.indexOf(t)>=0;}
 function hapAttach(b){if(b.querySelector(':scope>[data-hpt]'))return;var l=document.createElement('label');l.setAttribute('data-hpt','');l.setAttribute('aria-hidden','true');
   l.style.cssText='position:absolute;inset:0;touch-action:manipulation;-webkit-tap-highlight-color:transparent;border-radius:inherit';
   var i=document.createElement('input');i.type='checkbox';i.setAttribute('switch','');i.tabIndex=-1;i.style.cssText='position:absolute;width:1px;height:1px;margin:0;visibility:hidden';
   ['click','input','change'].forEach(function(ev){i.addEventListener(ev,function(e){e.stopPropagation();});});
   l.appendChild(i);if(getComputedStyle(b).position==='static')b.style.position='relative';b.appendChild(l);}
-var hapQ=0;function hapScan(){hapQ=0;$$('button,[role="button"]').forEach(function(b){if(hapHit(b))hapAttach(b);});}
+var hapQ=0;function hapScan(){hapQ=0;$$('button,[role="button"],.chip[data-a="cycle"]').forEach(function(b){if(hapHit(b))hapAttach(b);});}
 if(HAP_IOS){new MutationObserver(function(){if(!hapQ)hapQ=requestAnimationFrame(hapScan);}).observe(document.body,{childList:true,subtree:true});hapScan();}
-else document.addEventListener('click',function(e){var b=e.target&&e.target.closest?e.target.closest('button,[role="button"]'):null;if(b&&navigator.vibrate&&hapHit(b)){try{navigator.vibrate(12)}catch(er){}}},true);
+else document.addEventListener('click',function(e){var b=e.target&&e.target.closest?e.target.closest('button,[role="button"],.chip[data-a="cycle"]'):null;if(b&&navigator.vibrate&&hapHit(b)){try{navigator.vibrate(12)}catch(er){}}},true);
 
 })();
 
