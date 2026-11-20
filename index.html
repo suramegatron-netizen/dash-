@@ -1188,7 +1188,7 @@ if(/[?&]splash=freeze/.test(location.search)){el.classList.add('freeze');return;
   </section>
 
   <section class="glass card span7 ch chart card3d" data-reveal style="--i:1">
-    <div class="hd"><span class="h2" id="ch-title">Сделано задач</span><div class="seg" data-seg id="chseg"><i class="pill"></i><span class="on">Сегодня</span><span>Неделя</span><span>Месяц</span></div></div>
+    <div class="hd"><span class="h2" id="ch-title">Сделано задач</span><div class="seg" data-seg id="chseg"><i class="pill"></i><span>Сегодня</span><span class="on">Неделя</span><span>Месяц</span></div></div>
     <svg viewBox="0 0 600 200" width="100%" style="display:block;overflow:visible" role="img" aria-label="Сделано задач" id="chart">
       <defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4fe3ff" stop-opacity=".28"/><stop offset="1" stop-color="#4fe3ff" stop-opacity="0"/></linearGradient><filter id="b" x="-10%" y="-50%" width="120%" height="200%"><feGaussianBlur stdDeviation="6"/></filter></defs>
       <g class="grid" id="ygrid"></g><text class="ycap" x="0" y="12">Выполнено задач за день</text>
@@ -1628,10 +1628,10 @@ function renderCards(){var B=buildDay(),open=workOpen().length,all=S.sheet.tasks
   var mz=null;Object.keys(S.placed).sort().forEach(function(k){(S.placed[k]||[]).forEach(function(p){if(p.task.monthly&&!mz)mz={k:k,p:p}})});
   var ho=openTasks('home');$('#c-home').textContent=ho.length;$('#c-home-s').textContent='дел по дому';setChip('c-home-c',ho.length?'c-wait':'c-ok',ho.length?'вечером':'спокойно');$('#c-home-t').textContent=mz?'Рижский: '+(mz.k===todayKey()?'сегодня':mz.k.slice(8,10)+'.'+mz.k.slice(5,7))+' в '+fm(mz.p.a):(ho[0]?ho[0].title:'Стирка в 21:00');
   /* kpi: follow Сегодня/Неделя/Месяц */
-  var PN=['сегодня','за неделю','за месяц'],PP=['к вчера','к прошлой неделе','к прошлому месяцу'],ev=periodEvents(chMode,0),evp=periodEvents(chMode,1);
-  var dn=doneCount(ev),dp=doneCount(evp);$('#k1-l').textContent='Сделано '+PN[chMode];countTo($('#k1'),dn);var d1=$('#k1-d');d1.textContent=(dn-dp>=0?'+':'')+(dn-dp)+' '+PP[chMode];d1.className='small d '+(dn-dp>0?'ok':dn-dp<0?'crit':'');
-  var lsum=function(a){return a.filter(function(x){return x.kind==='lesson'}).reduce(function(s,x){return s+(x.sum||0)},0)},ps=lsum(ev),pl=lsum(evp);$('#k2-l').textContent='Репетиторство '+PN[chMode];countTo($('#k2'),ps);$('#k2-d').textContent=(ps-pl>=0?'+':'−')+Math.abs(ps-pl).toLocaleString('ru-RU')+' '+PP[chMode];$('#k2-d').className='small d '+(ps-pl>0?'ok':ps-pl<0?'crit':'');
-  countTo($('#k3'),days);var sd=chMode===2?30:7;spark('k1-sp',dailyCounts(sd,function(x){return x.kind==='done'&&x.ts>=new Date(STAT_FROM+'T00:00:00').getTime()}));spark('k2-sp',dailyCounts(sd,function(x){return x.kind==='lesson'}));
+  var PN=['сегодня','за неделю','за месяц'],PP=['к вчера','к прошлой неделе','к прошлому месяцу'],ev=periodEvents(kMode,0),evp=periodEvents(kMode,1);
+  var dn=doneCount(ev),dp=doneCount(evp);$('#k1-l').textContent='Сделано '+PN[kMode];countTo($('#k1'),dn);var d1=$('#k1-d');d1.textContent=(dn-dp>=0?'+':'')+(dn-dp)+' '+PP[kMode];d1.className='small d '+(dn-dp>0?'ok':dn-dp<0?'crit':'');
+  var lsum=function(a){return a.filter(function(x){return x.kind==='lesson'}).reduce(function(s,x){return s+(x.sum||0)},0)},ps=lsum(ev),pl=lsum(evp);$('#k2-l').textContent='Репетиторство '+PN[kMode];countTo($('#k2'),ps);$('#k2-d').textContent=(ps-pl>=0?'+':'−')+Math.abs(ps-pl).toLocaleString('ru-RU')+' '+PP[kMode];$('#k2-d').className='small d '+(ps-pl>0?'ok':ps-pl<0?'crit':'');
+  countTo($('#k3'),days);var sd=kMode===2?30:7;spark('k1-sp',dailyCounts(sd,function(x){return x.kind==='done'&&x.ts>=new Date(STAT_FROM+'T00:00:00').getTime()}));spark('k2-sp',dailyCounts(sd,function(x){return x.kind==='lesson'}));
   /* office */
   var ws=weekStart(now()),vis=0,fit=[];var html='';for(var i=0;i<5;i++){var d=addDays(ws,i),k=key(d),v=!!S.visits[k];if(v)vis++;var ok=dayFit(d,officeFor());if(ok)fit.push(WS[d.getDay()]);
     html+='<span class="day'+(v?' yes':ok?' fit':'')+(k===todayKey()?' today':'')+'" data-d="'+k+'" title="'+(v?'был в офисе'+(S.visits[k].which?' · '+S.visits[k].which:''):ok?'поездка влезает':'не влезает')+'">'+WS[d.getDay()]+'</span>';}
@@ -1730,7 +1730,7 @@ $('#of-btn').addEventListener('click',function(){if(S.preview){toast('Это п�
 $('#of-days').addEventListener('click',function(e){var d=e.target.closest('.day');if(!d)return;if(d.dataset.d>todayKey()){toast('Это ещё впереди');return;}setVisit(d.dataset.d,!S.visits[d.dataset.d]);});
 
 /* chart (honest: from events) */
-var chMode=0,chHi=null;
+var chMode=1,kMode=0,chHi=null;
 function chartData(){var a=[],b=[],x=[],hi=0,title='Сделано задач',note='',upto=null;
   if(chMode===0){for(var h=6;h<=23;h++){x.push(h%3===0?String(h):'');var c=0,p=0;var it=((S.events[todayKey()]||{}).items||[]),itp=((S.events[key(addDays(now(),-1))]||{}).items||[]);it.forEach(function(e){var hh=new Date(e.ts).getHours();if(hh<=h&&e.kind==='done'&&todayKey()>=STAT_FROM)c++;});a.push(c);}hi=Math.min(a.length-1,Math.max(0,now().getHours()-6));note='накопительно за день';title='Сделано задач · сегодня';}
   else if(chMode===1){var ws=weekStart(now()),d0=ws,d6=addDays(ws,6);for(var i=0;i<7;i++){var dd=addDays(ws,i),k=key(dd);x.push(WS[dd.getDay()].toLowerCase()+' '+dd.getDate());a.push(k<STAT_FROM?0:doneCount((S.events[k]||{}).items||[]));}hi=(now().getDay()+6)%7;upto=hi;note='неделя с понедельника';title='Сделано задач ('+d0.getDate()+(d0.getMonth()===d6.getMonth()?'':' '+MONG[d0.getMonth()])+'–'+d6.getDate()+' '+MONG[d6.getMonth()]+')';}
@@ -1748,9 +1748,8 @@ function drawChart(a,b,D){var M=Math.max.apply(null,a.concat(b,[1])),stp=M<=5?1:
 function renderChart(){var D=chartData();cancelAnimationFrame(chAnim);if(!chState||chState.a.length!==D.a.length){chState={a:D.a.slice(),b:D.b.slice()};drawChart(D.a,D.b,D);return;}
   var from={a:chState.a.slice(),b:chState.b.slice()},t0=performance.now(),dur=reduce?0:600;
   (function f(t){if(!chState)return;var p=Math.min(1,(t-t0)/dur),e=1-Math.pow(1-p,3);chState.a=D.a.map(function(v,i){return from.a[i]+(v-from.a[i])*e});chState.b=D.b.map(function(v,i){return from.b[i]+(v-from.b[i])*e});drawChart(chState.a,chState.b,D);if(p<1)chAnim=requestAnimationFrame(f);})(t0);}
-$('#chseg').addEventListener('change',function(e){chMode=e.detail;chHi=null;chState=null;renderChart();renderCards();var s=$('#topseg');$$('span',s).forEach(function(y,i){y.classList.toggle('on',i===e.detail)});var on=$('.on',s),pill=$('.pill',s);pill.style.left=on.offsetLeft+'px';pill.style.width=on.offsetWidth+'px';});
-$('#topseg').addEventListener('change',function(e){chMode=e.detail;chHi=null;chState=null;renderChart();renderCards();var s=$('#chseg');$$('span',s).forEach(function(y,i){y.classList.toggle('on',i===e.detail)});var on=$('.on',s),pill=$('.pill',s);pill.style.left=on.offsetLeft+'px';pill.style.width=on.offsetWidth+'px';
-  $('#k1-l').textContent=['Сделано сегодня','Сделано за неделю','Сделано за месяц'][e.detail];var D=chartData();countTo($('#k1'),e.detail===0?D.a[D.a.length-1]:D.a.reduce(function(x,y){return x+y},0));});
+$('#chseg').addEventListener('change',function(e){chMode=e.detail;chHi=null;chState=null;renderChart();});
+$('#topseg').addEventListener('change',function(e){kMode=e.detail;renderCards();});
 $('#chart').addEventListener('pointermove',function(e){var r=this.getBoundingClientRect(),D=chartData(),i=Math.round((e.clientX-r.left)/r.width*(D.a.length-1));i=Math.max(0,Math.min(D.a.length-1,i));if(i!==chHi){chHi=i;drawChart(chState?chState.a:D.a,chState?chState.b:D.b,chartData());}});
 $('#chart').addEventListener('pointerleave',function(){chHi=null;renderChart();});
 
