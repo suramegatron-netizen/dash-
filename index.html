@@ -2773,7 +2773,7 @@ function lkBuild(){if(lkBuilt)return;lkBuilt=true;
   addEventListener('resize',function(){lkDockD.measure();lkDockP.measure();});
   requestAnimationFrame(lkXTick);requestAnimationFrame(lkHlTick);
   lkSync();lkLive();}
-var lkEat=0;document.addEventListener('click',function(e){if(lkEat&&performance.now()<lkEat){e.stopPropagation();e.preventDefault();lkEat=0;}},true);
+var lkEat=0;document.addEventListener('click',function(e){if(e.target&&e.target.closest&&e.target.closest('#hpt'))return;if(lkEat&&performance.now()<lkEat){e.stopPropagation();e.preventDefault();lkEat=0;}},true);
 function lkNear(x){var b=-1,bd=1e9;lkPItems.forEach(function(e,i){var r=e.getBoundingClientRect(),d=Math.abs(x-(r.left+r.width/2));if(d<bd){bd=d;b=i;}});return b;}
 function lkSync(){if(!lkBuilt)return;var on='top';$$('#rail>a').forEach(function(a){if(a.classList.contains('on'))on=a.dataset.go?'top':(a.dataset.dir||on);});
   lkDItems.concat(lkPItems).forEach(function(e){e.classList.toggle('on',e.dataset.a===on)});
@@ -2881,6 +2881,18 @@ function lkScene(){var sc=$('#scene');if(!sc||reduce)return;var pat=$('.pat',sc)
     var P=root.getAttribute('data-pat');if(sp.length&&(P==='bokeh'||P==='glow')){var D2=P==='glow'?11000:8000,t2=(el%(2*D2))/D2;if(t2>1)t2=2-t2;var seg=Math.min(2,Math.floor(t2*3)),u2=lkEase(t2*3-seg);
       sp.forEach(function(e,i){var a=LK_PATH[i][seg],b=LK_PATH[i][seg+1];e.style.transform='translate3d('+((a[0]+(b[0]-a[0])*u2)*vw).toFixed(1)+'px,'+((a[1]+(b[1]-a[1])*u2)*vh).toFixed(1)+'px,0)';});}})(0);}
 (function(){var p=document.createElement('div');p.className='pat';p.innerHTML='<span></span><span></span><span></span><span></span><span></span><span></span>';var sc=$('#scene');if(sc)sc.appendChild(p);lookApply();lkScene();})();
+
+/* v112.6: тактильный отклик на iPhone («тик» в палец) — только на результат действия.
+   Веб-страницам Apple вибрацию напрямую не даёт; на iOS 18+ тикает переключатель <input switch>, поэтому нажимаем скрытый. */
+function haptic(){try{if(navigator.vibrate&&!/iP(hone|ad|od)/.test(navigator.userAgent)){navigator.vibrate(12);return;}
+  var l=document.getElementById('hpt');if(!l){l=document.createElement('label');l.id='hpt';l.setAttribute('aria-hidden','true');l.style.cssText='position:fixed;left:-200px;top:0;width:1px;height:1px;overflow:hidden;opacity:0;pointer-events:none';
+    var i=document.createElement('input');i.type='checkbox';i.setAttribute('switch','');i.tabIndex=-1;l.appendChild(i);document.body.appendChild(l);
+    l.addEventListener('click',function(e){e.stopPropagation();});i.addEventListener('click',function(e){e.stopPropagation();});}
+  l.click();}catch(e){}}
+var HAP_TXT=['сделано','сделал','снять','оплачено','оплатил','пришла','остался','не остался','сохранить','записать','поставить','убрать из плана'];
+document.addEventListener('click',function(e){var b=e.target&&e.target.closest?e.target.closest('button,[role="button"]'):null;if(!b||b.disabled||b.closest('#hpt'))return;
+  var t=(b.textContent||'').trim().toLowerCase(),hit=b.id==='dlg-ok'||/^(f|o|i)-save$/.test(b.id)||b.dataset.pe==='save'||(b.closest('#fc-btns')&&(b.dataset.act==='done'||b.dataset.act==='wait'))||HAP_TXT.indexOf(t)>=0;
+  if(hit)haptic();},true);
 
 })();
 
