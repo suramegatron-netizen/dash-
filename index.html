@@ -1004,24 +1004,24 @@ html,body{touch-action:manipulation;-webkit-text-size-adjust:100%;text-size-adju
 :root[data-nb] #brail.in{animation:nrIn .6s var(--ease) both}
 
 /* наборы значков */
-.nd-sc svg.ic{display:none}
+.nd-sc svg.lki{display:none}
 :root:not([data-ico="now"]) .nd-sc svg.io{display:none}
-:root:not([data-ico="now"]) .nd-sc svg.ic{display:block}
-:root[data-ico="c"] .nd-sc svg.ic{stroke-width:1.5;width:34px;height:34px;padding:8px;box-sizing:border-box;border-radius:50%;background:color-mix(in srgb,var(--ink) 7%,transparent);border:1px solid color-mix(in srgb,var(--ink) 12%,transparent)}
-:root[data-ico="c"] .nd-it.on .nd-sc svg.ic{background:color-mix(in srgb,var(--ink) 12%,transparent)}
-:root[data-ico="e"] .nd-sc svg.ic{stroke-width:1.5;width:22px;height:22px}
+:root:not([data-ico="now"]) .nd-sc svg.lki{display:block}
+:root[data-ico="c"] .nd-sc svg.lki{stroke-width:1.5;width:34px;height:34px;padding:8px;box-sizing:border-box;border-radius:50%;background:color-mix(in srgb,var(--ink) 7%,transparent);border:1px solid color-mix(in srgb,var(--ink) 12%,transparent)}
+:root[data-ico="c"] .nd-it.on .nd-sc svg.lki{background:color-mix(in srgb,var(--ink) 12%,transparent)}
+:root[data-ico="e"] .nd-sc svg.lki{stroke-width:1.5;width:22px;height:22px}
 :root[data-ico="d"] .nd-sc,:root[data-ico="g"] .nd-sc,:root[data-ico="f"] .nd-sc{background:color-mix(in srgb,var(--c) 13%,transparent);color:var(--c)}
 :root[data-ico="d"] .nd-it.on .nd-sc,:root[data-ico="g"] .nd-it.on .nd-sc,:root[data-ico="f"] .nd-it.on .nd-sc{background:color-mix(in srgb,var(--c) 24%,transparent);color:var(--c)}
 :root[data-ico="d"] .nd-it.ink .nd-sc,:root[data-ico="g"] .nd-it.ink .nd-sc,:root[data-ico="f"] .nd-it.ink .nd-sc{color:var(--ink-muted)}
 :root[data-ico="d"] .nd-sc{border-radius:14px;width:38px;height:38px}
-:root[data-ico="d"] .nd-sc svg.ic,:root[data-ico="g"] .nd-sc svg.ic{stroke-width:1.6;width:20px;height:20px}
+:root[data-ico="d"] .nd-sc svg.lki,:root[data-ico="g"] .nd-sc svg.lki{stroke-width:1.6;width:20px;height:20px}
 :root[data-ico="g"] .nd-sc{border-radius:15px;width:42px;height:42px}
-:root[data-ico="g"] .nd-sc svg.ic{position:relative;z-index:1}
+:root[data-ico="g"] .nd-sc svg.lki{position:relative;z-index:1}
 :root[data-ico="g"] .nd-sc::after{content:"";position:absolute;left:50%;top:50%;width:29px;height:29px;margin:-14.5px 0 0 -14.5px;box-sizing:border-box;border-radius:50%;background:color-mix(in srgb,#fff 9%,transparent);box-shadow:inset 0 1px 0 color-mix(in srgb,#fff 10%,transparent);pointer-events:none}
 :root[data-theme="light"][data-ico="g"] .nd-sc::after{background:color-mix(in srgb,#fff 55%,transparent);box-shadow:inset 0 1px 0 #fff,0 1px 2px #11182714}
 :root[data-ico="f"] .nd-sc{border-radius:14px;width:40px;height:40px}
-:root[data-ico="f"] .nd-sc svg.ic{stroke-width:1.5;width:30px;height:30px;padding:7px;box-sizing:border-box;border-radius:50%;background:color-mix(in srgb,var(--c) 10%,transparent);border:1px solid color-mix(in srgb,var(--c) 38%,transparent)}
-:root[data-ico="f"] .nd-it.ink .nd-sc svg.ic{border-color:color-mix(in srgb,var(--ink) 18%,transparent);background:color-mix(in srgb,var(--ink) 6%,transparent)}
+:root[data-ico="f"] .nd-sc svg.lki{stroke-width:1.5;width:30px;height:30px;padding:7px;box-sizing:border-box;border-radius:50%;background:color-mix(in srgb,var(--c) 10%,transparent);border:1px solid color-mix(in srgb,var(--c) 38%,transparent)}
+:root[data-ico="f"] .nd-it.ink .nd-sc svg.lki{border-color:color-mix(in srgb,var(--ink) 18%,transparent);background:color-mix(in srgb,var(--ink) 6%,transparent)}
 
 /* раскрытие панели */
 @media (min-width:981px){
@@ -1032,8 +1032,8 @@ html,body{touch-action:manipulation;-webkit-text-size-adjust:100%;text-size-adju
  :root[data-nr] body.nr-open .hdr h1{font-size:clamp(17px,1.5vw,22px)}
  :root[data-nr] body.nr-open .hdr .fx{flex:0 0 auto;flex-wrap:nowrap;justify-content:flex-end;max-width:none}
  :root[data-nr] body.nr-open .hdr .fx .src,:root[data-nr] body.nr-open .hdr .fx .seg,:root[data-nr] body.nr-open .hdr .fx .seg span{white-space:nowrap}
- :root[data-nr][data-open="card"] main{transition:transform .65s cubic-bezier(.3,.9,.4,1),border-radius .5s,box-shadow .5s,padding .5s;transform-origin:0 50%;border-radius:0}
- :root[data-nr][data-open="card"] body.nr-open main{transform:scale(.985);border-radius:36px;padding:14px;box-shadow:0 40px 80px -40px #000c,0 0 0 1px var(--glass-border);background:color-mix(in srgb,var(--bg-000) 55%,transparent)}
+ :root[data-nr][data-open="card"] main{transition:border-radius .5s,box-shadow .5s,padding .5s,background .5s;border-radius:0}
+ :root[data-nr][data-open="card"] body.nr-open main{border-radius:36px;padding:14px;box-shadow:0 40px 80px -40px #000c,0 0 0 1px var(--glass-border);background:color-mix(in srgb,var(--bg-000) 55%,transparent)}
  :root[data-nr][data-open="card"] .scene{transition:filter .6s}
  :root[data-nr][data-open="card"] body.nr-open .scene{filter:brightness(.8)}
  :root[data-nr][data-open="always"] .shell{margin:19px;max-width:none;border-radius:36px;padding:22px 24px 40px 18px;background:color-mix(in srgb,var(--bg-000) 58%,transparent);box-shadow:0 40px 90px -40px #000d,0 0 0 1px var(--glass-border)}
@@ -1077,6 +1077,8 @@ html,body{touch-action:manipulation;-webkit-text-size-adjust:100%;text-size-adju
  .lk-ch::-webkit-scrollbar{display:none}
 }
 .inc.lk>.hd .h2{white-space:nowrap;flex:0 0 auto}
+
+:root[data-ico="c"] .nd-sc svg.lki,:root[data-ico="e"] .nd-sc svg.lki{color:var(--ink)}
 
 </style>
 </head>
@@ -2703,7 +2705,7 @@ var LK_SYM='<svg style="display:none" xmlns="http://www.w3.org/2000/svg">'
  +'<symbol id="l-luna" viewBox="0 0 24 24"><path d="M20 14.2A8.2 8.2 0 1 1 9.8 4a6.6 6.6 0 0 0 10.2 10.2z"/></symbol>'
  +'<symbol id="l-fs" viewBox="0 0 24 24"><path d="M4 9V6a2 2 0 0 1 2-2h3M15 4h3a2 2 0 0 1 2 2v3M20 15v3a2 2 0 0 1-2 2h-3M9 20H6a2 2 0 0 1-2-2v-3"/></symbol>'
  +'</svg>';
-function lkItemHtml(it,k){var ink=!it.c;return '<div role="button" tabindex="0" class="nd-it'+(ink?' ink':'')+'" data-a="'+it.a+'" style="--k:'+k+';--c:'+(it.c||'var(--ink)')+'"><span class="nd-ic"><span class="nd-sc"><svg class="ic" viewBox="0 0 24 24"><use href="#l-'+it.i+'"/></svg><svg class="io" viewBox="0 0 24 24"><use href="#i-'+it.i+'"/></svg><i class="nd-now"></i></span></span><span class="nd-lb"><b>'+it.n+'</b><small></small></span><span class="nd-chip">сейчас</span></div>';}
+function lkItemHtml(it,k){var ink=!it.c;return '<div role="button" tabindex="0" class="nd-it'+(ink?' ink':'')+'" data-a="'+it.a+'" style="--k:'+k+';--c:'+(it.c||'var(--ink)')+'"><span class="nd-ic"><span class="nd-sc"><svg class="lki" viewBox="0 0 24 24"><use href="#l-'+it.i+'"/></svg><svg class="io" viewBox="0 0 24 24"><use href="#i-'+it.i+'"/></svg><i class="nd-now"></i></span></span><span class="nd-lb"><b>'+it.n+'</b><small></small></span><span class="nd-chip">сейчас</span></div>';}
 function lkMobile(){return matchMedia('(max-width:980px)').matches}
 function lkAct(a){if(a==='theme'){var t=$('#theme');if(t)t.click();lkLive();return;}if(a==='fs'){fsToggle();return;}
   if(a==='top'){closeSheet();if(finOn)finClose();scrollTo({top:0,behavior:'smooth'});return;}openDir(a);}
@@ -2757,7 +2759,7 @@ function lkLive(){if(!lkBuilt)return;var dark=root.getAttribute('data-theme')!==
     obl:(lkTxt('#k4')+' '+lkTxt('#k4-u')).trim(),settings:'будильник, дорога, вид',theme:dark?'переключить на светлую':'переключить на тёмную',fs:'клавиша F'};
   var nowA=null,till='';try{var b=curBlock(buildDay());if(b){nowA=b.type==='task'?b.dir:({work:'work',cls:'uni',uni:'uni',tutor:'tutor',lesson:'tutor',biz:'biz',home:'home',grp:'biz'})[b.type]||null;till=fm(b.b);}}catch(e){}
   lkDItems.concat(lkPItems).forEach(function(e){var a=e.dataset.a,isn=a===nowA;e.classList.toggle('isnow',isn);var s=$('.nd-lb small',e);if(s)s.textContent=isn?'сейчас · до '+till:(LK_SUB[a]||'');
-    if(a==='theme'){var u=$('svg.ic use',e);if(u)u.setAttribute('href',dark?'#l-moon':'#l-luna');}});
+    if(a==='theme'){var u=$('svg.lki use',e);if(u)u.setAttribute('href',dark?'#l-moon':'#l-luna');}});
   var nd=$('#nr-date');if(nd)nd.textContent=W[d.getDay()].toLowerCase()+', '+d.getDate()+' '+M[d.getMonth()];}
 function lkFlyData(a){var out=[];try{
   if(a==='work'){workSorted().forEach(function(t){out.push([t.title,'сделать'])});S.sheet.tasks.forEach(function(t){if(t.active&&t.state!=='Сделать')out.push([t.title,String(t.state||'').toLowerCase()])});}
