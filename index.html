@@ -2773,7 +2773,7 @@ function lkBuild(){if(lkBuilt)return;lkBuilt=true;
   addEventListener('resize',function(){lkDockD.measure();lkDockP.measure();});
   requestAnimationFrame(lkXTick);requestAnimationFrame(lkHlTick);
   lkSync();lkLive();}
-var lkEat=0;document.addEventListener('click',function(e){if(e.target&&e.target.closest&&e.target.closest('#hpt'))return;if(lkEat&&performance.now()<lkEat){e.stopPropagation();e.preventDefault();lkEat=0;}},true);
+var lkEat=0;document.addEventListener('click',function(e){if(e.target&&e.target.closest&&e.target.closest('[data-hpt] input'))return;if(lkEat&&performance.now()<lkEat){e.stopPropagation();e.preventDefault();lkEat=0;}},true);
 function lkNear(x){var b=-1,bd=1e9;lkPItems.forEach(function(e,i){var r=e.getBoundingClientRect(),d=Math.abs(x-(r.left+r.width/2));if(d<bd){bd=d;b=i;}});return b;}
 function lkSync(){if(!lkBuilt)return;var on='top';$$('#rail>a').forEach(function(a){if(a.classList.contains('on'))on=a.dataset.go?'top':(a.dataset.dir||on);});
   lkDItems.concat(lkPItems).forEach(function(e){e.classList.toggle('on',e.dataset.a===on)});
@@ -2883,16 +2883,21 @@ function lkScene(){var sc=$('#scene');if(!sc||reduce)return;var pat=$('.pat',sc)
 (function(){var p=document.createElement('div');p.className='pat';p.innerHTML='<span></span><span></span><span></span><span></span><span></span><span></span>';var sc=$('#scene');if(sc)sc.appendChild(p);lookApply();lkScene();})();
 
 /* v112.6: тактильный отклик на iPhone («тик» в палец) — только на результат действия.
-   Веб-страницам Apple вибрацию напрямую не даёт; на iOS 18+ тикает переключатель <input switch>, поэтому нажимаем скрытый. */
-function haptic(){try{if(navigator.vibrate&&!/iP(hone|ad|od)/.test(navigator.userAgent)){navigator.vibrate(12);return;}
-  var l=document.getElementById('hpt');if(!l){l=document.createElement('label');l.id='hpt';l.setAttribute('aria-hidden','true');l.style.cssText='position:fixed;left:-200px;top:0;width:1px;height:1px;overflow:hidden;opacity:0;pointer-events:none';
-    var i=document.createElement('input');i.type='checkbox';i.setAttribute('switch','');i.tabIndex=-1;l.appendChild(i);document.body.appendChild(l);
-    l.addEventListener('click',function(e){e.stopPropagation();});i.addEventListener('click',function(e){e.stopPropagation();});}
-  l.click();}catch(e){}}
+   Apple не даёт веб-страницам вибрацию. Safari тикает, когда пальцем переключают <input switch>.
+   Программное нажатие больше не работает, поэтому поверх кнопки-результата лежит прозрачный label,
+   связанный со скрытым переключателем: палец жмёт кнопку → настоящий тап по label → тик (способ библиотеки ios-haptics 3.3). */
+var HAP_IOS=/iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
 var HAP_TXT=['сделано','сделал','снять','оплачено','оплатил','пришла','остался','не остался','сохранить','записать','поставить','убрать из плана'];
-document.addEventListener('click',function(e){var b=e.target&&e.target.closest?e.target.closest('button,[role="button"]'):null;if(!b||b.disabled||b.closest('#hpt'))return;
-  var t=(b.textContent||'').trim().toLowerCase(),hit=b.id==='dlg-ok'||/^(f|o|i)-save$/.test(b.id)||b.dataset.pe==='save'||(b.closest('#fc-btns')&&(b.dataset.act==='done'||b.dataset.act==='wait'))||HAP_TXT.indexOf(t)>=0;
-  if(hit)haptic();},true);
+function hapHit(b){if(!b||b.disabled)return false;var t='';b.childNodes.forEach(function(n){if(!(n.nodeType===1&&n.hasAttribute('data-hpt')))t+=n.textContent||'';});t=t.trim().toLowerCase();
+  return b.id==='dlg-ok'||/^(f|o|i)-save$/.test(b.id)||(b.dataset&&b.dataset.pe==='save')||!!(b.closest('#fc-btns')&&(b.dataset.act==='done'||b.dataset.act==='wait'))||HAP_TXT.indexOf(t)>=0;}
+function hapAttach(b){if(b.querySelector(':scope>[data-hpt]'))return;var l=document.createElement('label');l.setAttribute('data-hpt','');l.setAttribute('aria-hidden','true');
+  l.style.cssText='position:absolute;inset:0;touch-action:manipulation;-webkit-tap-highlight-color:transparent;border-radius:inherit';
+  var i=document.createElement('input');i.type='checkbox';i.setAttribute('switch','');i.tabIndex=-1;i.style.cssText='position:absolute;width:1px;height:1px;margin:0;visibility:hidden';
+  ['click','input','change'].forEach(function(ev){i.addEventListener(ev,function(e){e.stopPropagation();});});
+  l.appendChild(i);if(getComputedStyle(b).position==='static')b.style.position='relative';b.appendChild(l);}
+var hapQ=0;function hapScan(){hapQ=0;$$('button,[role="button"]').forEach(function(b){if(hapHit(b))hapAttach(b);});}
+if(HAP_IOS){new MutationObserver(function(){if(!hapQ)hapQ=requestAnimationFrame(hapScan);}).observe(document.body,{childList:true,subtree:true});hapScan();}
+else document.addEventListener('click',function(e){var b=e.target&&e.target.closest?e.target.closest('button,[role="button"]'):null;if(b&&navigator.vibrate&&hapHit(b)){try{navigator.vibrate(12)}catch(er){}}},true);
 
 })();
 
