@@ -1188,7 +1188,7 @@ if(/[?&]splash=freeze/.test(location.search)){el.classList.add('freeze');return;
   </section>
 
   <section class="glass card span7 ch chart card3d" data-reveal style="--i:1">
-    <div class="hd"><span class="h2" id="ch-title">Сделано задач</span><div class="seg" data-seg id="chseg"><i class="pill"></i><span>Сегодня</span><span class="on">Неделя</span><span>Месяц</span></div></div>
+    <div class="hd"><span class="h2" id="ch-title">Сделано задач</span><div class="seg" data-seg id="chseg"><i class="pill"></i><span class="on">Сегодня</span><span>Неделя</span><span>Месяц</span></div></div>
     <svg viewBox="0 0 600 200" width="100%" style="display:block;overflow:visible" role="img" aria-label="Сделано задач" id="chart">
       <defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4fe3ff" stop-opacity=".28"/><stop offset="1" stop-color="#4fe3ff" stop-opacity="0"/></linearGradient><filter id="b" x="-10%" y="-50%" width="120%" height="200%"><feGaussianBlur stdDeviation="6"/></filter></defs>
       <g class="grid" id="ygrid"></g><text class="ycap" x="0" y="12">Выполнено задач за день</text>
@@ -1730,7 +1730,7 @@ $('#of-btn').addEventListener('click',function(){if(S.preview){toast('Это п�
 $('#of-days').addEventListener('click',function(e){var d=e.target.closest('.day');if(!d)return;if(d.dataset.d>todayKey()){toast('Это ещё впереди');return;}setVisit(d.dataset.d,!S.visits[d.dataset.d]);});
 
 /* chart (honest: from events) */
-var chMode=1,chHi=null;
+var chMode=0,chHi=null;
 function chartData(){var a=[],b=[],x=[],hi=0,title='Сделано задач',note='',upto=null;
   if(chMode===0){for(var h=6;h<=23;h++){x.push(h%3===0?String(h):'');var c=0,p=0;var it=((S.events[todayKey()]||{}).items||[]),itp=((S.events[key(addDays(now(),-1))]||{}).items||[]);it.forEach(function(e){var hh=new Date(e.ts).getHours();if(hh<=h&&e.kind==='done'&&todayKey()>=STAT_FROM)c++;});a.push(c);}hi=Math.min(a.length-1,Math.max(0,now().getHours()-6));note='накопительно за день';title='Сделано задач · сегодня';}
   else if(chMode===1){var ws=weekStart(now()),d0=ws,d6=addDays(ws,6);for(var i=0;i<7;i++){var dd=addDays(ws,i),k=key(dd);x.push(WS[dd.getDay()].toLowerCase()+' '+dd.getDate());a.push(k<STAT_FROM?0:doneCount((S.events[k]||{}).items||[]));}hi=(now().getDay()+6)%7;upto=hi;note='неделя с понедельника';title='Сделано задач ('+d0.getDate()+(d0.getMonth()===d6.getMonth()?'':' '+MONG[d0.getMonth()])+'–'+d6.getDate()+' '+MONG[d6.getMonth()]+')';}
