@@ -15,7 +15,7 @@
 <link rel="apple-touch-icon" href="icon.png">
 <link id="sp-img" rel="apple-touch-startup-image" media="screen and (device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="splash-dark.png">
 
-<script>(function(){var r=document.documentElement;try{var L=JSON.parse(localStorage.getItem('kc-look')||'null');if(L)['font','bg','pat','date','hov','fly','xhov','open','ico'].forEach(function(k){if(typeof L[k]==='string'&&/^[a-z0-9]{1,12}$/.test(L[k]))r.setAttribute('data-'+k,L[k]);});}catch(e){}})()</script>
+<script>(function(){var r=document.documentElement;r.setAttribute('data-calm','');try{var L=JSON.parse(localStorage.getItem('kc-look')||'null');if(L)['font','bg','pat','date','hov','fly','xhov','open','ico'].forEach(function(k){if(typeof L[k]==='string'&&/^[a-z0-9]{1,12}$/.test(L[k]))r.setAttribute('data-'+k,L[k]);});}catch(e){}})()</script>
 <script>(function(){var r=document.documentElement,sa=navigator.standalone===true||(window.matchMedia&&matchMedia('(display-mode: standalone),(display-mode: fullscreen),(display-mode: minimal-ui)').matches)||/[#&]k=/.test(location.hash)||/[?&]splash/.test(location.search);if(!sa)return;var pt=function(dt){var h=dt.getHours();return (h>=5&&h<17)?'light':'dark';},th=pt(new Date());try{var man=localStorage.getItem('kc-theme'),at=+localStorage.getItem('kc-theme-at')||0;if((man==='light'||man==='dark')&&at&&pt(new Date(at))===th)th=man;}catch(e){}if(!r.getAttribute('data-theme'))r.setAttribute('data-theme',th);r.classList.add('sp-on');var li=document.getElementById('sp-img');if(li)li.setAttribute('href','splash-'+th+'.png');})()</script>
 <style>:root.sp-on .shell,:root.sp-on .scene,:root.sp-on .bottomrail{visibility:hidden!important}:root.sp-on{background:#090b12}:root.sp-on[data-theme="light"]{background:#eef0f5}</style>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Onest:wght@400;500;600;700&family=Nunito:wght@400;500;600;700;800&display=swap">
@@ -1116,6 +1116,37 @@ html,body{touch-action:manipulation;-webkit-text-size-adjust:100%;text-size-adju
 #splash .pat{z-index:0}
 #splash .sp-in{z-index:1}
 
+/* v114: «спокойный» вариант — меньше свечения и пульсаций, подписи обычными буквами.
+   Всё под :root[data-calm]; откат = убрать атрибут (или этот файл). */
+:root[data-calm] .label{text-transform:none!important;letter-spacing:0!important;font-family:var(--font-sans)!important;font-size:13px!important;font-weight:500!important}
+/* дата наверху: без чёрточки и точки, время тем же цветом */
+:root[data-calm] .hdr>div:first-child>.label{padding:0!important;background:none!important;box-shadow:none!important;color:var(--ink-muted)!important;font-size:14px!important}
+:root[data-calm] .hdr>div:first-child>.label::before,:root[data-calm] .hdr>div:first-child>.label::after{display:none!important}
+:root[data-calm] .clock,:root[data-calm] .hdr .clock{color:inherit!important;text-shadow:none!important}
+/* «таблица / база»: видно только когда что-то не так */
+:root[data-calm] .hdr .src.ok,:root[data-calm] .hdr .src.wait{display:none!important}
+:root[data-calm] .src i{box-shadow:none!important;animation:none!important}
+/* карточки сверху: без светящихся линий, цифры спокойнее */
+:root[data-calm] .kpi .sp{display:none!important}
+:root[data-calm] .kpi .numeral-s{font-weight:600}
+:root[data-calm] .kpi .d.crit{color:var(--ink-muted)!important}
+:root[data-calm] .kpi .d .neg{color:var(--crit)}
+/* главная карточка и кнопки: цвет есть, свечения нет */
+:root[data-calm] .fc::before{box-shadow:none!important}
+:root[data-calm] .btn.primary{box-shadow:none!important}
+:root[data-calm] .btn.primary:hover{box-shadow:0 10px 24px -12px rgba(0,0,0,.35)!important}
+/* план дня: линия «сейчас» без свечения и пульса */
+:root[data-calm] .now{box-shadow:none!important}
+:root[data-calm] .now::before{animation:none!important}
+/* закреплённые строки: тонкая рамка вместо яркой, полоска слева остаётся */
+:root[data-calm] .ev.task.fixed{border:1px solid color-mix(in srgb,var(--fxc,var(--violet)) 30%,transparent)!important;border-left:3px solid var(--fxc,var(--violet))!important}
+/* график: линия без размытого свечения */
+:root[data-calm] .ln.glow,:root[data-calm] #d1{display:none!important}
+/* фон: пятна тусклее */
+:root[data-calm] .scene .pat{opacity:.5!important}
+:root[data-calm] .scene .a,:root[data-calm] .scene .v{opacity:calc(var(--light-opacity)*.75)!important}
+:root[data-calm] .scene .n{opacity:calc(var(--light-opacity)*.35)!important}
+
 </style>
 </head>
 <body>
@@ -2052,7 +2083,7 @@ function finAdvice(m){var A=[],st=fset(),t=m.t,cap=m.cap,les=function(sum){retur
 /* ---------- main screen card ---------- */
 function finCard(){var el=$('#k4');if(!el)return;if(!fAccs().length){el.textContent='–';$('#k4-d').textContent='Нажми, чтобы открыть';return;}var m=finModel();countTo(el,Math.max(0,m.left));
   var nx=m.exps.filter(function(x){return x.occ})[0],ul=$('#k4-u');if(ul)ul.textContent='₽ на себя';
-  $('#k4-d').textContent=(m.L<=0?'не хватает '+rub(-m.M)+' · ':'')+(nx?'ближайший: '+nx.title+' '+rub(nx.sum)+' · '+ddmm(nx.d):'платежей впереди нет');$('#k4-d').className='small d '+(m.L<=0?'crit':'');}
+  var k4d=$('#k4-d');k4d.textContent='';if(m.L<=0){var k4n=document.createElement('span');k4n.className='neg';k4n.textContent='не хватает '+rub(-m.M);k4d.appendChild(k4n);k4d.appendChild(document.createTextNode(' · '));}k4d.appendChild(document.createTextNode(nx?'ближайший: '+nx.title+' '+rub(nx.sum)+' · '+ddmm(nx.d):'платежей впереди нет'));$('#k4-d').className='small d '+(m.L<=0?'crit':'');}
 
 /* ---------- charts ---------- */
 function niceMax(v){if(v<=0)return 1;var p=Math.pow(10,Math.floor(Math.log10(v))),f=v/p;return (f<=1?1:f<=2?2:f<=2.5?2.5:f<=5?5:10)*p}
