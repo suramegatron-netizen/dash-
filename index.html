@@ -15,9 +15,9 @@
 <link rel="apple-touch-icon" href="icon.png">
 <link id="sp-img" rel="apple-touch-startup-image" media="screen and (device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="splash-dark.png">
 
-<script>window.APP_VER='1795288869';(function(){var r=document.documentElement;r.setAttribute('data-calm','');try{var L=JSON.parse(localStorage.getItem('kc-look')||'null');if(L)['font','bg','pat','date','hov','fly','xhov','open','ico'].forEach(function(k){if(typeof L[k]==='string'&&/^[a-z0-9]{1,12}$/.test(L[k]))r.setAttribute('data-'+k,L[k]);});}catch(e){}})()</script>
+<script>window.APP_VER='1795295099';(function(){var r=document.documentElement;try{if(Date.now()-(+sessionStorage.getItem('kc-unl')||0)>300000)r.classList.add('lk-on');}catch(e){r.classList.add('lk-on');}})();(function(){var r=document.documentElement;r.setAttribute('data-calm','');try{var L=JSON.parse(localStorage.getItem('kc-look')||'null');if(L)['font','bg','pat','date','hov','fly','xhov','open','ico'].forEach(function(k){if(typeof L[k]==='string'&&/^[a-z0-9]{1,12}$/.test(L[k]))r.setAttribute('data-'+k,L[k]);});}catch(e){}})()</script>
 <script>(function(){var r=document.documentElement,sa=navigator.standalone===true||(window.matchMedia&&matchMedia('(display-mode: standalone),(display-mode: fullscreen),(display-mode: minimal-ui)').matches)||/[#&]k=/.test(location.hash)||/[?&]splash/.test(location.search);if(!sa)return;var pt=function(dt){var h=dt.getHours();return (h>=5&&h<17)?'light':'dark';},th=pt(new Date());try{var man=localStorage.getItem('kc-theme'),at=+localStorage.getItem('kc-theme-at')||0;if((man==='light'||man==='dark')&&at&&pt(new Date(at))===th)th=man;}catch(e){}if(!r.getAttribute('data-theme'))r.setAttribute('data-theme',th);r.classList.add('sp-on');var li=document.getElementById('sp-img');if(li)li.setAttribute('href','splash-'+th+'.png');})()</script>
-<style>:root.sp-on .shell,:root.sp-on .scene,:root.sp-on .bottomrail{visibility:hidden!important}:root.sp-on{background:#090b12}:root.sp-on[data-theme="light"]{background:#eef0f5}</style>
+<style>:root.lk-on body>*:not(#lock):not(#splash):not(.scene):not(script):not(svg){visibility:hidden!important}:root.sp-on .shell,:root.sp-on .scene,:root.sp-on .bottomrail{visibility:hidden!important}:root.sp-on{background:#090b12}:root.sp-on[data-theme="light"]{background:#eef0f5}</style>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Onest:wght@400;500;600;700&family=Nunito:wght@400;500;600;700;800&display=swap">
 <style>
 /* Live command center. Data: Google Sheet (viewer's connector, two-way), artifact db (tasks, events, visits, schedule, settings). Layout: rail + 12 cols on desktop, one column + bottom rail on phone. */
@@ -1126,7 +1126,7 @@ html,body{touch-action:manipulation;-webkit-text-size-adjust:100%;text-size-adju
 /* v114.2: вместо «таблица / база» — одна точка в строке с датой: зелёная — всё подключено, жёлтая — грузится, красная + «нет связи» */
 .conn{display:none}
 :root[data-calm] .hdr .src{display:none!important}
-:root[data-calm] .conn{display:inline-flex;align-items:center;gap:6px;margin-left:2px;cursor:pointer;vertical-align:middle;-webkit-tap-highlight-color:transparent}
+:root[data-calm] .conn{display:inline-flex;align-items:center;gap:6px;margin-left:6px;cursor:pointer;vertical-align:middle;-webkit-tap-highlight-color:transparent}
 :root[data-calm] .conn i{width:7px;height:7px;border-radius:50%;background:var(--ok);transition:background .3s}
 :root[data-calm] .conn.wait i{background:var(--wait)}
 :root[data-calm] .conn.bad i{background:var(--crit)}
@@ -1153,6 +1153,54 @@ html,body{touch-action:manipulation;-webkit-text-size-adjust:100%;text-size-adju
 :root[data-calm] .scene .pat{opacity:.5!important}
 :root[data-calm] .scene .a,:root[data-calm] .scene .v{opacity:calc(var(--light-opacity)*.75)!important}
 :root[data-calm] .scene .n{opacity:calc(var(--light-opacity)*.35)!important}
+
+/* v115: экран кода */
+#lock{position:fixed;inset:0;z-index:99;display:none;place-items:center;padding:env(safe-area-inset-top) 16px env(safe-area-inset-bottom);
+  background:color-mix(in srgb,var(--bg-000) 62%,transparent);-webkit-backdrop-filter:blur(28px) saturate(1.25);backdrop-filter:blur(28px) saturate(1.25);
+  -webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+#lock.on{display:grid;animation:lkIn .45s var(--ease,ease) both}
+#lock.out{opacity:0;transform:scale(1.04);filter:blur(8px);transition:opacity .42s ease,transform .42s ease,filter .42s ease;pointer-events:none}
+@keyframes lkIn{from{opacity:0}to{opacity:1}}
+.lk-box{display:flex;flex-direction:column;align-items:center;width:100%;max-width:320px;transform:translateY(-2vh)}
+.lk-logo{width:56px;height:56px;color:var(--ink);margin-bottom:18px;animation:lkPop .7s cubic-bezier(.32,1.3,.5,1) both .05s}
+.lk-logo svg{width:100%;height:100%}
+.lk-t{font-family:var(--font-display);font-size:19px;font-weight:600;color:var(--ink);min-height:26px;text-align:center;transition:color .2s}
+.lk-t.bad{color:var(--crit)}
+.lk-dots{display:flex;gap:20px;margin:18px 0 34px}
+.lk-dots i{width:13px;height:13px;border-radius:50%;border:1.5px solid var(--ink);opacity:.75;transition:background .15s,transform .2s cubic-bezier(.32,1.6,.5,1),border-color .2s}
+.lk-dots i.on{background:var(--ink);opacity:1;transform:scale(1.08)}
+.lk-dots.err{animation:lkShake .42s cubic-bezier(.36,.07,.19,.97)}
+.lk-dots.err i{border-color:var(--crit)}.lk-dots.err i.on{background:var(--crit)}
+#lock.ok .lk-dots i{background:var(--ok);border-color:var(--ok)}
+@keyframes lkShake{10%,90%{transform:translateX(-2px)}20%,80%{transform:translateX(4px)}30%,50%,70%{transform:translateX(-9px)}40%,60%{transform:translateX(9px)}}
+.lk-pad{display:grid;grid-template-columns:repeat(3,76px);gap:16px 26px;justify-content:center}
+.lk-k{width:76px;height:76px;border-radius:50%;display:grid;place-items:center;font-family:var(--font-display);font-size:30px;font-weight:500;color:var(--ink);cursor:pointer;
+  background:var(--glass);border:1px solid var(--glass-border);box-shadow:inset 0 1px 0 var(--glass-hi);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);
+  transition:transform .18s cubic-bezier(.32,1.4,.5,1),background .18s;font-variant-numeric:tabular-nums;padding:0;animation:lkPop .55s cubic-bezier(.32,1.3,.5,1) both}
+.lk-k:nth-child(3n+1){animation-delay:.08s}.lk-k:nth-child(3n+2){animation-delay:.12s}.lk-k:nth-child(3n){animation-delay:.16s}
+.lk-k.pr{transform:scale(.9);background:var(--glass-strong)}
+@media (hover:hover){.lk-k:hover{background:var(--glass-strong)}}
+.lk-k:focus-visible{outline:2px solid var(--focus-ring,var(--ink));outline-offset:3px}
+.lk-k.lk-x{background:none;border-color:transparent;box-shadow:none;-webkit-backdrop-filter:none;backdrop-filter:none;color:var(--ink-muted)}
+.lk-k.lk-x svg{width:28px;height:28px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+#lk-f{visibility:hidden}#lk-f.show{visibility:visible;color:var(--ink)}
+#lk-f.lk-hint{animation:lkHint .9s ease}
+@keyframes lkHint{30%{transform:scale(1.15);color:var(--neon)}}
+@keyframes lkPop{from{opacity:0;transform:translateY(8px) scale(.85)}to{opacity:1;transform:none}}
+.lk-cancel{display:none;margin-top:22px;background:none;border:0;color:var(--ink-muted);font:500 15px var(--font-sans);cursor:pointer;padding:8px 14px}
+#lock.chg .lk-cancel{display:block}
+.lk-offer{position:fixed;left:16px;right:16px;bottom:calc(16px + env(safe-area-inset-bottom));z-index:2;display:none;gap:10px;align-items:center;flex-wrap:wrap;max-width:440px;margin:0 auto;padding:16px 18px;border-radius:22px;
+  background:color-mix(in srgb,var(--bg-100) 94%,transparent);border:1px solid var(--glass-border);box-shadow:var(--shadow-lift,0 12px 30px -14px #0008);-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px)}
+.lk-offer>div{grid-column:1/-1;display:flex;flex-direction:column;gap:2px;margin-bottom:4px}.lk-offer .btn{justify-content:center}
+.lk-offer b{font-family:var(--font-display);font-size:15px;color:var(--ink)}
+.lk-offer span{font-size:13px;color:var(--ink-muted)}
+.lk-offer.on{display:grid;grid-template-columns:1fr 1fr;animation:lkPop .5s cubic-bezier(.32,1.3,.5,1) both}
+/* предложение Face ID показываем уже поверх дашборда */
+#lock:not(.on) .lk-offer.on{position:fixed}
+#lock:not(.on){display:none}#lock:not(.on):has(.lk-offer.on){display:block;background:none;-webkit-backdrop-filter:none;backdrop-filter:none;inset:auto 0 0 0;padding:0}
+#lock:not(.on):has(.lk-offer.on) .lk-box{display:none}
+@media (max-width:380px){.lk-pad{grid-template-columns:repeat(3,70px);gap:14px 22px}.lk-k{width:70px;height:70px;font-size:28px}}
+@media (max-height:620px){.lk-logo{display:none}.lk-dots{margin:14px 0 22px}}
 
 </style>
 </head>
@@ -1809,12 +1857,12 @@ function formHtml(t,isWork){t=t||{};if(isWork&&t.n!=null)t=Object.assign({},t,S.
   '<div class="fb"><button class="btn" id="f-cancel">Отмена</button><button class="btn primary" id="f-save">Сохранить</button></div></div>';}
 function renderSheet(){if(!curDir)return;var k=curDir;
   if(k==='settings'){$('#sh-title').textContent='Настройки дня';$('#sh-sum').textContent='Эти числа строят план. Меняются сразу.';$('#sh-tools').innerHTML='';$('#sh-form').innerHTML='';var st=S.settings;
-    $('#sh-rows').innerHTML=pushRow()+lookBlock()+[['alarm','Будильник','время, на которое ставишь',st.alarm,'time'],['wakeMin','До первой задачи','минут после будильника (встать + прийти в себя)',st.wakeMin,'number'],['prepMin','Сборы в вуз','минут',st.prepMin,'number'],['commuteMin','Дорога до вуза','минут в одну сторону',st.commuteMin,'number'],['officeTarget','Офис в неделю','раз',st.officeTarget,'number'],['vTo','Восток 2: дорога туда','минут из дома',st.vTo,'number'],['vBack','Восток 2: обратно до Динамо','минут',st.vBack,'number'],['lTo','Ласточкино: дорога туда','минут из дома',st.lTo,'number'],['lBack','Ласточкино: обратно до Динамо','минут',st.lBack,'number'],['oStay','В офисе сидеть','минут',st.oStay,'number'],['dynamo','От Динамо','минут до дома, вуза, учеников',st.dynamo,'number'],['lessonPrice','Занятие','₽ за час',st.lessonPrice,'number'],['sleep','Конец задач','все задачи закрыты к',st.sleep,'time']].map(function(r){return '<div class="set"><div><span>'+r[1]+'</span><span class="small">'+r[2]+'</span></div><input data-k="'+r[0]+'" type="'+r[4]+'" value="'+esc(r[3])+'"></div>'}).join('')+
+    $('#sh-rows').innerHTML=pushRow()+lockRow()+lookBlock()+[['alarm','Будильник','время, на которое ставишь',st.alarm,'time'],['wakeMin','До первой задачи','минут после будильника (встать + прийти в себя)',st.wakeMin,'number'],['prepMin','Сборы в вуз','минут',st.prepMin,'number'],['commuteMin','Дорога до вуза','минут в одну сторону',st.commuteMin,'number'],['officeTarget','Офис в неделю','раз',st.officeTarget,'number'],['vTo','Восток 2: дорога туда','минут из дома',st.vTo,'number'],['vBack','Восток 2: обратно до Динамо','минут',st.vBack,'number'],['lTo','Ласточкино: дорога туда','минут из дома',st.lTo,'number'],['lBack','Ласточкино: обратно до Динамо','минут',st.lBack,'number'],['oStay','В офисе сидеть','минут',st.oStay,'number'],['dynamo','От Динамо','минут до дома, вуза, учеников',st.dynamo,'number'],['lessonPrice','Занятие','₽ за час',st.lessonPrice,'number'],['sleep','Конец задач','все задачи закрыты к',st.sleep,'time']].map(function(r){return '<div class="set"><div><span>'+r[1]+'</span><span class="small">'+r[2]+'</span></div><input data-k="'+r[0]+'" type="'+r[4]+'" value="'+esc(r[3])+'"></div>'}).join('')+
     '<div class="set" style="grid-template-columns:1fr"><div><span>Адрес скрипта таблицы</span><span class="small">Уже вшит в файл. Менять только если пересоздадите скрипт в таблице (Расширения → Apps Script → Развернуть).</span><input id="gas-url" type="url" placeholder="https://script.google.com/macros/s/…/exec" value="'+esc(gasUrl())+'" style="width:100%;text-align:left;margin-top:8px"></div></div>'+
     '<div class="set"><div><span>Связь сейчас</span><span class="small">'+(T.mode==='mcp'?'через claude.ai, коннектор Google Sheets':T.mode==='gas'?'через скрипт таблицы':'нет связи')+'</span></div></div>'+
     '<div class="set"><div><span>Расписание учеников</span><span class="small">Меняется в разделе «Репетиторство» → «Ученики и расписание». Чтобы поменять, напиши мне в чате.</span></div></div>';
     $$('#sh-rows input[data-k]').forEach(function(inp){inp.addEventListener('change',function(){var p={};p[inp.dataset.k]=inp.type==='number'?+inp.value:inp.value;saveSettings(p);toast('Сохранено')});});
-    $('#gas-url').addEventListener('change',function(){var u=this.value.trim();var km=/[#&]k=([A-Za-z0-9_-]{20,})/.exec(u);if(km)u='https://script.google.com/macros/s/'+km[1]+'/exec';if(u&&!/^https:\/\/script\.google\.com\/macros\/s\/.+\/exec$/.test(u)){toast('Похоже, это не адрес веб-приложения Apps Script');}setGasUrl(u);setMode();toast(u?'Адрес сохранён, подключаюсь…':'Адрес удалён');renderSheet();});pushWire();lookWire();return;}
+    $('#gas-url').addEventListener('change',function(){var u=this.value.trim();var km=/[#&]k=([A-Za-z0-9_-]{20,})/.exec(u);if(km)u='https://script.google.com/macros/s/'+km[1]+'/exec';if(u&&!/^https:\/\/script\.google\.com\/macros\/s\/.+\/exec$/.test(u)){toast('Похоже, это не адрес веб-приложения Apps Script');}setGasUrl(u);setMode();toast(u?'Адрес сохранён, подключаюсь…':'Адрес удалён');renderSheet();});pushWire();lockWire();lookWire();return;}
   if(k==='obl'){var L=oblList(),act=L.filter(function(o){return !o.done}),tot=oblTotal(),mx=Math.max.apply(null,act.map(function(o){return +o.sum||0}).concat([1]));$('#sh-title').textContent='Обязательства';$('#sh-sum').textContent=act.length?act.length+' открытых · '+tot.toLocaleString('ru-RU')+' ₽ всего':'Пока пусто. Добавь первое.';
     $('#sh-tools').innerHTML='<button class="btn primary" id="t-add">+ Обязательство</button>';
     var oform=function(o){o=o||{};return '<div class="form" id="oform"><input id="o-title" placeholder="Название" value="'+esc(o.title||'')+'"><div class="fr"><input id="o-sum" type="number" min="0" step="100" placeholder="Сумма, ₽" value="'+(o.sum||'')+'"></div><textarea id="o-note" placeholder="Описание">'+esc(o.note||'')+'</textarea><div class="fb"><button class="btn" id="o-cancel">Отмена</button><button class="btn primary" id="o-save">Сохранить</button></div></div>'};
@@ -2974,6 +3022,99 @@ function connPaint(){var c=$('#conn'),a=$('#src-sheet'),b=$('#src-db');if(!c||!a
   document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible')setTimeout(check,800);});
   addEventListener('pageshow',function(e){if(e.persisted)setTimeout(check,800);});})();
 
+
+/* ================= v115: пин-код и Face ID =================
+   Экран с кнопками цифр при каждом запуске и после 5 минут в фоне. Код общий для всех устройств (в настройках базы — только отпечаток кода),
+   Face ID — на каждом телефоне свой (WebAuthn, ключ лежит в Связке ключей iPhone). Нажатия внутри экрана не доходят до дашборда. */
+var LK_DEF='5254c4fb',LK_IDLE=5*60*1000,lkMode='',lkBuf='',lkStep=0,lkNew='',lkBusy=false,lkHidAt=0;
+function lkHash(p){var s='kc-pin:'+p,h=2166136261;for(var i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)>>>0;}return ('0000000'+h.toString(16)).slice(-8);}
+function lkLs(k,v){try{if(v===undefined)return localStorage.getItem(k);if(v===null)localStorage.removeItem(k);else localStorage.setItem(k,v);}catch(e){return null;}}
+function lkSs(v){try{if(v===undefined)return +sessionStorage.getItem('kc-unl')||0;sessionStorage.setItem('kc-unl',String(v));}catch(e){return 0;}}
+function lkDbOk(){var b=$('#src-db');return !!(b&&b.classList.contains('ok'));}
+function lkExpected(){if(lkDbOk())return (S.settings&&S.settings.pinH)||LK_DEF;return lkLs('kc-pinh')||null;}
+var LK_IOS=/iPhone|iPad|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+function lkFid(){return lkLs('kc-fid');}
+function lkFidName(){return LK_IOS?'Face ID':'вход без кода';}
+function lkB64(buf){var s='',b=new Uint8Array(buf);for(var i=0;i<b.length;i++)s+=String.fromCharCode(b[i]);return btoa(s).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');}
+function lkUnb64(s){s=s.replace(/-/g,'+').replace(/_/g,'/');while(s.length%4)s+='=';var b=atob(s),u=new Uint8Array(b.length);for(var i=0;i<b.length;i++)u[i]=b.charCodeAt(i);return u;}
+function lkRand(n){var u=new Uint8Array(n);crypto.getRandomValues(u);return u;}
+function lkFidAvail(){if(!window.PublicKeyCredential||!PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable)return Promise.resolve(false);return PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable().catch(function(){return false});}
+
+var LK_FACE='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8V6a2 2 0 0 1 2-2h2M16 4h2a2 2 0 0 1 2 2v2M20 16v2a2 2 0 0 1-2 2h-2M8 20H6a2 2 0 0 1-2-2v-2"/><path d="M9 9.5v1M15 9.5v1M12 9.5v3.5h-1M9.5 16c1.4 1.1 3.6 1.1 5 0"/></svg>';
+var LK_DEL='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5h10a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H9l-6-7z"/><path d="M12.5 9.5l5 5M17.5 9.5l-5 5"/></svg>';
+(function(){var el=document.createElement('div');el.id='lock';el.setAttribute('role','dialog');el.setAttribute('aria-label','Код для входа');
+  var keys=['1','2','3','4','5','6','7','8','9','f','0','d'];
+  el.innerHTML='<div class="lk-box"><div class="lk-logo" aria-hidden="true"><svg viewBox="0 0 180 180"><circle cx="90" cy="90" r="54" fill="none" stroke="currentColor" stroke-opacity=".18" stroke-width="10"/><circle cx="90" cy="90" r="54" fill="none" stroke="var(--neon)" stroke-width="10" stroke-linecap="round" stroke-dasharray="250 400" transform="rotate(-90 90 90)"/><circle cx="90" cy="90" r="16" fill="var(--neon)"/></svg></div>'
+    +'<div class="lk-t" id="lk-t">Введите код</div><div class="lk-dots" id="lk-dots"><i></i><i></i><i></i><i></i></div>'
+    +'<div class="lk-pad">'+keys.map(function(k){if(k==='f')return '<button type="button" class="lk-k lk-x" data-k="f" id="lk-f" aria-label="Face ID">'+LK_FACE+'</button>';if(k==='d')return '<button type="button" class="lk-k lk-x" data-k="d" aria-label="Стереть">'+LK_DEL+'</button>';return '<button type="button" class="lk-k" data-k="'+k+'">'+k+'</button>';}).join('')+'</div>'
+    +'<button type="button" class="lk-cancel" id="lk-cancel">Отмена</button></div>'
+    +'<div class="lk-offer" id="lk-offer"><div><b>Входить по '+lkFidName()+'?</b><span>Код останется запасным вариантом</span></div><button type="button" class="btn primary" data-o="on">Включить</button><button type="button" class="btn" data-o="no">Не надо</button></div>';
+  document.body.appendChild(el);
+  el.addEventListener('pointerdown',function(e){var b=e.target.closest('.lk-k');if(!b)return;b.classList.add('pr');setTimeout(function(){b.classList.remove('pr')},160);});
+  el.addEventListener('click',function(e){e.stopPropagation();var b=e.target.closest('.lk-k');if(b){lkKey(b.dataset.k);return;}
+    if(e.target.closest('#lk-cancel')){lkHide();return;}
+    var o=e.target.closest('[data-o]');if(o){if(o.dataset.o==='on')lkFidEnroll(true);else{lkLs('kc-fid-no','1');lkOfferHide();}}});
+  document.addEventListener('keydown',function(e){if(!root.classList.contains('lk-on'))return;e.stopPropagation();e.preventDefault();
+    if(/^[0-9]$/.test(e.key))lkKey(e.key);else if(e.key==='Backspace')lkKey('d');else if(e.key==='Escape'&&lkMode==='change')lkHide();},true);
+  /* код из базы запоминаем на устройстве, чтобы проверять его ещё до загрузки */
+  var db=$('#src-db');if(db)new MutationObserver(function(){if(lkDbOk())setTimeout(function(){lkLs('kc-pinh',(S.settings&&S.settings.pinH)||LK_DEF);},0);}).observe(db,{attributes:true});
+  document.addEventListener('visibilitychange',function(){if(document.visibilityState==='hidden'){lkHidAt=Date.now();if(!root.classList.contains('lk-on'))lkSs(Date.now());}
+    else if(lkHidAt&&Date.now()-lkHidAt>LK_IDLE&&!root.classList.contains('lk-on'))lkShow('unlock');});
+  setInterval(function(){if(document.visibilityState==='visible'&&!root.classList.contains('lk-on'))lkSs(Date.now());},30000);
+  if(root.classList.contains('lk-on'))lkShow('unlock');})();
+
+function lkTitle(t,bad){var e=$('#lk-t');e.textContent=t;e.classList.toggle('bad',!!bad);}
+function lkDots(){$$('#lk-dots i').forEach(function(d,i){d.classList.toggle('on',i<lkBuf.length);});}
+function lkShow(mode){lkMode=mode;lkBuf='';lkStep=0;lkNew='';lkBusy=false;var el=$('#lock');el.classList.remove('out','ok');$('#lk-dots').className='lk-dots';
+  el.classList.toggle('chg',mode==='change');lkTitle(mode==='change'?'Текущий код':'Введите код');lkDots();
+  $('#lk-f').classList.toggle('show',mode==='unlock'&&!!lkFid());lkOfferHide();
+  root.classList.add('lk-on');el.classList.add('on');
+  if(mode==='unlock'&&lkFid())lkWhenSplashGone(function(){lkFidCheck(true);});}
+function lkWhenSplashGone(fn){(function w(n){if(root.classList.contains('sp-on')&&n<40)setTimeout(function(){w(n+1)},150);else setTimeout(fn,250);})(0);}
+function lkHide(){var el=$('#lock');el.classList.add('out');lkMode='';setTimeout(function(){el.classList.remove('on','out','ok','chg');},450);root.classList.remove('lk-on');}
+function lkUnlock(){lkSs(Date.now());lkHidAt=0;var el=$('#lock');el.classList.add('ok');setTimeout(function(){lkHide();lkOfferMaybe();},260);}
+function lkErr(t){var d=$('#lk-dots');d.classList.remove('err');void d.offsetWidth;d.classList.add('err');lkTitle(t,true);try{navigator.vibrate&&navigator.vibrate(120)}catch(e){}
+  setTimeout(function(){lkBuf='';lkDots();d.classList.remove('err');},420);}
+function lkKey(k){if(lkBusy)return;if(k==='f'){lkFidCheck(false);return;}
+  if(k==='d'){lkBuf=lkBuf.slice(0,-1);lkDots();return;}
+  if(lkBuf.length>=4)return;lkBuf+=k;lkDots();if(lkBuf.length<4)return;
+  var p=lkBuf;lkBusy=true;setTimeout(function(){lkBusy=false;lkDone(p);},120);}
+function lkDone(p){var h=lkHash(p);
+  if(lkMode==='change'){
+    if(lkStep===0){lkCheck(h,function(ok){if(!ok){lkErr('Неверный код');return;}lkStep=1;lkBuf='';lkDots();lkTitle('Новый код');});return;}
+    if(lkStep===1){lkNew=h;lkStep=2;lkBuf='';lkDots();lkTitle('Повторите новый код');return;}
+    if(h!==lkNew){lkStep=1;lkNew='';lkErr('Не совпало. Новый код ещё раз');return;}
+    lkLs('kc-pinh',h);saveSettings({pinH:h});$('#lock').classList.add('ok');setTimeout(function(){lkHide();toast('Код изменён');},260);return;}
+  lkCheck(h,function(ok){if(ok)lkUnlock();else lkErr('Неверный код');});}
+/* если на этом устройстве код ещё не запомнен — ждём базу (до 8 секунд), потом сверяем с исходным */
+function lkCheck(h,cb){var e=lkExpected();if(e){cb(h===e);return;}lkTitle('Проверяю…');var n=0;(function w(){var x=lkExpected();if(x||n>=40){lkTitle(lkMode==='change'?'Текущий код':'Введите код');cb(h===(x||LK_DEF));return;}n++;setTimeout(w,200);})();}
+
+/* Face ID */
+function lkFidCheck(auto){var id=lkFid();if(!id||!window.PublicKeyCredential)return;
+  navigator.credentials.get({publicKey:{challenge:lkRand(32),allowCredentials:[{type:'public-key',id:lkUnb64(id),transports:['internal']}],userVerification:'required',timeout:60000}})
+    .then(function(c){if(c&&root.classList.contains('lk-on')&&lkMode==='unlock')lkUnlock();})
+    .catch(function(e){var f=$('#lk-f');if(f){f.classList.remove('lk-hint');void f.offsetWidth;f.classList.add('lk-hint');}if(!auto&&e&&e.name==='InvalidStateError'){lkLs('kc-fid',null);f.classList.remove('show');toast(lkFidName()+' сброшен, включи заново в «Настройках»');}});}
+function lkFidEnroll(fromOffer){lkFidAvail().then(function(ok){if(!ok){toast(lkFidName()+' здесь недоступен. Работает в приложении на телефоне');lkOfferHide();return;}
+  return navigator.credentials.create({publicKey:{challenge:lkRand(32),rp:{name:'Command Centre'},user:{id:lkRand(16),name:'Command Centre',displayName:'Command Centre'},
+      pubKeyCredParams:[{type:'public-key',alg:-7},{type:'public-key',alg:-257}],authenticatorSelection:{authenticatorAttachment:'platform',userVerification:'required',residentKey:'discouraged'},attestation:'none',timeout:60000}})
+    .then(function(c){lkLs('kc-fid',lkB64(c.rawId));lkLs('kc-fid-no',null);lkOfferHide();toast(lkFidName()+' включён');lkSetPaint();});})
+  .catch(function(e){lkOfferHide();toast(e&&e.name==='NotAllowedError'?'Не включился: отменено':'Не включился: '+((e&&e.name)||'ошибка'));});}
+function lkFidOff(){lkLs('kc-fid',null);toast(lkFidName()+' выключен на этом устройстве');lkSetPaint();}
+function lkOfferMaybe(){if(!LK_IOS||lkFid()||lkLs('kc-fid-no'))return;lkFidAvail().then(function(ok){if(ok&&!root.classList.contains('lk-on'))$('#lk-offer').classList.add('on');});}
+function lkOfferHide(){var o=$('#lk-offer');if(o)o.classList.remove('on');}
+
+/* строка в «Настройках» */
+var lkFidOk=null;
+function lockRow(){var f=lkFid();
+  return '<div class="set lkset"><div><span>'+(LK_IOS?'Пин-код и Face ID':'Пин-код')+'</span><span class="small" id="lk-st">Код спрашивается при запуске и после 5 минут в фоне. '+(f?lkFidName()+' на этом устройстве включён.':'')+'</span></div><div class="pbtns">'
+    +'<button class="btn" data-lk-a="pin">Сменить код</button>'
+    +'<span id="lk-fbtn">'+(f?'<button class="btn" data-lk-a="foff">Выключить '+lkFidName()+'</button>':(lkFidOk?'<button class="btn primary" data-lk-a="fon">Включить '+lkFidName()+'</button>':''))+'</span></div></div>';}
+function lkSetPaint(){var w=$('#lk-fbtn'),st=$('#lk-st');if(!w)return;var f=lkFid();
+  w.innerHTML=f?'<button class="btn" data-lk-a="foff">Выключить '+lkFidName()+'</button>':(lkFidOk?'<button class="btn primary" data-lk-a="fon">Включить '+lkFidName()+'</button>':'');
+  if(st)st.textContent='Код спрашивается при запуске и после 5 минут в фоне. '+(f?lkFidName()+' на этом устройстве включён.':'');}
+function lockWire(){var r=$('.lkset');if(!r)return;r.addEventListener('click',function(e){var b=e.target.closest('[data-lk-a]');if(!b)return;var a=b.dataset.lkA;
+    if(a==='pin')lkShow('change');else if(a==='fon')lkFidEnroll(false);else if(a==='foff')lkFidOff();});
+  if(lkFidOk===null&&LK_IOS)lkFidAvail().then(function(ok){lkFidOk=ok;lkSetPaint();});}
 
 })();
 
