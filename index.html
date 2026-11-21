@@ -15,7 +15,7 @@
 <link rel="apple-touch-icon" href="icon.png">
 <link id="sp-img" rel="apple-touch-startup-image" media="screen and (device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="splash-dark.png">
 
-<script>(function(){var r=document.documentElement;r.setAttribute('data-calm','');try{var L=JSON.parse(localStorage.getItem('kc-look')||'null');if(L)['font','bg','pat','date','hov','fly','xhov','open','ico'].forEach(function(k){if(typeof L[k]==='string'&&/^[a-z0-9]{1,12}$/.test(L[k]))r.setAttribute('data-'+k,L[k]);});}catch(e){}})()</script>
+<script>window.APP_VER='1795288869';(function(){var r=document.documentElement;r.setAttribute('data-calm','');try{var L=JSON.parse(localStorage.getItem('kc-look')||'null');if(L)['font','bg','pat','date','hov','fly','xhov','open','ico'].forEach(function(k){if(typeof L[k]==='string'&&/^[a-z0-9]{1,12}$/.test(L[k]))r.setAttribute('data-'+k,L[k]);});}catch(e){}})()</script>
 <script>(function(){var r=document.documentElement,sa=navigator.standalone===true||(window.matchMedia&&matchMedia('(display-mode: standalone),(display-mode: fullscreen),(display-mode: minimal-ui)').matches)||/[#&]k=/.test(location.hash)||/[?&]splash/.test(location.search);if(!sa)return;var pt=function(dt){var h=dt.getHours();return (h>=5&&h<17)?'light':'dark';},th=pt(new Date());try{var man=localStorage.getItem('kc-theme'),at=+localStorage.getItem('kc-theme-at')||0;if((man==='light'||man==='dark')&&at&&pt(new Date(at))===th)th=man;}catch(e){}if(!r.getAttribute('data-theme'))r.setAttribute('data-theme',th);r.classList.add('sp-on');var li=document.getElementById('sp-img');if(li)li.setAttribute('href','splash-'+th+'.png');})()</script>
 <style>:root.sp-on .shell,:root.sp-on .scene,:root.sp-on .bottomrail{visibility:hidden!important}:root.sp-on{background:#090b12}:root.sp-on[data-theme="light"]{background:#eef0f5}</style>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Onest:wght@400;500;600;700&family=Nunito:wght@400;500;600;700;800&display=swap">
@@ -1123,8 +1123,15 @@ html,body{touch-action:manipulation;-webkit-text-size-adjust:100%;text-size-adju
 :root[data-calm] .hdr>div:first-child>.label{padding:0!important;background:none!important;box-shadow:none!important;color:var(--ink-muted)!important;font-size:14px!important}
 :root[data-calm] .hdr>div:first-child>.label::before,:root[data-calm] .hdr>div:first-child>.label::after{display:none!important}
 :root[data-calm] .clock,:root[data-calm] .hdr .clock{color:inherit!important;text-shadow:none!important}
-/* «таблица / база»: видно только когда что-то не так */
-:root[data-calm] .hdr .src.ok,:root[data-calm] .hdr .src.wait{display:none!important}
+/* v114.2: вместо «таблица / база» — одна точка в строке с датой: зелёная — всё подключено, жёлтая — грузится, красная + «нет связи» */
+.conn{display:none}
+:root[data-calm] .hdr .src{display:none!important}
+:root[data-calm] .conn{display:inline-flex;align-items:center;gap:6px;margin-left:2px;cursor:pointer;vertical-align:middle;-webkit-tap-highlight-color:transparent}
+:root[data-calm] .conn i{width:7px;height:7px;border-radius:50%;background:var(--ok);transition:background .3s}
+:root[data-calm] .conn.wait i{background:var(--wait)}
+:root[data-calm] .conn.bad i{background:var(--crit)}
+:root[data-calm] .conn b{display:none;font-weight:500;color:var(--crit)}
+:root[data-calm] .conn.bad b{display:inline}
 :root[data-calm] .src i{box-shadow:none!important;animation:none!important}
 /* карточки сверху: без светящихся линий, цифры спокойнее */
 :root[data-calm] .kpi .sp{display:none!important}
@@ -1188,7 +1195,7 @@ if(/[?&]splash=freeze/.test(location.search)){el.classList.add('freeze');return;
 
 <main>
   <header class="hdr span12" id="top">
-    <div><span class="label"><span id="date"></span> · <span class="clock" id="clock" title="Нажми, чтобы пролистать день">--:--</span></span><h1 id="greet"><span style="--w:0">Добрый</span> <span style="--w:1">день,</span> <span style="--w:2">Андрей</span> <span style="--w:3">Антонович</span></h1></div>
+    <div><span class="label"><span id="date"></span> · <span class="clock" id="clock" title="Нажми, чтобы пролистать день">--:--</span><span class="conn wait" id="conn" role="button" aria-label="Связь"><i></i><b>нет связи</b></span></span><h1 id="greet"><span style="--w:0">Добрый</span> <span style="--w:1">день,</span> <span style="--w:2">Андрей</span> <span style="--w:3">Антонович</span></h1></div>
     <div class="fx"><span class="src wait" id="src-sheet"><i></i>таблица</span><span class="src wait" id="src-db"><i></i>база</span><div class="seg" data-seg id="topseg"><i class="pill"></i><span class="on">Сегодня</span><span>Неделя</span><span>Месяц</span></div></div>
   </header>
 
@@ -2952,6 +2959,21 @@ function hapAttach(b){if(b.querySelector(':scope>[data-hpt]'))return;var l=docum
 var hapQ=0;function hapScan(){hapQ=0;$$('button,[role="button"],.chip[data-a="cycle"]').forEach(function(b){if(hapHit(b))hapAttach(b);});}
 if(HAP_IOS){new MutationObserver(function(){if(!hapQ)hapQ=requestAnimationFrame(hapScan);}).observe(document.body,{childList:true,subtree:true});hapScan();}
 else document.addEventListener('click',function(e){var b=e.target&&e.target.closest?e.target.closest('button,[role="button"],.chip[data-a="cycle"]'):null;if(b&&navigator.vibrate&&hapHit(b)){try{navigator.vibrate(12)}catch(er){}}},true);
+/* v114.2: точка связи. Зелёная, только когда и таблица, и база подключены. */
+function connPaint(){var c=$('#conn'),a=$('#src-sheet'),b=$('#src-db');if(!c||!a||!b)return;var bad=a.classList.contains('bad')||b.classList.contains('bad'),ok=a.classList.contains('ok')&&b.classList.contains('ok');c.className='conn '+(bad?'bad':ok?'ok':'wait');c.title=a.textContent+' · '+b.textContent;}
+(function(){var a=$('#src-sheet'),b=$('#src-db'),c=$('#conn');if(!a||!b||!c)return;var mo=new MutationObserver(connPaint);[a,b].forEach(function(e){mo.observe(e,{attributes:true,childList:true,subtree:true,characterData:true});});connPaint();
+  c.addEventListener('click',function(e){e.stopPropagation();var t=$('#src-sheet').textContent+' · '+$('#src-db').textContent;toast(c.classList.contains('ok')?'Всё подключено: '+t:c.classList.contains('bad')?'Нет связи: '+t:'Подключаюсь: '+t);});})();
+/* v114.2: автообновление. Телефон иногда показывает старую копию из памяти.
+   При открытии, при возвращении в приложение и раз в 10 минут проверяем, нет ли на сайте версии новее; если есть — перезагружаемся,
+   но не когда открыта форма/окно или курсор стоит в поле ввода. Работает только на github.io (в claude.ai версия всегда свежая). */
+(function(){if(!/github\.io$/.test(location.hostname)||!window.APP_VER)return;var busy=false,pending=false;
+  function safe(){var ae=document.activeElement;if(ae&&/^(INPUT|TEXTAREA|SELECT)$/.test(ae.tagName))return false;if(document.querySelector('#sheet.on,#dlg.on,#fdlg.on,#fin.on'))return false;return document.visibilityState==='visible';}
+  function go(){if(safe())location.reload();else pending=true;}
+  function check(){if(busy||document.visibilityState!=='visible')return;busy=true;fetch(location.pathname+'?v='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.text():''}).then(function(t){busy=false;var m=/APP_VER='(\d+)'/.exec(t||'');if(m&&m[1]!==String(window.APP_VER)&&+m[1]>+window.APP_VER)go();},function(){busy=false;});}
+  setTimeout(check,4000);setInterval(function(){if(pending)go();else check();},10*60*1000);setInterval(function(){if(pending&&safe())location.reload();},30000);
+  document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible')setTimeout(check,800);});
+  addEventListener('pageshow',function(e){if(e.persisted)setTimeout(check,800);});})();
+
 
 })();
 
