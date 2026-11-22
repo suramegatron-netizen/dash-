@@ -15,7 +15,7 @@
 <link rel="apple-touch-icon" href="icon.png">
 <link id="sp-img" rel="apple-touch-startup-image" media="screen and (device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="splash-dark.png">
 
-<script>window.APP_VER='1795379366';(function(){var r=document.documentElement;try{if(Date.now()-(+sessionStorage.getItem('kc-unl')||0)>300000)r.classList.add('lk-on');}catch(e){r.classList.add('lk-on');}})();(function(){var r=document.documentElement;r.setAttribute('data-calm','');try{var L=JSON.parse(localStorage.getItem('kc-look')||'null');if(L)['font','bg','pat','date','hov','fly','xhov','open','ico'].forEach(function(k){if(typeof L[k]==='string'&&/^[a-z0-9]{1,12}$/.test(L[k]))r.setAttribute('data-'+k,L[k]);});}catch(e){}})()</script>
+<script>window.APP_VER='1795379646';(function(){var r=document.documentElement;try{if(Date.now()-(+sessionStorage.getItem('kc-unl')||0)>300000)r.classList.add('lk-on');}catch(e){r.classList.add('lk-on');}})();(function(){var r=document.documentElement;r.setAttribute('data-calm','');try{var L=JSON.parse(localStorage.getItem('kc-look')||'null');if(L)['font','bg','pat','date','hov','fly','xhov','open','ico'].forEach(function(k){if(typeof L[k]==='string'&&/^[a-z0-9]{1,12}$/.test(L[k]))r.setAttribute('data-'+k,L[k]);});}catch(e){}})()</script>
 <script>(function(){var r=document.documentElement,sa=navigator.standalone===true||(window.matchMedia&&matchMedia('(display-mode: standalone),(display-mode: fullscreen),(display-mode: minimal-ui)').matches)||/[#&]k=/.test(location.hash)||/[?&]splash/.test(location.search);if(!sa)return;var pt=function(dt){var h=dt.getHours();return (h>=5&&h<17)?'light':'dark';},th=pt(new Date());try{var man=localStorage.getItem('kc-theme'),at=+localStorage.getItem('kc-theme-at')||0;if((man==='light'||man==='dark')&&at&&pt(new Date(at))===th)th=man;}catch(e){}if(!r.getAttribute('data-theme'))r.setAttribute('data-theme',th);r.classList.add('sp-on');var li=document.getElementById('sp-img');if(li)li.setAttribute('href','splash-'+th+'.png');})()</script>
 <style>:root.lk-on body>*:not(#lock):not(#splash):not(.scene):not(script):not(svg){visibility:hidden!important}:root.sp-on .shell,:root.sp-on .scene,:root.sp-on .bottomrail{visibility:hidden!important}:root.sp-on{background:#090b12}:root.sp-on[data-theme="light"]{background:#eef0f5}</style>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Onest:wght@400;500;600;700&family=Nunito:wght@400;500;600;700;800&display=swap">
@@ -957,6 +957,10 @@ html,body{touch-action:manipulation;-webkit-text-size-adjust:100%;text-size-adju
 .fsvg .f2pt{fill:var(--c);stroke:var(--bg-100);stroke-width:2}.fsvg .f2pt.fc{fill:var(--bg-100);stroke:var(--c);stroke-width:2}
 .fsvg .ax text.cur{fill:var(--ink);font-weight:600}
 @media (max-width:560px){.f2dsec .fhd{flex-wrap:wrap}.f2seg button{padding:6px 10px}}
+/* v119: списки колонок со своей прокруткой, черта перед кнопками */
+.f2list{max-height:min(64vh,640px);overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:color-mix(in srgb,var(--ink) 22%,transparent) transparent;margin-right:-6px;padding-right:6px}
+.f2list::-webkit-scrollbar{width:6px}.f2list::-webkit-scrollbar-thumb{background:color-mix(in srgb,var(--ink) 22%,transparent);border-radius:3px}.f2list::-webkit-scrollbar-track{background:transparent}
+.f2col .f2add{margin-top:0;border-top:1px solid var(--line);padding-top:14px}
 
 /* ================= v112: внешний вид ================= */
 /* шрифты */
@@ -2940,15 +2944,18 @@ function f2LoanRow(x){var L=x.L,I=x.I,owe=L.loan==='owe',t=todayKey(),late=!I.do
   return f2R('l:'+L.id,L.who||'—',+L.sum||0,{done:I.done,late:late,tag:tag,bar:I.back&&!I.done?I.back/Math.max(1,+L.sum)*100:null,body:body,acts:acts});}
 function f2LoanGrp(m,kind){var X=m.loans.filter(function(x){return (x.L.loan==='owe')===(kind==='owe')});if(!X.length)return '';
   return '<div class="f2gh"><span>'+(kind==='owe'?'Кредиторская задолженность':'Дебиторская задолженность')+'</span><span>'+rubN(X.reduce(function(s,x){return s+x.I.left},0))+' ₽</span></div>'+X.map(f2LoanRow).join('');}
-function f2IncCol(m){var t=m.t,h='';
-  m.sal.forEach(function(x){if(x.pre){h+=f2R(x.k,x.title,x.sum,{done:true,tag:'до начала учёта',body:'<div class="small f2n">Пришло '+dmon(x.d)+', до того как ты начал вести финансы здесь. В итогах не считается.</div>',acts:f2B('got','Отметить получение')});return;}h+=f2IncRow(x,{shift:x.d.slice(8)!==(x.k==='sal:1'?'25':'10'),note:x.k==='sal:1'?'Сумма аванса примерная. Пришло меньше — впиши сколько пришло, остаток останется в ожидаемых.':'Остаток = зарплата за месяц минус аванс.'});});
-  var tu=m.tut;h+=f2R('tut','Ученики',tu.got+tu.exp,{tag:tu.got?'получено '+rubN(tu.got):'',bar:tu.got+tu.exp?tu.got/(tu.got+tu.exp)*100:0,
+function f2IncCol(m){var t=m.t,G={},add=function(g,html,v){G[g]=G[g]||{h:'',s:0};G[g].h+=html;G[g].s+=v||0;},h='';
+  m.sal.forEach(function(x){if(x.pre){add('work',f2R(x.k,x.title,x.sum,{done:true,tag:'до начала учёта',body:'<div class="small f2n">Пришло '+dmon(x.d)+', до того как ты начал вести финансы здесь. В итогах не считается.</div>',acts:f2B('got','Отметить получение')}),0);return;}add('work',f2IncRow(x,{shift:x.d.slice(8)!==(x.k==='sal:1'?'25':'10'),note:x.k==='sal:1'?'Сумма аванса примерная. Пришло меньше — впиши сколько пришло, остаток останется в ожидаемых.':'Остаток = зарплата за месяц минус аванс.'}),x.I.val);});
+  var tu=m.tut;add('tutor',f2R('tut','Ученики',tu.got+tu.exp,{tag:tu.got?'получено '+rubN(tu.got):'',bar:tu.got+tu.exp?tu.got/(tu.got+tu.exp)*100:0,
     body:f2Line('Уже получено',rub(tu.got)+(tu.gotN?' · '+f2LesT(tu.gotN):''))+f2Line('Ещё по расписанию',f2LesT(tu.n)+' на '+rub(tu.full))+f2Line('Ждём с учётом '+Math.round((1-tu.pct)*100)+'% отмен',rub(tu.exp))+'<div class="small f2n">Провёл занятие — нажми «Провёл» в плане, деньги посчитаются сами.</div>',
-    acts:f2B('tutgot','Получено','pri')+f2B('incset','Править допущение')});
-  m.grp.forEach(function(x){h+=f2IncRow(x);});
-  m.incs.forEach(function(x){h+=f2IncRow(x,{del:true});});
+    acts:f2B('tutgot','Получено','pri')+f2B('incset','Править допущение')}),tu.got+tu.exp);
+  var sg=function(src){return src==='salary'?'work':FG2N[src]?src:'pers'};
+  m.grp.forEach(function(x){add('biz',f2IncRow(x),x.I.val);});
+  m.incs.forEach(function(x){add(sg(x.i.src),f2IncRow(x,{del:true}),x.I.off?0:x.I.val);});
+  var OG={};m.othL.forEach(function(o){var g=o.grp&&FG2N[o.grp]?o.grp:sg(o.src);(OG[g]=OG[g]||[]).push(o);});
+  Object.keys(OG).forEach(function(g){var L=OG[g],sm=L.reduce(function(s,o){return s+(+o.sum||0)},0);add(g,f2R('oth:'+g,'Прочие поступления',sm,{done:true,tag:L.length+' '+plural(L.length,'запись','записи','записей'),body:L.map(function(o){return '<div class="f2op"><span>'+ddmm(o.d)+'</span><span>'+esc(o.title||o.note||'доход')+'</span><b>'+rub(o.sum)+'</b><button class="x" data-fop="'+o.d.slice(0,7)+'|'+o.ts+'" title="Удалить">×</button></div>'}).join('')}),sm);});
+  FG2.forEach(function(g){if(!G[g])return;h+='<div class="f2gh"><span>'+FG2N[g]+'</span><span>'+rubN(G[g].s)+' ₽</span></div>'+G[g].h;});
   h+=f2LoanGrp(m,'lent');
-  if(m.oth)h+=f2R('oth','Прочие поступления',m.oth,{done:true,tag:m.othL.length+' '+plural(m.othL.length,'запись','записи','записей'),body:m.othL.map(function(o){return '<div class="f2op"><span>'+ddmm(o.d)+'</span><span>'+esc(o.title||o.note||'доход')+'</span><b>'+rub(o.sum)+'</b><button class="x" data-fop="'+o.d.slice(0,7)+'|'+o.ts+'" title="Удалить">×</button></div>'}).join('')});
   return h;}
 function f2ExpCol(m){var h='',P=m.P;FG2.forEach(function(g){var R=m.rows.filter(function(r){return f2g(r.it)===g}),X=m.xs[g]||[];if(!R.length&&!X.length&&g!=='pers')return;
     R.sort(function(a,b){return (a.done?1:0)-(b.done?1:0)});var gs=R.reduce(function(s,r){return s+r.sum},0)+X.reduce(function(s,o){return s+(+o.sum||0)},0)+(g==='pers'?m.persPlan:0);
@@ -2990,14 +2997,14 @@ function f2AccH(m){var c=m.cap,h='<div class="f2cap"><div><span class="small">С
   return h;}
 
 /* ---------- экран ---------- */
-function finRender(){if(!finOn)return;var box=$('#fin-body');if(!box)return;var sy=$('#fin').scrollTop;
+function finRender(){if(!finOn)return;var box=$('#fin-body');if(!box)return;var sy=$('#fin').scrollTop,ls=[].map.call(document.querySelectorAll('#fin .f2list'),function(e){return e.scrollTop});
   if(!fAccs(true).length){box.innerHTML='<section class="glass fcard card3d span12" style="--i:0"><h3>Данные ещё грузятся</h3><p class="small">Подожди пару секунд.</p></section>';return;}
   f2Migrate();f2Cash();var m=f2PlanV(),P=m.P;
   $('#fin-sub').textContent=W[now().getDay()]+' · '+now().getDate()+' '+M[now().getMonth()]+' · до конца периода '+m.left+' '+plural(m.left,'день','дня','дней');
   var short=-m.res,html=''
-    +'<section class="glass fcard card3d span12 f2plan" style="--i:0"><div class="fhd"><div><span class="label">Бюджетный период</span><h3>План на '+f2PerName(P)+'</h3></div><div class="fhr">'+(m.normal?'':'<span class="f2mode">Режим минимальных трат</span>')+'<span class="f2per"><button data-x="pprev" aria-label="Прошлый период">‹</button><span>'+(m.isCur?'текущий':m.fut?'следующий':'прошлый')+'</span><button data-x="pnext" aria-label="Следующий период">›</button></span></div></div>'
-    +'<div class="f2cols"><div class="f2col"><div class="f2ch"><b>Ожидаемые доходы</b><span>'+rubN(m.IN)+' ₽</span></div><div class="small f2cs">получено '+rub(m.GOT)+' · ждём '+rub(Math.max(0,m.IN-m.GOT))+'</div>'+f2IncCol(m)+'<div class="f2add"><button class="btn sm" data-fx="inc">+ Поступление</button><button class="btn sm" data-fx="incset">Зарплата и ученики</button></div></div>'
-    +'<div class="f2col"><div class="f2ch"><b>Ожидаемые расходы</b><span>'+rubN(m.EX)+' ₽</span></div><div class="small f2cs">оплачено '+rub(m.PAID)+' · осталось '+rub(Math.max(0,m.EX-m.PAID))+'</div>'+f2ExpCol(m)+'<div class="f2add"><button class="btn sm" data-fx="item">+ Статья</button></div></div></div></section>'
+    +'<section class="glass fcard card3d span12 f2plan" style="--i:0"><div class="fhd"><div><span class="label">Бюджетный период</span><h3>План на '+f2PerName(P)+'</h3></div><div class="fhr">'+(m.normal?'':'<span class="f2mode">Режим минимальных трат</span>')+'<button class="btn sm" data-x="incset">Настройки</button><span class="f2per"><button data-x="pprev" aria-label="Прошлый период">‹</button><span>'+(m.isCur?'текущий':m.fut?'следующий':'прошлый')+'</span><button data-x="pnext" aria-label="Следующий период">›</button></span></div></div>'
+    +'<div class="f2cols"><div class="f2col"><div class="f2ch"><b>Ожидаемые доходы</b><span>'+rubN(m.IN)+' ₽</span></div><div class="small f2cs">получено '+rub(m.GOT)+' · ждём '+rub(Math.max(0,m.IN-m.GOT))+'</div><div class="f2list">'+f2IncCol(m)+'</div><div class="f2add"><button class="btn sm" data-fx="inc">+ Поступление</button></div></div>'
+    +'<div class="f2col"><div class="f2ch"><b>Ожидаемые расходы</b><span>'+rubN(m.EX)+' ₽</span></div><div class="small f2cs">оплачено '+rub(m.PAID)+' · осталось '+rub(Math.max(0,m.EX-m.PAID))+'</div><div class="f2list">'+f2ExpCol(m)+'</div><div class="f2add"><button class="btn sm" data-fx="item">+ Статья</button></div></div></div></section>'
     +'<section class="fkpis f3 span12">'
     +'<div class="glass fcard card3d kpi fk" style="--i:1"><div class="top"><span class="label">Итог плана</span></div><div class="val"><span class="numeral-s '+(m.res<0?'neg':m.surplus>0?'pos':'')+'">'+(m.res>0?'+':'')+rubN(m.res)+'</span><span class="small u">₽</span></div><span class="small d'+(m.res<0?' crit':'')+'">'+(m.normal?(m.surplus>0?'сверху остаётся, можно направить в цель':'план сходится в ноль'):(short>0?'не хватает '+rub(short)+', это '+f2LesT(f2Les(short)):'сходится только в режиме минимальных трат'))+'</span></div>'
     +'<div class="glass fcard card3d kpi fk" style="--i:2"><div class="top"><span class="label">Капитал за период</span></div><div class="val"><span class="numeral-s '+(m.capD<0?'neg':'pos')+'">'+(m.capD>0?'+':'')+rubN(m.capD)+'</span><span class="small u">₽</span></div><span class="small d">'+(m.fut?'период начнётся '+ddmm(P.a):'с '+ddmm(P.a)+': пришло '+rub(m.dIn)+', ушло '+rub(m.dOut))+'</span></div>'
@@ -3006,7 +3013,7 @@ function finRender(){if(!finOn)return;var box=$('#fin-body');if(!box)return;var 
     +'<section class="glass fcard card3d span6" style="--i:5"><div class="fhd"><div><span class="label">По очереди</span><h3>Цели</h3></div><div class="fhr"><button class="btn sm" data-x="gnew">+ Цель</button></div></div>'+f2GoalsH(m)+'</section>'
     +'<section class="glass fcard card3d span6" style="--i:6"><div class="fhd"><div><span class="label">Счета и карты</span><h3>Капитал и счета</h3></div><div class="fhr"><button class="btn sm" data-fx="tr">Перевод</button><button class="btn sm" data-fx="acc">+ Счёт</button></div></div>'+f2AccH(m)+'</section>'
     +'<section class="glass fcard card3d span12" style="--i:7"><div class="fhd"><div><span class="label">По периодам</span><h3>Доходы</h3></div></div>'+f2ChInc(f2Plan(0))+'</section>';
-  box.innerHTML=html;$('#fin').scrollTop=sy;
+  box.innerHTML=html;$('#fin').scrollTop=sy;[].forEach.call(document.querySelectorAll('#fin .f2list'),function(e,i){if(ls[i])e.scrollTop=ls[i];});
   $$('#fin [data-cnt]').forEach(function(el){var v=+el.dataset.cnt,key0='fc'+[].indexOf.call(document.querySelectorAll('#fin [data-cnt]'),el);el.dataset.v=FMC[key0]||0;countTo(el,v);FMC[key0]=v;});}
 
 /* ---------- карточка на главном ---------- */
