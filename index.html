@@ -15,7 +15,7 @@
 <link rel="apple-touch-icon" href="icon.png">
 <link id="sp-img" rel="apple-touch-startup-image" media="screen and (device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="splash-dark.png">
 
-<script>window.APP_VER='1795295099';(function(){var r=document.documentElement;try{if(Date.now()-(+sessionStorage.getItem('kc-unl')||0)>300000)r.classList.add('lk-on');}catch(e){r.classList.add('lk-on');}})();(function(){var r=document.documentElement;r.setAttribute('data-calm','');try{var L=JSON.parse(localStorage.getItem('kc-look')||'null');if(L)['font','bg','pat','date','hov','fly','xhov','open','ico'].forEach(function(k){if(typeof L[k]==='string'&&/^[a-z0-9]{1,12}$/.test(L[k]))r.setAttribute('data-'+k,L[k]);});}catch(e){}})()</script>
+<script>window.APP_VER='1795311055';(function(){var r=document.documentElement;try{if(Date.now()-(+sessionStorage.getItem('kc-unl')||0)>300000)r.classList.add('lk-on');}catch(e){r.classList.add('lk-on');}})();(function(){var r=document.documentElement;r.setAttribute('data-calm','');try{var L=JSON.parse(localStorage.getItem('kc-look')||'null');if(L)['font','bg','pat','date','hov','fly','xhov','open','ico'].forEach(function(k){if(typeof L[k]==='string'&&/^[a-z0-9]{1,12}$/.test(L[k]))r.setAttribute('data-'+k,L[k]);});}catch(e){}})()</script>
 <script>(function(){var r=document.documentElement,sa=navigator.standalone===true||(window.matchMedia&&matchMedia('(display-mode: standalone),(display-mode: fullscreen),(display-mode: minimal-ui)').matches)||/[#&]k=/.test(location.hash)||/[?&]splash/.test(location.search);if(!sa)return;var pt=function(dt){var h=dt.getHours();return (h>=5&&h<17)?'light':'dark';},th=pt(new Date());try{var man=localStorage.getItem('kc-theme'),at=+localStorage.getItem('kc-theme-at')||0;if((man==='light'||man==='dark')&&at&&pt(new Date(at))===th)th=man;}catch(e){}if(!r.getAttribute('data-theme'))r.setAttribute('data-theme',th);r.classList.add('sp-on');var li=document.getElementById('sp-img');if(li)li.setAttribute('href','splash-'+th+'.png');})()</script>
 <style>:root.lk-on body>*:not(#lock):not(#splash):not(.scene):not(script):not(svg){visibility:hidden!important}:root.sp-on .shell,:root.sp-on .scene,:root.sp-on .bottomrail{visibility:hidden!important}:root.sp-on{background:#090b12}:root.sp-on[data-theme="light"]{background:#eef0f5}</style>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Onest:wght@400;500;600;700&family=Nunito:wght@400;500;600;700;800&display=swap">
@@ -3050,6 +3050,11 @@ var LK_DEL='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5h10a2 2 0 0
     +'<button type="button" class="lk-cancel" id="lk-cancel">Отмена</button></div>'
     +'<div class="lk-offer" id="lk-offer"><div><b>Входить по '+lkFidName()+'?</b><span>Код останется запасным вариантом</span></div><button type="button" class="btn primary" data-o="on">Включить</button><button type="button" class="btn" data-o="no">Не надо</button></div>';
   document.body.appendChild(el);
+  /* тик в палец при неверном коде: на iPhone вибрация доступна только от настоящего касания переключателя, поэтому
+     на цифрах лежит скрытый переключатель, и он включается лишь для касания, которое завершает НЕВЕРНЫЙ код */
+  if(typeof HAP_IOS!=='undefined'&&HAP_IOS){$$('.lk-k',el).forEach(function(b){if(/^[0-9]$/.test(b.dataset.k)){hapAttach(b);var i=b.querySelector('[data-hpt] input');if(i)i.disabled=true;}});
+    el.addEventListener('touchstart',function(e){var b=e.target.closest&&e.target.closest('.lk-k');if(!b)return;var i=b.querySelector('[data-hpt] input');if(!i)return;var bad=false;
+      if(lkMode&&!lkBusy&&lkBuf.length===3){var ex=lkMode==='change'?(lkStep===0?lkExpected():lkStep===2?lkNew:null):lkExpected();bad=!!ex&&lkHash(lkBuf+b.dataset.k)!==ex;}i.disabled=!bad;},{passive:true,capture:true});}
   el.addEventListener('pointerdown',function(e){var b=e.target.closest('.lk-k');if(!b)return;b.classList.add('pr');setTimeout(function(){b.classList.remove('pr')},160);});
   el.addEventListener('click',function(e){e.stopPropagation();var b=e.target.closest('.lk-k');if(b){lkKey(b.dataset.k);return;}
     if(e.target.closest('#lk-cancel')){lkHide();return;}
@@ -3073,7 +3078,7 @@ function lkShow(mode){lkMode=mode;lkBuf='';lkStep=0;lkNew='';lkBusy=false;var el
 function lkWhenSplashGone(fn){(function w(n){if(root.classList.contains('sp-on')&&n<40)setTimeout(function(){w(n+1)},150);else setTimeout(fn,250);})(0);}
 function lkHide(){var el=$('#lock');el.classList.add('out');lkMode='';setTimeout(function(){el.classList.remove('on','out','ok','chg');},450);root.classList.remove('lk-on');}
 function lkUnlock(){lkSs(Date.now());lkHidAt=0;var el=$('#lock');el.classList.add('ok');setTimeout(function(){lkHide();lkOfferMaybe();},260);}
-function lkErr(t){var d=$('#lk-dots');d.classList.remove('err');void d.offsetWidth;d.classList.add('err');lkTitle(t,true);try{navigator.vibrate&&navigator.vibrate(120)}catch(e){}
+function lkErr(t){var d=$('#lk-dots');d.classList.remove('err');void d.offsetWidth;d.classList.add('err');lkTitle(t,true);try{navigator.vibrate&&navigator.vibrate([70,50,70])}catch(e){}
   setTimeout(function(){lkBuf='';lkDots();d.classList.remove('err');},420);}
 function lkKey(k){if(lkBusy)return;if(k==='f'){lkFidCheck(false);return;}
   if(k==='d'){lkBuf=lkBuf.slice(0,-1);lkDots();return;}
