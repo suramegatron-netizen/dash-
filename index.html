@@ -15,7 +15,7 @@
 <link rel="apple-touch-icon" href="icon.png">
 <link id="sp-img" rel="apple-touch-startup-image" media="screen and (device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="splash-dark.png">
 
-<script>window.APP_VER='1795386149';(function(){var r=document.documentElement;try{if(Date.now()-(+sessionStorage.getItem('kc-unl')||0)>300000)r.classList.add('lk-on');}catch(e){r.classList.add('lk-on');}})();(function(){var r=document.documentElement;r.setAttribute('data-calm','');try{var L=JSON.parse(localStorage.getItem('kc-look')||'null');if(L)['font','bg','pat','date','hov','fly','xhov','open','ico'].forEach(function(k){if(typeof L[k]==='string'&&/^[a-z0-9]{1,12}$/.test(L[k]))r.setAttribute('data-'+k,L[k]);});}catch(e){}})()</script>
+<script>window.APP_VER='1795388597';(function(){var r=document.documentElement;try{if(Date.now()-(+sessionStorage.getItem('kc-unl')||0)>300000)r.classList.add('lk-on');}catch(e){r.classList.add('lk-on');}})();(function(){var r=document.documentElement;r.setAttribute('data-calm','');try{var L=JSON.parse(localStorage.getItem('kc-look')||'null');if(L)['font','bg','pat','date','hov','fly','xhov','open','ico'].forEach(function(k){if(typeof L[k]==='string'&&/^[a-z0-9]{1,12}$/.test(L[k]))r.setAttribute('data-'+k,L[k]);});}catch(e){}})()</script>
 <script>(function(){var r=document.documentElement,sa=navigator.standalone===true||(window.matchMedia&&matchMedia('(display-mode: standalone),(display-mode: fullscreen),(display-mode: minimal-ui)').matches)||/[#&]k=/.test(location.hash)||/[?&]splash/.test(location.search);if(!sa)return;var pt=function(dt){var h=dt.getHours();return (h>=5&&h<17)?'light':'dark';},th=pt(new Date());try{var man=localStorage.getItem('kc-theme'),at=+localStorage.getItem('kc-theme-at')||0;if((man==='light'||man==='dark')&&at&&pt(new Date(at))===th)th=man;}catch(e){}if(!r.getAttribute('data-theme'))r.setAttribute('data-theme',th);r.classList.add('sp-on');var li=document.getElementById('sp-img');if(li)li.setAttribute('href','splash-'+th+'.png');})()</script>
 <style>:root.lk-on body>*:not(#lock):not(#splash):not(.scene):not(script):not(svg){visibility:hidden!important}:root.sp-on .shell,:root.sp-on .scene,:root.sp-on .bottomrail{visibility:hidden!important}:root.sp-on{background:#090b12}:root.sp-on[data-theme="light"]{background:#eef0f5}</style>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Onest:wght@400;500;600;700&family=Nunito:wght@400;500;600;700;800&display=swap">
@@ -986,6 +986,28 @@ html,body{touch-action:manipulation;-webkit-text-size-adjust:100%;text-size-adju
 .f2sum .numeral-s{font-size:28px;font-variant-numeric:tabular-nums}.f2sum .neg{color:var(--crit)}
 [data-r^="a:"] .f2bar i{background:var(--crit);opacity:.7}
 @media (max-width:560px){.f2sum{grid-template-columns:1fr}.f2ah,.f2at{padding-left:10px;padding-right:10px}}
+
+/* v124 счета + баланс */
+.f2ah:first-child{margin-top:4px}
+.f2at>span:first-child{font-weight:500}
+.f2avl{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-top:18px;padding:16px 12px 4px;border-top:1px solid var(--line)}
+.f2avl>div{display:flex;flex-direction:column;gap:4px}.f2avl>div>span:first-child{font-weight:600}.f2avl .small{color:var(--ink-muted)}
+.f2avl .numeral-s{font-size:28px;white-space:nowrap;font-variant-numeric:tabular-nums}
+.f2avl .numeral-s::after{content:' ₽'}
+.f2bal{display:grid;grid-template-columns:1fr 1fr;gap:32px;padding:0 12px 4px}
+.f2bc{display:flex;flex-direction:column}
+.f2bh{font-size:12.5px;font-weight:600;letter-spacing:.02em;color:var(--ink-muted);padding-bottom:8px;border-bottom:1px solid var(--line)}
+.f2bl{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:12px 0}
+.f2bl>div{display:flex;flex-direction:column;gap:2px;min-width:0}.f2bl>div>span:first-child{font-weight:600}.f2bl .small{color:var(--ink-muted)}
+.f2bl b{font-family:var(--font-display);font-weight:700;font-size:16px;white-space:nowrap;font-variant-numeric:tabular-nums}
+.f2bl.neg b{color:var(--crit)}
+.f2bl.ind{padding-left:14px}
+.f2bs{font-size:12.5px;color:var(--ink-muted);padding-top:6px}
+.f2bsp{flex:1}
+.f2bl.tot{margin-top:auto;border-top:1px solid var(--line);padding-top:14px}
+.f2bl.tot b{font-size:20px}
+@media (max-width:760px){.f2bal{grid-template-columns:1fr;gap:20px}.f2bl.tot{margin-top:0}}
+@media (max-width:560px){.f2bal{padding:0 10px 4px}.f2avl{padding-left:10px;padding-right:10px}}
 
 /* ================= v112: внешний вид ================= */
 /* шрифты */
@@ -3022,23 +3044,50 @@ function f2GoalsH(m){var h='',first=null;
   if(!m.goals.length)h+='<div class="empty">Целей пока нет.</div>';
   var closed=f2Goals(true).filter(function(g){return g.done});if(closed.length)h+='<details class="fclosed"><summary class="small">Закрытые цели · '+closed.length+'</summary>'+closed.map(function(g){return '<div class="f2op"><span></span><span>'+esc(g.title)+'</span><b>'+rub(f2Saved(g)||g.sum||0)+'</b><button class="x" data-x="greopen" data-gid="'+g.id+'" title="Вернуть">↺</button></div>'}).join('')+'</details>';
   return h;}
-function f2AccH(m){var c=m.cap,h='<div class="f2cap"><div><span class="small">Собственный капитал</span><b class="numeral-s" data-cnt="'+Math.round(c.own)+'">0</b><span class="small">свои деньги на счетах и наличными</span></div><div><span class="small">Заёмный капитал</span><b class="numeral-s" data-cnt="'+Math.round(c.avail)+'">0</b><span class="small">доступно по кредиткам из '+rub(c.lim)+(c.debt?' · долг '+rub(c.debt):'')+'</span></div></div>';
-  var LT={owe:[],lent:[]};fLoans().forEach(function(L){var I=f2LS(L);if(I.left>0)LT[L.loan==='owe'?'owe':'lent'].push(esc(L.who)+' '+rubN(I.left));});var lt=f2LoanTot();
-  h+='<div class="f2cap"><div><span class="small">Кредиторская задолженность</span><b class="numeral-s'+(lt.owe?' neg':'')+'">'+rubN(lt.owe)+'</b><span class="small">'+(LT.owe.length?'я должен: '+LT.owe.join(', '):'никому не должен')+'</span></div><div><span class="small">Дебиторская задолженность</span><b class="numeral-s">'+rubN(lt.lent)+'</b><span class="small">'+(LT.lent.length?'мне должны: '+LT.lent.join(', '):'никто не должен')+'</span></div></div>';
-  var c2=function(a,b){return '<span class="f2s2"><span>'+a+'</span><span>'+b+'</span></span>'},OW=0,DB=0,AV=0,CF=0,own=[],crd=[],tail=function(a){return (a.closed?'закрыта':'')+(a.id===mainAcc()?(a.closed?' · ':'')+'основной':'')};
-  fAccs(true).forEach(function(a){var b=accBal(a),cr=a.type==='credit',debt=Math.max(0,-b),lim=+a.limit||0,free=Math.max(0,lim-debt)+Math.max(0,b);
+function f2IsLoan(a){return a.type==='credit'&&a.sub==='loan'}
+function f2AccH(m){var h='',c2=function(a,b){return '<span class="f2s2"><span>'+a+'</span><span>'+b+'</span></span>'},OW=0,DB=0,CF=0,own=[],bor=[],tail=function(a){return (a.closed?'закрыт':'')+(a.id===mainAcc()?(a.closed?' · ':'')+'основной':'')};
+  fAccs(true).forEach(function(a){var b=accBal(a),cr=a.type==='credit',ln=f2IsLoan(a),debt=Math.max(0,-b),lim=ln?0:(+a.limit||0),free=Math.max(0,lim-debt)+Math.max(0,b);
     var acts=f2B('aedit','Сверить и править','pri'),note=a.note?'<div class="small f2n">'+esc(a.note)+'</div>':'';
-    if(!cr){if(!a.closed){OW+=b;AV+=b;}own.push(f2R('a:'+a.id,a.title,b,{tag:tail(a),body:f2Line('Остаток',rub(b))+note,acts:acts}));return;}
-    if(!a.closed){DB+=debt;AV+=free;CF+=free;OW+=Math.max(0,b);}
-    crd.push(f2R('a:'+a.id,a.title,0,{tag:'лимит '+rubN(lim)+(tail(a)?' · '+tail(a):''),bar:lim&&debt?debt/lim*100:null,
-      sums:c2('<b class="'+(debt?'neg':'')+'">'+rubN(debt)+' ₽</b>',rubN(free)+' ₽'),
-      body:f2Line('Кредитный лимит',rub(lim))+f2Line('Задолженность',rub(debt))+f2Line('Доступный лимит',rub(Math.max(0,lim-debt)))+(b>0?f2Line('Собственные средства на карте',rub(b)):'')+note,acts:acts}));});
-  h+='<div class="f2ah"><span>Собственные средства</span><span>Остаток</span></div>'+own.join('')+'<div class="f2at"><span>Итого собственных средств</span><span class="f2s">'+rubN(OW)+' ₽</span></div>';
-  h+='<div class="f2ah f2ah2"><span>Кредитные карты</span>'+c2('Задолженность','Доступно')+'</div>'+crd.join('')+'<div class="f2at"><span>Итого по картам</span>'+c2('<b class="'+(DB?'neg':'')+'">'+rubN(DB)+' ₽</b>',rubN(CF)+' ₽')+'</div>';
-  var N=f2Net(),parts='собственные средства '+rubN(OW)+' − задолженность по картам '+rubN(DB)+(lt.owe?' − кредиторская '+rubN(lt.owe):'')+(lt.lent?' + дебиторская '+rubN(lt.lent):'');
-  h+='<div class="f2sum"><div><span class="small">Доступно к расходованию</span><b class="numeral-s">'+rubN(AV)+' ₽</b><span class="small">собственные средства '+rubN(OW)+' + доступный лимит '+rubN(AV-OW)+'</span></div>'
-    +'<div><span class="small">Чистый капитал</span><b class="numeral-s'+(N<0?' neg':'')+'">'+rubN(N)+' ₽</b><span class="small">'+parts+'</span></div></div>';
+    if(!cr){if(!a.closed)OW+=b;own.push(f2R('a:'+a.id,a.title,b,{tag:tail(a),body:f2Line('Остаток',rub(b))+note,acts:acts}));return;}
+    if(!a.closed){DB+=debt;CF+=free;OW+=Math.max(0,b);}
+    var tg=(ln?'кредит или заём':'лимит '+rubN(lim))+(tail(a)?' · '+tail(a):'');
+    bor.push(f2R('a:'+a.id,a.title,0,{tag:tg,bar:!ln&&lim&&debt?debt/lim*100:null,
+      sums:c2('<b class="'+(debt?'neg':'')+'">'+rubN(debt)+' ₽</b>',ln&&!(b>0)?'<i>—</i>':rubN(free)+' ₽'),
+      body:(ln?f2Line('Задолженность',rub(debt)):f2Line('Кредитный лимит',rub(lim))+f2Line('Задолженность',rub(debt))+f2Line('Доступный лимит',rub(Math.max(0,lim-debt))))+(b>0?f2Line('Собственные средства сверх долга',rub(b)):'')+note,acts:acts}));});
+  h+='<div class="f2ah"><span>Собственные средства</span><span>Остаток</span></div>'+(own.join('')||'<div class="empty">Пока нет</div>')+'<div class="f2at"><span>Итого</span><span class="f2s">'+rubN(OW)+' ₽</span></div>';
+  h+='<div class="f2ah f2ah2"><span>Заёмные средства</span>'+c2('Задолженность','Доступно')+'</div>'+(bor.join('')||'<div class="empty">Пока нет</div>')+'<div class="f2at"><span>Итого</span>'+c2('<b class="'+(DB?'neg':'')+'">'+rubN(DB)+' ₽</b>',rubN(CF)+' ₽')+'</div>';
+  h+='<div class="f2avl"><div><span>Доступно к расходованию</span><span class="small">собственные средства '+rubN(OW)+' + доступный лимит '+rubN(CF)+'</span></div><b class="numeral-s" data-cnt="'+Math.round(OW+CF)+'">0</b></div>';
   return h;}
+function f2BalH(){var c=fCap(),lt=f2LoanTot(),N=f2Net(),LT={owe:[],lent:[]};fLoans().forEach(function(L){var I=f2LS(L);if(I.left>0)LT[L.loan==='owe'?'owe':'lent'].push(esc(L.who)+' '+rubN(I.left));});
+  var row=function(t,v,sub,cls){return '<div class="f2bl'+(cls?' '+cls:'')+'"><div><span>'+t+'</span>'+(sub?'<span class="small">'+sub+'</span>':'')+'</div><b>'+rubN(v)+' ₽</b></div>'};
+  var A=c.own+lt.lent,P=N+c.debt+lt.owe;
+  return '<div class="f2bal"><div class="f2bc"><div class="f2bh">Актив</div>'
+    +row('Денежные средства',c.own,'остатки на счетах и наличные')
+    +row('Дебиторская задолженность',lt.lent,LT.lent.length?'мне должны: '+LT.lent.join(', '):'никто не должен')
+    +'<div class="f2bsp"></div>'+row('Итого актив',A,'','tot')+'</div>'
+    +'<div class="f2bc"><div class="f2bh">Пассив</div>'
+    +row('Капитал и резервы',N,'собственные средства минус обязательства',N<0?'neg':'')
+    +'<div class="f2bs">Обязательства</div>'
+    +row('Заёмные средства',c.debt,'кредитные карты, кредиты и займы','ind')
+    +row('Кредиторская задолженность',lt.owe,LT.owe.length?'я должен: '+LT.owe.join(', '):'никому не должен','ind')
+    +row('Итого пассив',P,'','tot')+'</div></div>';}
+
+/* ---------- форма счёта: собственные / заёмные ---------- */
+function accForm(a){var isNew=!a;a=a||{type:'own'};var b=isNew?0:accBal(a),g=a.type==='credit'?'bor':'own',sub=f2IsLoan(a)?'loan':'card';
+  fForm({title:isNew?'Новый счёт':'Сверить: '+a.title,text:isNew?'Выбери, свои это деньги или заёмные. Счёт сам встанет в нужную группу.':'Впиши, что сейчас видно в банке. С этой минуты дашборд считает от этих цифр.',fields:[
+    {k:'g',type:'select',value:g,opts:[['own','Собственные средства: дебетовая карта, вклад, наличные'],['bor','Заёмные средства: кредитная карта, кредит, заём']]},
+    {k:'sub',type:'select',value:sub,opts:[['card','Кредитная карта'],['loan','Кредит или заём']],show:'g=bor'},
+    {k:'title',label:'Название',value:a.title||''},
+    {k:'bal',type:'number',label:'Остаток сейчас, ₽',unit:'₽',value:isNew?'':Math.round(Math.max(0,b)),show:'g=own'},
+    {k:'limit',type:'number',label:'Кредитный лимит, ₽',unit:'₽ лимит',value:a.limit||'',show:'g=bor&sub=card'},
+    {k:'debt',type:'number',label:'Задолженность сейчас, ₽',unit:'₽ долг',value:isNew?'':Math.max(0,Math.round(-b)),show:'g=bor'},
+    {k:'main',type:'check',label:'Основной: сюда приходят доходы и отсюда траты',value:!isNew&&a.id===mainAcc()},
+    {k:'closed',type:'check',label:'Закрыт (в архив)',value:!!a.closed}],ok:isNew?'Добавить':'Сохранить',del:isNew?null:'Удалить',
+  onDel:function(){ask({title:'Удалить «'+a.title+'»?',text:'Операции по нему останутся в истории.',ok:'Удалить'}).then(function(y){if(y)fSave('acc',Object.assign({},a,{deleted:true}))})},
+  check:function(r){if(!r.title)return 'Напиши название';},
+  save:function(r){var cr=r.g==='bor',ln=cr&&r.sub==='loan';var n=Object.assign({},a,{title:r.title,type:cr?'credit':'own',sub:ln?'loan':'',limit:cr&&!ln?+r.limit||0:0,debt:cr?+r.debt||0:0,bal:cr?0:+r.bal||0,closed:!!r.closed,asOf:Date.now(),updated:Date.now()});
+    if(isNew){n.id=fid('a');n.order=fAccs(true).length+1;n.created=Date.now();}fSave('acc',n);if(r.main)fSetSave({mainAcc:n.id});toast('Сохранено');}});}
+function accOpts(){return fAccs().map(function(a){return [a.id,(a.type==='credit'?(f2IsLoan(a)?'Кредит: ':'Кредитка: '):'Счёт: ')+a.title]})}
 
 /* ---------- экран ---------- */
 function finRender(){if(!finOn)return;var box=$('#fin-body');if(!box)return;var sy=$('#fin').scrollTop,ls=[].map.call(document.querySelectorAll('#fin .f2list'),function(e){return e.scrollTop});
@@ -3053,10 +3102,11 @@ function finRender(){if(!finOn)return;var box=$('#fin-body');if(!box)return;var 
     +'<div class="glass fcard card3d kpi fk" style="--i:1"><div class="top"><span class="label">Итог плана</span></div><div class="val"><span class="numeral-s '+(m.res<0?'neg':m.surplus>0?'pos':'')+'">'+(m.res>0?'+':'')+rubN(m.res)+'</span><span class="small u">₽</span></div><span class="small d'+(m.res<0?' crit':'')+'">'+(m.normal?(m.surplus>0?'сверху остаётся, можно направить в цель':'план сходится в ноль'):(short>0?'не хватает '+rub(short)+', это '+f2LesT(f2Les(short)):'сходится только в режиме минимальных трат'))+'</span></div>'
     +'<div class="glass fcard card3d kpi fk" style="--i:2"><div class="top"><span class="label">Капитал за период</span></div><div class="val"><span class="numeral-s '+(m.capD<0?'neg':'pos')+'">'+(m.capD>0?'+':'')+rubN(m.capD)+'</span><span class="small u">₽</span></div><span class="small d">'+(m.fut?'период начнётся '+ddmm(P.a):'получено '+rub(m.dIn)+' − оплачено '+rub(m.dOut))+'</span></div>'
     +'<div class="glass fcard card3d kpi fk" style="--i:3"><div class="top"><span class="label">'+(m.isCur?'На себя сегодня':'На себя в день')+'</span></div><div class="val"><span class="numeral-s" data-cnt="'+Math.max(0,Math.round(m.isCur?m.today:m.perDay))+'">0</span><span class="small u">₽</span></div><span class="small d'+(m.today<0?' crit':'')+'">'+(m.today<0?'перерасход '+rub(-m.today)+' · ':'')+(m.isCur?rub(m.perDay)+' в день до '+ddmm(P.b):'по плану периода')+(m.normal?'':' · минимум')+'</span></div></section>'
-    +'<section class="glass fcard card3d span12 f2dsec" style="--i:4"><div class="fhd"><div><span class="label">Свои деньги минус долги</span><h3>Капитал</h3></div><div class="fhr">'+f2Seg()+'</div></div>'+f2ChDay(m)+'</section>'
+    +'<section class="glass fcard card3d span12 f2dsec" style="--i:4"><div class="fhd"><div><span class="label">Собственные средства минус обязательства</span><h3>Капитал и резервы</h3></div><div class="fhr">'+f2Seg()+'</div></div>'+f2ChDay(m)+'</section>'
     +'<section class="glass fcard card3d span6" style="--i:5"><div class="fhd"><div><span class="label">По очереди</span><h3>Цели</h3></div><div class="fhr"><button class="btn sm" data-x="gnew">+ Цель</button></div></div>'+f2GoalsH(m)+'</section>'
-    +'<section class="glass fcard card3d span6" style="--i:6"><div class="fhd"><div><span class="label">Счета и карты</span><h3>Капитал и счета</h3></div><div class="fhr"><button class="btn sm" data-fx="tr">Перевод</button><button class="btn sm" data-fx="acc">+ Счёт</button></div></div>'+f2AccH(m)+'</section>'
-    +'<section class="glass fcard card3d span12" style="--i:7"><div class="fhd"><div><span class="label">По периодам</span><h3>Доходы</h3></div></div>'+f2ChInc(f2Plan(0))+'</section>';
+    +'<section class="glass fcard card3d span6" style="--i:6"><div class="fhd"><div><span class="label">Собственные и заёмные средства</span><h3>Счета</h3></div><div class="fhr"><button class="btn sm" data-fx="tr">Перевод</button><button class="btn sm" data-fx="acc">+ Счёт</button></div></div>'+f2AccH(m)+'</section>'
+    +'<section class="glass fcard card3d span12" style="--i:7"><div class="fhd"><div><span class="label">На сегодня</span><h3>Баланс</h3></div></div>'+f2BalH()+'</section>'
+    +'<section class="glass fcard card3d span12" style="--i:8"><div class="fhd"><div><span class="label">По периодам</span><h3>Доходы</h3></div></div>'+f2ChInc(f2Plan(0))+'</section>';
   box.innerHTML=html;$('#fin').scrollTop=sy;[].forEach.call(document.querySelectorAll('#fin .f2list'),function(e,i){if(ls[i])e.scrollTop=ls[i];});
   $$('#fin [data-cnt]').forEach(function(el){var v=+el.dataset.cnt,key0='fc'+[].indexOf.call(document.querySelectorAll('#fin [data-cnt]'),el);el.dataset.v=FMC[key0]||0;countTo(el,v);FMC[key0]=v;});}
 
