@@ -15,7 +15,7 @@
 <link rel="apple-touch-icon" href="icon.png">
 <link id="sp-img" rel="apple-touch-startup-image" media="screen and (device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="splash-dark.png">
 
-<script>window.APP_VER='1795383209';(function(){var r=document.documentElement;try{if(Date.now()-(+sessionStorage.getItem('kc-unl')||0)>300000)r.classList.add('lk-on');}catch(e){r.classList.add('lk-on');}})();(function(){var r=document.documentElement;r.setAttribute('data-calm','');try{var L=JSON.parse(localStorage.getItem('kc-look')||'null');if(L)['font','bg','pat','date','hov','fly','xhov','open','ico'].forEach(function(k){if(typeof L[k]==='string'&&/^[a-z0-9]{1,12}$/.test(L[k]))r.setAttribute('data-'+k,L[k]);});}catch(e){}})()</script>
+<script>window.APP_VER='1795385242';(function(){var r=document.documentElement;try{if(Date.now()-(+sessionStorage.getItem('kc-unl')||0)>300000)r.classList.add('lk-on');}catch(e){r.classList.add('lk-on');}})();(function(){var r=document.documentElement;r.setAttribute('data-calm','');try{var L=JSON.parse(localStorage.getItem('kc-look')||'null');if(L)['font','bg','pat','date','hov','fly','xhov','open','ico'].forEach(function(k){if(typeof L[k]==='string'&&/^[a-z0-9]{1,12}$/.test(L[k]))r.setAttribute('data-'+k,L[k]);});}catch(e){}})()</script>
 <script>(function(){var r=document.documentElement,sa=navigator.standalone===true||(window.matchMedia&&matchMedia('(display-mode: standalone),(display-mode: fullscreen),(display-mode: minimal-ui)').matches)||/[#&]k=/.test(location.hash)||/[?&]splash/.test(location.search);if(!sa)return;var pt=function(dt){var h=dt.getHours();return (h>=5&&h<17)?'light':'dark';},th=pt(new Date());try{var man=localStorage.getItem('kc-theme'),at=+localStorage.getItem('kc-theme-at')||0;if((man==='light'||man==='dark')&&at&&pt(new Date(at))===th)th=man;}catch(e){}if(!r.getAttribute('data-theme'))r.setAttribute('data-theme',th);r.classList.add('sp-on');var li=document.getElementById('sp-img');if(li)li.setAttribute('href','splash-'+th+'.png');})()</script>
 <style>:root.lk-on body>*:not(#lock):not(#splash):not(.scene):not(script):not(svg){visibility:hidden!important}:root.sp-on .shell,:root.sp-on .scene,:root.sp-on .bottomrail{visibility:hidden!important}:root.sp-on{background:#090b12}:root.sp-on[data-theme="light"]{background:#eef0f5}</style>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Onest:wght@400;500;600;700&family=Nunito:wght@400;500;600;700;800&display=swap">
@@ -963,6 +963,17 @@ html,body{touch-action:manipulation;-webkit-text-size-adjust:100%;text-size-adju
 .f2col .f2add{margin-top:0;border-top:1px solid var(--line);padding-top:14px}
 /* v119.1: одна черта — если у последней строки уже есть полоска прогресса, своя черта не нужна */
 .f2list:has(>.f2r:last-child>.f2bar)+.f2add{border-top:0;padding-top:12px}
+
+/* v122 счета: две колонки */
+.f2s2{display:flex;gap:0;flex-shrink:0;font-variant-numeric:tabular-nums}
+.f2s2>span{width:104px;text-align:right;white-space:nowrap}
+.f2l .f2s2>span,.f2at .f2s2>span{font-family:var(--font-display);font-weight:700;font-size:16px;letter-spacing:-.01em}
+.f2s2 b{font-weight:inherit}.f2s2 b.neg{color:var(--crit)}.f2s2 i{font-style:normal;color:var(--ink-faint)}
+.f2ah,.f2at{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:8px 12px}
+.f2ah{margin-top:14px;font-size:12px;color:var(--ink-muted)}
+.f2ah .f2s2>span{font-weight:500}
+.f2at{margin-top:6px;border-top:1px solid var(--line);padding-top:12px;font-weight:600}
+@media (max-width:560px){.f2s2>span{width:84px}[data-r^="a:"] .f2t>span{white-space:normal;line-height:1.25}.f2ah,.f2at{padding-left:10px;padding-right:10px}}
 
 /* ================= v112: внешний вид ================= */
 /* шрифты */
@@ -2938,7 +2949,7 @@ function f2ChInc(m){var L=f2Pers(),W=(window.innerWidth<600?340:1000),H=220,pl=1
 
 /* ---------- строки ---------- */
 function f2R(k,title,sum,o){o=o||{};var op=!!f2open[k];
-  return '<div class="f2r'+(op?' op':'')+(o.done?' done':'')+(o.late?' late':'')+(o.off?' off':'')+'" data-r="'+esc(k)+'"><div class="f2l"><span class="f2t">'+(o.done?F2CHK:'')+'<span>'+esc(title)+'</span>'+(o.tag?'<em>'+o.tag+'</em>':'')+'</span><span class="f2s">'+(o.pre||'')+rubN(sum)+' ₽</span></div>'
+  return '<div class="f2r'+(op?' op':'')+(o.done?' done':'')+(o.late?' late':'')+(o.off?' off':'')+'" data-r="'+esc(k)+'"><div class="f2l"><span class="f2t">'+(o.done?F2CHK:'')+'<span>'+esc(title)+'</span>'+(o.tag?'<em>'+o.tag+'</em>':'')+'</span>'+(o.sums!=null?o.sums:'<span class="f2s">'+(o.pre||'')+rubN(sum)+' ₽</span>')+'</div>'
     +(o.bar!=null?'<div class="f2bar"><i style="width:'+Math.max(0,Math.min(100,o.bar)).toFixed(1)+'%"></i></div>':'')
     +(op?'<div class="f2x">'+(o.body||'')+(o.acts?'<div class="acts">'+o.acts+'</div>':'')+'</div>':'')+'</div>';}
 function f2B(x,t,cls){return '<button data-x="'+x+'"'+(cls?' class="'+cls+'"':'')+'>'+t+'</button>'}
@@ -3002,10 +3013,15 @@ function f2GoalsH(m){var h='',first=null;
 function f2AccH(m){var c=m.cap,h='<div class="f2cap"><div><span class="small">Собственный капитал</span><b class="numeral-s" data-cnt="'+Math.round(c.own)+'">0</b><span class="small">свои деньги на счетах и наличными</span></div><div><span class="small">Заёмный капитал</span><b class="numeral-s" data-cnt="'+Math.round(c.avail)+'">0</b><span class="small">доступно по кредиткам из '+rub(c.lim)+(c.debt?' · долг '+rub(c.debt):'')+'</span></div></div>';
   var LT={owe:[],lent:[]};fLoans().forEach(function(L){var I=f2LS(L);if(I.left>0)LT[L.loan==='owe'?'owe':'lent'].push(esc(L.who)+' '+rubN(I.left));});var lt=f2LoanTot();
   h+='<div class="f2cap"><div><span class="small">Кредиторская задолженность</span><b class="numeral-s'+(lt.owe?' neg':'')+'">'+rubN(lt.owe)+'</b><span class="small">'+(LT.owe.length?'я должен: '+LT.owe.join(', '):'никому не должен')+'</span></div><div><span class="small">Дебиторская задолженность</span><b class="numeral-s">'+rubN(lt.lent)+'</b><span class="small">'+(LT.lent.length?'мне должны: '+LT.lent.join(', '):'никто не должен')+'</span></div></div>';
-  fAccs(true).forEach(function(a){var b=accBal(a),cr=a.type==='credit',debt=Math.max(0,-b);
-    h+=f2R('a:'+a.id,a.title,cr?debt:b,{done:false,tag:(cr?(debt?'долг':'без долга'):'на счёте')+(a.closed?' · закрыта':'')+(a.id===mainAcc()?' · основная':''),
-      body:(cr?f2Line('Лимит',rub(a.limit))+f2Line('Долг',rub(debt))+f2Line('Свободно',rub(Math.max(0,(+a.limit||0)-debt))):f2Line('На счёте',rub(b)))+(a.note?'<div class="small f2n">'+esc(a.note)+'</div>':''),
+  var TH=0,TD=0,c2=function(a,b){return '<span class="f2s2"><span>'+a+'</span><span>'+b+'</span></span>'};
+  h+='<div class="f2ah"><span>Счёт</span>'+c2('Есть','Должен')+'</div>';
+  fAccs(true).forEach(function(a){var b=accBal(a),cr=a.type==='credit',debt=Math.max(0,-b),free=Math.max(0,(+a.limit||0)-debt),has=cr?free+Math.max(0,b):b;
+    if(!a.closed){TH+=has;TD+=cr?debt:0;}
+    h+=f2R('a:'+a.id,a.title,0,{done:false,tag:(cr?'лимит '+rubN(+a.limit||0):'')+(a.closed?(cr?' · ':'')+'закрыта':'')+(a.id===mainAcc()?((cr||a.closed)?' · ':'')+'основная':''),
+      sums:c2(rubN(has)+' ₽',cr?'<b class="'+(debt?'neg':'')+'">'+rubN(debt)+' ₽</b>':'<i>—</i>'),
+      body:(cr?f2Line('Лимит',rub(a.limit))+f2Line('Долг',rub(debt))+f2Line('Можно потратить',rub(free))+(b>0?f2Line('Своих сверх долга',rub(b)):''):f2Line('На счёте',rub(b)))+(a.note?'<div class="small f2n">'+esc(a.note)+'</div>':''),
       acts:f2B('aedit','Сверить и править','pri')});});
+  h+='<div class="f2at"><span>Итого</span>'+c2(rubN(TH)+' ₽',rubN(TD)+' ₽')+'</div>';
   return h;}
 
 /* ---------- экран ---------- */
