@@ -15,7 +15,7 @@
 <link rel="apple-touch-icon" href="icon.png">
 <link id="sp-img" rel="apple-touch-startup-image" media="screen and (device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="splash-dark.png">
 
-<script>window.APP_VER='1795379817';(function(){var r=document.documentElement;try{if(Date.now()-(+sessionStorage.getItem('kc-unl')||0)>300000)r.classList.add('lk-on');}catch(e){r.classList.add('lk-on');}})();(function(){var r=document.documentElement;r.setAttribute('data-calm','');try{var L=JSON.parse(localStorage.getItem('kc-look')||'null');if(L)['font','bg','pat','date','hov','fly','xhov','open','ico'].forEach(function(k){if(typeof L[k]==='string'&&/^[a-z0-9]{1,12}$/.test(L[k]))r.setAttribute('data-'+k,L[k]);});}catch(e){}})()</script>
+<script>window.APP_VER='1795380508';(function(){var r=document.documentElement;try{if(Date.now()-(+sessionStorage.getItem('kc-unl')||0)>300000)r.classList.add('lk-on');}catch(e){r.classList.add('lk-on');}})();(function(){var r=document.documentElement;r.setAttribute('data-calm','');try{var L=JSON.parse(localStorage.getItem('kc-look')||'null');if(L)['font','bg','pat','date','hov','fly','xhov','open','ico'].forEach(function(k){if(typeof L[k]==='string'&&/^[a-z0-9]{1,12}$/.test(L[k]))r.setAttribute('data-'+k,L[k]);});}catch(e){}})()</script>
 <script>(function(){var r=document.documentElement,sa=navigator.standalone===true||(window.matchMedia&&matchMedia('(display-mode: standalone),(display-mode: fullscreen),(display-mode: minimal-ui)').matches)||/[#&]k=/.test(location.hash)||/[?&]splash/.test(location.search);if(!sa)return;var pt=function(dt){var h=dt.getHours();return (h>=5&&h<17)?'light':'dark';},th=pt(new Date());try{var man=localStorage.getItem('kc-theme'),at=+localStorage.getItem('kc-theme-at')||0;if((man==='light'||man==='dark')&&at&&pt(new Date(at))===th)th=man;}catch(e){}if(!r.getAttribute('data-theme'))r.setAttribute('data-theme',th);r.classList.add('sp-on');var li=document.getElementById('sp-img');if(li)li.setAttribute('href','splash-'+th+'.png');})()</script>
 <style>:root.lk-on body>*:not(#lock):not(#splash):not(.scene):not(script):not(svg){visibility:hidden!important}:root.sp-on .shell,:root.sp-on .scene,:root.sp-on .bottomrail{visibility:hidden!important}:root.sp-on{background:#090b12}:root.sp-on[data-theme="light"]{background:#eef0f5}</style>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Onest:wght@400;500;600;700&family=Nunito:wght@400;500;600;700;800&display=swap">
@@ -2378,7 +2378,7 @@ function fForm(o){var d=$('#fdlg'),v=$('#fdlgv');var h='<div class="h2">'+esc(o.
   h+='</div><div class="dlg-b">'+(o.del?'<button class="btn del" data-b="del">'+esc(o.del)+'</button><span style="flex:1"></span>':'')+'<button class="btn" data-b="no">Отмена</button><button class="btn primary" data-b="ok">'+esc(o.ok||'Сохранить')+'</button></div>';
   d.innerHTML=h;d.classList.add('on');v.classList.add('on');
   function vals(){var r={};$$('#fdlg [data-k]').forEach(function(e){r[e.dataset.k]=e.type==='checkbox'?e.checked:e.type==='number'?(e.value===''?'':+e.value):e.value.trim();});return r;}
-  function vis(){var r=vals();$$('#fdlg [data-show]').forEach(function(e){var c=e.dataset.show.split('='),ok=c[1].split('|').indexOf(String(r[c[0]]))>=0;e.style.display=ok?'':'none';});}
+  function vis(){var r=vals();$$('#fdlg [data-show]').forEach(function(e){var ok=e.dataset.show.split('&').every(function(q){var c=q.split('=');return c[1].split('|').indexOf(String(r[c[0]]))>=0;});e.style.display=ok?'':'none';});}
   d.oninput=function(e){var w=e.target.parentNode;if(w&&(w.classList.contains('uf')||w.classList.contains('ph')))w.classList.toggle('has',!!e.target.value);vis();};d.onchange=vis;vis();
   function close(){d.classList.remove('on');v.classList.remove('on');d.onclick=null;v.onclick=null;document.removeEventListener('keydown',kd,true);}
   function kd(e){if(e.key==='Escape'){e.preventDefault();e.stopPropagation();close();}else if(e.key==='Enter'&&e.target.tagName!=='TEXTAREA'){e.preventDefault();ok();}}
@@ -2788,10 +2788,20 @@ function fLoans(){return fvals(S.fin.inc).filter(function(i){return i&&!i.delete
 function f2LoanOp(o){return o.src==='loan'||o.src==='loanback'||!!o.loan}
 function f2LS(L){var ops=fOps().filter(function(o){return o.occ==='loan@'+L.id}).sort(function(a,b){return (a.ts||0)-(b.ts||0)}),back=ops.reduce(function(s,o){return s+(+o.sum||0)},0),sum=+L.sum||0;
   return {ops:ops,back:back,left:Math.max(0,sum-back),done:back>=sum&&sum>0,last:ops[ops.length-1]||null,lastD:ops.length?ops[ops.length-1].d:''};}
+function f2DueM(L){return L.dueMode||(L.due?'date':'none')}
+function f2DueP(L){var m=f2DueM(L);if(m==='date'&&L.due)return f2Per(L.due);if(m==='per'&&L.duePer)return {mk:L.duePer,nm:mAdd(L.duePer,1),a:L.duePer+'-25',b:mAdd(L.duePer,1)+'-24'};return null;}
+function f2DueT(L,long){var m=f2DueM(L),P=f2DueP(L);if(m==='date'&&L.due)return long?dmon(L.due):'до '+ddmm(L.due);if(m==='per'&&P)return long?'в периоде '+f2PerName(P):'в периоде '+ddmm(P.a)+'–'+ddmm(P.b);return 'бессрочно';}
+function f2DueLate(L){var P=f2DueP(L),t=todayKey();if(!P)return false;return f2DueM(L)==='date'?L.due<t:P.b<t;}
+function f2PerOpts(){var P=f2Per(todayKey()),out=[];for(var i=0;i<12;i++){out.push([P.mk,'Период: '+f2PerName(P)]);P=f2Per(addK(P.b,1));}return out;}
+function f2DueFields(L,owe,cond){var c=cond?cond+'&':'',w=owe?'Вернуть':'Вернёт';L=L||{};var P0=f2DueP(L);
+  return [{k:'dm',type:'select',value:f2DueM(L),opts:[['date',w+': точная дата'],['per',w+': в течение периода'],['none',w+': бессрочно']],show:cond||undefined},
+    {k:'due',type:'date',label:owe?'Когда вернуть':'Когда вернёт',value:f2DueM(L)==='date'?(L.due||''):'',show:c+'dm=date'},
+    {k:'dp',type:'select',value:(L.dueMode==='per'&&L.duePer)||(P0&&P0.mk)||f2Per(todayKey()).mk,opts:f2PerOpts(),show:c+'dm=per'}];}
+function f2DueVal(r){return {dueMode:r.dm||'none',due:r.dm==='date'?(r.due||''):'',duePer:r.dm==='per'?(r.dp||''):''};}
 function f2LoanTot(){var r={owe:0,lent:0};fLoans().forEach(function(L){var I=f2LS(L);r[L.loan==='owe'?'owe':'lent']+=I.left;});return r;}
 function f2Net(){var c=fCap(),l=f2LoanTot();return c.net-l.owe+l.lent;}
 function f2LoansIn(P,isCur,fut){return fLoans().map(function(L){return {L:L,I:f2LS(L)}}).filter(function(x){var L=x.L,I=x.I;
-  if(!I.done){if(isCur)return true;if(fut)return !!L.due&&L.due>=P.a&&L.due<=P.b;return (L.d>=P.a&&L.d<=P.b);}
+  if(!I.done){if(isCur)return true;var DP=f2DueP(L);if(fut)return !!DP&&DP.mk===P.mk;return (L.d>=P.a&&L.d<=P.b);}
   return (I.lastD>=P.a&&I.lastD<=P.b)||(L.d>=P.a&&L.d<=P.b);});}
 
 /* ---------- доходы периода ---------- */
@@ -2940,8 +2950,8 @@ function f2IncRow(x,o){o=o||{};var I=x.I,t=todayKey(),late=!I.done&&!I.off&&x.d<
   if(I.off)acts=f2B('back','Вернуть в план','pri')+(o.del?f2B('del','Удалить','del'):'');
   else{if(!I.done)acts+=f2B('got',I.part?'Получено ещё':'Получено','pri');if(I.ops.length)acts+=f2B('ungot',I.ops.length>1?'Отменить последнее':'Отменить получение');acts+=f2B('edit','Править');if(!I.done)acts+=f2B('nogo',I.part?'Остаток не придёт':'Не придёт');if(o.del)acts+=f2B('del','Удалить','del');}
   return f2R(x.k,x.title,I.off?0:I.val,{done:I.done,late:late,off:I.off,tag:tag,bar:bar,body:body,acts:acts});}
-function f2LoanRow(x){var L=x.L,I=x.I,owe=L.loan==='owe',t=todayKey(),late=!I.done&&L.due&&L.due<t,tag=I.done?(owe?'вернул':'вернули'):I.back?'осталось '+rubN(I.left):late?'просрочено':L.due?'до '+ddmm(L.due):'';
-  var body=f2Line(owe?'Взял':'Дал',dmon(L.d)+' · '+rub(L.sum))+(L.due?f2Line(owe?'Вернуть до':'Вернёт до',dmon(L.due)):'')+(I.back?f2Line(owe?'Уже вернул':'Уже вернули',rub(I.back)):'')+(I.back&&I.left?f2Line('Осталось',rub(I.left)):'')+(L.acc?f2Line(owe?'Пришло на счёт':'Ушло со счёта',esc(accName(L.acc))):'')+(L.note?'<div class="small f2n">'+esc(L.note)+'</div>':'')+'<div class="small f2n">В итог плана не входит: '+(owe?'деньги чужие и вернутся владельцу':'деньги твои и вернутся к тебе')+', капитал от этого не меняется.</div>';
+function f2LoanRow(x){var L=x.L,I=x.I,owe=L.loan==='owe',t=todayKey(),late=!I.done&&f2DueLate(L),tag=I.done?(owe?'вернул':'вернули'):I.back?'осталось '+rubN(I.left):late?'просрочено':f2DueT(L);
+  var body=f2Line(owe?'Взял':'Дал',dmon(L.d)+' · '+rub(L.sum))+f2Line(owe?'Вернуть':'Вернёт',f2DueT(L,true))+(I.back?f2Line(owe?'Уже вернул':'Уже вернули',rub(I.back)):'')+(I.back&&I.left?f2Line('Осталось',rub(I.left)):'')+(L.acc?f2Line(owe?'Пришло на счёт':'Ушло со счёта',esc(accName(L.acc))):'')+(L.note?'<div class="small f2n">'+esc(L.note)+'</div>':'')+'<div class="small f2n">В итог плана не входит: '+(owe?'деньги чужие и вернутся владельцу':'деньги твои и вернутся к тебе')+', капитал от этого не меняется.</div>';
   var acts=(!I.done?f2B('lpay',owe?'Оплачено':'Получено','pri'):'')+(I.ops.length?f2B('lundo',I.ops.length>1?'Отменить последнее':(owe?'Отменить оплату':'Отменить получение')):'')+f2B('ledit','Править')+f2B('ldel','Удалить','del');
   return f2R('l:'+L.id,L.who||'—',+L.sum||0,{done:I.done,late:late,tag:tag,bar:I.back&&!I.done?I.back/Math.max(1,+L.sum)*100:null,body:body,acts:acts});}
 function f2LoanGrp(m,kind){var X=m.loans.filter(function(x){return (x.L.loan==='owe')===(kind==='owe')});if(!X.length)return '';
@@ -3077,18 +3087,18 @@ function incSetForm(){var st=fset();fForm({title:'Зарплата, ученик
   save:function(r){fSetSave({salary:+r.salary||0,avans:+r.avans||0,lessonPct:Math.max(1,Math.min(100,+r.lessonPct||70)),persMonth:+r.persMonth||0,persMin:+r.persMin||0,tripCost:+r.tripCost||0});toast('Сохранено');}});}
 function expForm(){fForm({title:'Расход',text:'Трата вне плана. Плановые статьи отмечай кнопкой «Оплачено» в строке.',fields:[{k:'sum',type:'number',label:'Сумма, ₽',unit:'₽',step:10},
     {k:'grp',type:'select',value:'pers',opts:[['pers','Группа: Личное'],['work','Группа: Работа'],['biz','Группа: Бизнес'],['tutor','Группа: Репетиторство'],['home','Группа: Дом'],['loan','Дал в долг']]},
-    {k:'who',label:'Кому',show:'grp=loan'},{k:'due',type:'date',label:'Когда вернёт',show:'grp=loan'},{k:'note',label:'Комментарий'},{k:'acc',type:'select',value:mainAcc(),opts:accOpts()},{k:'d',type:'date',label:'Когда',value:todayKey()}],ok:'Записать',
+    {k:'who',label:'Кому',show:'grp=loan'}].concat(f2DueFields(null,false,'grp=loan'),[{k:'note',label:'Комментарий'},{k:'acc',type:'select',value:mainAcc(),opts:accOpts()},{k:'d',type:'date',label:'Когда',value:todayKey()}]),ok:'Записать',
   check:function(r){if(!r.sum)return 'Впиши сумму';if(r.grp==='loan'&&!r.who)return 'Напиши, кому дал в долг';},
-  save:function(r){var d=r.d||todayKey();if(r.grp==='loan'){var L={id:fid('l'),loan:'lent',who:r.who,sum:+r.sum,d:d,due:r.due||'',note:r.note||'',acc:r.acc,created:Date.now()};fSave('inc',L);fOpAdd({d:d,kind:'exp',grp:'loan',src:'loan',loan:L.id,title:'Дал в долг · '+r.who,note:r.note,sum:+r.sum,acc:r.acc});toast('Дебиторская задолженность: '+r.who+' · '+rub(+r.sum));return;}
+  save:function(r){var d=r.d||todayKey();if(r.grp==='loan'){var L=Object.assign({id:fid('l'),loan:'lent',who:r.who,sum:+r.sum,d:d,note:r.note||'',acc:r.acc,created:Date.now()},f2DueVal(r));fSave('inc',L);fOpAdd({d:d,kind:'exp',grp:'loan',src:'loan',loan:L.id,title:'Дал в долг · '+r.who,note:r.note,sum:+r.sum,acc:r.acc});toast('Дебиторская задолженность: '+r.who+' · '+rub(+r.sum));return;}
     fOpAdd({d:d,kind:'exp',grp:r.grp,note:r.note,title:r.note,sum:+r.sum,acc:r.acc});toast('Записано: −'+rub(+r.sum));}});}
 function incNowForm(){var names=tutorNames();fForm({title:'Доход',text:'Деньги пришли. Если это заём, выбери «Взял в долг»: в доход он не считается.',fields:[{k:'sum',type:'number',label:'Сумма, ₽',unit:'₽',step:100},
     {k:'src',type:'select',value:'tutor',opts:[['salary','Источник: Работа'],['tutor','Источник: Репетиторство'],['biz','Источник: Бизнес'],['home','Источник: Дом'],['pers','Источник: Личное'],['loan','Взял в долг']]},
     {k:'who',type:'select',value:names[0]||'',opts:names.map(function(n){return [n,'Ученик: '+n]}).concat([['Занятие','Ученик: другой']]),show:'src=tutor'},
-    {k:'party',label:'У кого занял',show:'src=loan'},{k:'due',type:'date',label:'Когда вернуть',show:'src=loan'},
-    {k:'note',label:'Комментарий'},{k:'acc',type:'select',value:incAcc(),opts:accOpts(),show:'src=salary|biz|home|pers|loan'},{k:'d',type:'date',label:'Когда пришло',value:todayKey()}],ok:'Записать',
+    {k:'party',label:'У кого занял',show:'src=loan'}].concat(f2DueFields(null,true,'src=loan'),[
+    {k:'note',label:'Комментарий'},{k:'acc',type:'select',value:incAcc(),opts:accOpts(),show:'src=salary|biz|home|pers|loan'},{k:'d',type:'date',label:'Когда пришло',value:todayKey()}]),ok:'Записать',
   check:function(r){if(!r.sum)return 'Впиши сумму';if(r.src==='loan'&&!r.party)return 'Напиши, у кого занял';},
   save:function(r){var d=r.d||todayKey(),v=+r.sum;if(r.src==='tutor'){incomeAdd(d,v,r.who||'Занятие',r.note||'');toast('+'+rub(v)+' · ученики (видно и в «Репетиторстве»)');return;}
-    if(r.src==='loan'){var L={id:fid('l'),loan:'owe',who:r.party,sum:v,d:d,due:r.due||'',note:r.note||'',acc:r.acc,created:Date.now()};fSave('inc',L);fOpAdd({d:d,kind:'inc',src:'loan',loan:L.id,title:'Взял в долг · '+r.party,note:r.note,sum:v,acc:r.acc});toast('Кредиторская задолженность: '+r.party+' · '+rub(v));return;}
+    if(r.src==='loan'){var L=Object.assign({id:fid('l'),loan:'owe',who:r.party,sum:v,d:d,note:r.note||'',acc:r.acc,created:Date.now()},f2DueVal(r));fSave('inc',L);fOpAdd({d:d,kind:'inc',src:'loan',loan:L.id,title:'Взял в долг · '+r.party,note:r.note,sum:v,acc:r.acc});toast('Кредиторская задолженность: '+r.party+' · '+rub(v));return;}
     var op={d:d,kind:'inc',src:r.src,grp:r.src==='salary'?'work':r.src,title:r.src==='salary'?'Зарплата':(r.note||FSRC[r.src]||'Доход'),note:r.note,sum:v,acc:r.acc};
     if(r.src==='salary'){var sn=salNear();if(sn){op.occ=sn.occ;[0,1,-1].some(function(o){var x=f2Plan(o).sal.filter(function(z){return z.occ===sn.occ})[0];if(x){op.exp=x.I.exp;return true;}});}}
     fOpAdd(op);toast('Записано: +'+rub(v));}});}
@@ -3098,8 +3108,16 @@ function incForm(){fForm({title:'Ожидаемое поступление',fiel
 function f2LoanPayForm(L,I){var owe=L.loan==='owe';fForm({title:(owe?'Вернул долг: ':'Вернули долг: ')+L.who,text:(I.back?'Уже '+(owe?'вернул ':'вернули ')+rub(I.back)+' из '+rub(L.sum)+'. ':'')+'Можно частями: впиши, сколько сейчас.',
   fields:[{k:'sum',type:'number',label:'Сумма, ₽',unit:'₽',value:Math.round(I.left)},{k:'acc',type:'select',value:L.acc||mainAcc(),opts:accOpts()},{k:'d',type:'date',label:'Когда',value:todayKey()}],ok:'Отметить',
   check:function(r){if(!(+r.sum>0))return 'Впиши сумму'},save:function(r){var v=+r.sum,left=Math.max(0,I.left-v);fOpAdd({d:r.d||todayKey(),kind:owe?'pay':'inc',src:'loanback',loan:L.id,occ:'loan@'+L.id,title:(owe?'Вернул долг · ':'Вернули долг · ')+L.who,sum:v,acc:r.acc});toast((owe?'Вернул ':'Получено ')+rub(v)+(left>0?', осталось '+rub(left):', долг закрыт'));}});}
-function f2LoanEditForm(L){var owe=L.loan==='owe';fForm({title:(owe?'Кредиторская задолженность':'Дебиторская задолженность'),fields:[{k:'who',label:owe?'У кого занял':'Кому дал',value:L.who||''},{k:'sum',type:'number',label:'Сумма долга, ₽',unit:'₽',value:L.sum},{k:'due',type:'date',label:owe?'Когда вернуть':'Когда вернёт',value:L.due||''},{k:'note',label:'Комментарий',value:L.note||''}],
-  check:function(r){if(!r.who)return 'Напиши имя';if(!r.sum)return 'Впиши сумму';},save:function(r){fSave('inc',Object.assign({},L,{who:r.who,sum:+r.sum,due:r.due||'',note:r.note||'',updated:Date.now()}));toast('Сохранено');}});}
+function f2LoanEditForm(L){var owe=L.loan==='owe';fForm({title:'Править: '+(owe?'кредиторская':'дебиторская')+' задолженность',text:'Можно поправить всё. Записи по счёту пересчитаются сами.',fields:[
+    {k:'kind',type:'select',value:L.loan,opts:[['owe','Кредиторская: я занял'],['lent','Дебиторская: я дал в долг']]},
+    {k:'who',label:'Кто: у кого занял или кому дал',value:L.who||''},{k:'sum',type:'number',label:'Сумма долга, ₽',unit:'₽',value:L.sum},
+    {k:'d',type:'date',label:'Когда взял или дал',value:L.d||todayKey()},{k:'acc',type:'select',value:L.acc||mainAcc(),opts:accOpts()}].concat(f2DueFields(L,owe,null),[{k:'note',label:'Комментарий',value:L.note||''}]),
+  check:function(r){if(!r.who)return 'Напиши имя';if(!r.sum)return 'Впиши сумму';if(r.dm==='date'&&!r.due)return 'Укажи дату возврата или выбери другой вариант';},
+  save:function(r){var nOwe=r.kind==='owe',N=Object.assign({},L,{loan:r.kind,who:r.who,sum:+r.sum,d:r.d||L.d,acc:r.acc,note:r.note||'',updated:Date.now()},f2DueVal(r));fSave('inc',N);
+    var ops=fOps().filter(function(o){return o.loan===L.id||o.occ==='loan@'+L.id});
+    ops.forEach(function(o){if(o.src==='loan'){if(o.d!==N.d||+o.sum!==+N.sum||o.acc!==N.acc||nOwe!==owe||o.title.indexOf(N.who)<0){fOpDel(o.d.slice(0,7),o.ts);fOpAdd(nOwe?{d:N.d,kind:'inc',src:'loan',loan:N.id,title:'Взял в долг · '+N.who,note:N.note,sum:+N.sum,acc:N.acc}:{d:N.d,kind:'exp',grp:'loan',src:'loan',loan:N.id,title:'Дал в долг · '+N.who,note:N.note,sum:+N.sum,acc:N.acc});}}
+      else if(nOwe!==owe){fOpDel(o.d.slice(0,7),o.ts);fOpAdd(Object.assign({},o,{ts:Date.now()+Math.floor(Math.random()*997)+1,kind:nOwe?'pay':'inc',title:(nOwe?'Вернул долг · ':'Вернули долг · ')+N.who}));}});
+    toast('Сохранено');}});}
 
 /* ---------- нажатия ---------- */
 function f2Find(k,m){var p=k.split(':'),ty=p[0],id=p.slice(1).join(':');return {ty:ty,id:id};}
