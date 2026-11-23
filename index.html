@@ -15,7 +15,7 @@
 <link rel="apple-touch-icon" href="icon.png">
 <link id="sp-img" rel="apple-touch-startup-image" media="screen and (device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="splash-dark.png">
 
-<script>window.APP_VER='1795397287';(function(){var r=document.documentElement;try{if(Date.now()-(+sessionStorage.getItem('kc-unl')||0)>300000)r.classList.add('lk-on');}catch(e){r.classList.add('lk-on');}})();(function(){var r=document.documentElement;r.setAttribute('data-calm','');try{var L=JSON.parse(localStorage.getItem('kc-look')||'null');if(L)['font','bg','pat','date','hov','fly','xhov','open','ico'].forEach(function(k){if(typeof L[k]==='string'&&/^[a-z0-9]{1,12}$/.test(L[k]))r.setAttribute('data-'+k,L[k]);});}catch(e){}})()</script>
+<script>window.APP_VER='1795399674';(function(){var r=document.documentElement;try{if(Date.now()-(+sessionStorage.getItem('kc-unl')||0)>300000)r.classList.add('lk-on');}catch(e){r.classList.add('lk-on');}})();(function(){var r=document.documentElement;r.setAttribute('data-calm','');try{var L=JSON.parse(localStorage.getItem('kc-look')||'null');if(L)['font','bg','pat','date','hov','fly','xhov','open','ico'].forEach(function(k){if(typeof L[k]==='string'&&/^[a-z0-9]{1,12}$/.test(L[k]))r.setAttribute('data-'+k,L[k]);});}catch(e){}})()</script>
 <script>(function(){var r=document.documentElement,sa=navigator.standalone===true||(window.matchMedia&&matchMedia('(display-mode: standalone),(display-mode: fullscreen),(display-mode: minimal-ui)').matches)||/[#&]k=/.test(location.hash)||/[?&]splash/.test(location.search);if(!sa)return;var pt=function(dt){var h=dt.getHours();return (h>=5&&h<17)?'light':'dark';},th=pt(new Date());try{var man=localStorage.getItem('kc-theme'),at=+localStorage.getItem('kc-theme-at')||0;if((man==='light'||man==='dark')&&at&&pt(new Date(at))===th)th=man;}catch(e){}if(!r.getAttribute('data-theme'))r.setAttribute('data-theme',th);r.classList.add('sp-on');var li=document.getElementById('sp-img');if(li)li.setAttribute('href','splash-'+th+'.png');})()</script>
 <style>:root.lk-on body>*:not(#lock):not(#splash):not(.scene):not(script):not(svg){visibility:hidden!important}:root.sp-on .shell,:root.sp-on .scene,:root.sp-on .bottomrail{visibility:hidden!important}:root.sp-on{background:#090b12}:root.sp-on[data-theme="light"]{background:#eef0f5}</style>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Onest:wght@400;500;600;700&family=Nunito:wght@400;500;600;700;800&display=swap">
@@ -1053,6 +1053,14 @@ html,body{touch-action:manipulation;-webkit-text-size-adjust:100%;text-size-adju
 .f2gt{display:flex;justify-content:space-between;gap:12px;margin-top:10px;padding:14px 12px 4px;border-top:1px solid var(--line);font-size:15px;font-weight:700}
 .f2gt b{font-weight:800;font-variant-numeric:tabular-nums}
 .f2gtn{padding:0 12px 4px;text-align:right;color:var(--ink-muted)}
+
+/* v135 баланс: дата */
+.f2bnav{display:flex;align-items:center;gap:8px}
+.f2bnav .btn{width:36px;height:36px;min-width:36px;padding:0;display:inline-flex;align-items:center;justify-content:center;flex:none}
+.f2bnav .btn svg{display:block}
+.f2bnav .btn[disabled]{opacity:.35;pointer-events:none}
+.f2bdate{position:relative;display:inline-flex;align-items:center;min-height:36px;padding:0 14px;border-radius:999px;border:1px solid var(--line);font-size:14px;font-weight:600;cursor:pointer;white-space:nowrap;font-variant-numeric:tabular-nums}
+.f2bdate input{position:absolute;inset:0;opacity:0;width:100%;height:100%;cursor:pointer;font-size:16px}
 
 /* ================= v112: внешний вид ================= */
 /* шрифты */
@@ -3141,9 +3149,19 @@ function f2AccH(m){var h='',c2=function(a,b){return '<span class="f2s2"><span>'+
   h+='<div class="f2ah f2ah2"><span>Заёмные средства</span>'+c2('Задолженность','Доступно')+'</div>'+(bor.join('')||'<div class="empty">Пока нет</div>')+'<div class="f2at"><span>Итого</span>'+c2('<b class="'+(DB?'neg':'')+'">'+rubN(DB)+' ₽</b>',rubN(CF)+' ₽')+'</div>';
   h+='<div class="f2avl"><div><span>Доступно к расходованию</span><span class="small">собственные средства '+rubN(OW)+' + доступный лимит '+rubN(CF)+'</span></div><b class="numeral-s" data-cnt="'+Math.round(OW+CF)+'">0</b></div>';
   return h;}
-function f2BalH(){var c=fCap(),N=f2Net(),D={lent:[],owe:[],adv:[]},S2={lent:0,owe:0,adv:0},cards=0,loans=0,CN=[],LN=[],CA=[];
-  fLoans().forEach(function(L){var I=f2LS(L);if(!(I.left>0))return;var g=L.loan==='lent'?'lent':L.adv?'adv':'owe';S2[g]+=I.left;D[g].push([esc(L.who||'—')+(L.adv?' · предоплата':''),I.left]);});
-  fAccs().forEach(function(a){var b=accBal(a);if(a.type!=='credit'){CA.push([esc(a.title),b]);return;}if(b>0)CA.push([esc(a.title)+' · сверх долга',b]);var d=Math.max(0,-b);if(f2IsLoan(a)){loans+=d;if(d)LN.push([esc(a.title),d]);}else{cards+=d;CN.push([esc(a.title),d]);}});
+var f2bd='';
+function f2BMin(){var s=fset().start||todayKey();return s>todayKey()?todayKey():s}
+function accBalAt(a,D){var v=accBal(a),t=todayKey();if(!D||D>=t)return v;var t0=a.asOf||0,main=mainAcc();
+  fOps().forEach(function(o){if(o.base||o.kind==='goal'||!(o.d>D))return;if(o.kind==='tr'){if(o.from===a.id)v+=+o.sum||0;if(o.to===a.id)v-=+o.sum||0;return;}if((o.acc||main)!==a.id)return;v-=o.kind==='inc'?(+o.sum||0):-(+o.sum||0);});
+  var ia=incAcc();Object.keys(S.events).forEach(function(d){if(!(d>D))return;((S.events[d]||{}).items||[]).forEach(function(e){if(e.kind==='lesson'&&((e.acc&&S.fin.acc[e.acc]&&!S.fin.acc[e.acc].deleted)?e.acc:ia)===a.id)v-=+e.sum||0;});});
+  if(a.id===main){var tc=+fset().tripCost||0;Object.keys(S.visits||{}).forEach(function(d){if(d>D&&d<=t)v+=tc;});}
+  return v;}
+function f2LSAt(L,D){if(!D||D>=todayKey())return f2LS(L);if(!(L.d<=D))return {left:0};var I=f2LS(L),back=I.ops.filter(function(o){return o.d<=D}).reduce(function(s,o){return s+(+o.sum||0)},0),sv=I.svcs.filter(function(x){return x.d<=D}).reduce(function(s,x){return s+(+x.sum||0)},0);return {left:Math.max(0,(+L.sum||0)-back-sv)};}
+function f2BalNav(){var t=todayKey(),D=f2bd||t,mn=f2BMin();
+  return '<div class="f2bnav"><button class="btn sm" data-x="bprev"'+(D<=mn?' disabled':'')+' aria-label="Назад"><svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3L5 8l5 5"/></svg></button><label class="f2bdate"><span>'+(D===t?'Сегодня, ':'')+dmon(D)+'</span><input type="date" data-bdate value="'+D+'" min="'+mn+'" max="'+t+'"></label><button class="btn sm" data-x="bnext"'+(D>=t?' disabled':'')+' aria-label="Вперёд"><svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3l5 5-5 5"/></svg></button></div>';}
+function f2BalH(){var BD=f2bd&&f2bd<todayKey()?f2bd:'',c={own:0,avail:0},D={lent:[],owe:[],adv:[]},S2={lent:0,owe:0,adv:0},cards=0,loans=0,CN=[],LN=[],CA=[];
+  fLoans().forEach(function(L){var I=f2LSAt(L,BD);if(!(I.left>0))return;var g=L.loan==='lent'?'lent':L.adv?'adv':'owe';S2[g]+=I.left;D[g].push([esc(L.who||'—')+(L.adv?' · предоплата':''),I.left]);});
+  fAccs().forEach(function(a){var b=accBalAt(a,BD);if(a.type==='credit')c.avail+=Math.max(0,(+a.limit||0)-Math.max(0,-b));if(a.type!=='credit'||b>0)c.own+=Math.max(a.type==='credit'?0:-1e15,b);if(a.type!=='credit'){CA.push([esc(a.title),b]);return;}if(b>0)CA.push([esc(a.title)+' · сверх долга',b]);var d=Math.max(0,-b);if(f2IsLoan(a)){loans+=d;if(d)LN.push([esc(a.title),d]);}else{cards+=d;CN.push([esc(a.title),d]);}});
   var num=function(v){return v?(v<0?'−'+rubN(-v):rubN(v)):'—'},
     numT=function(v){return v<0?'−'+rubN(-v):rubN(v)},
     det=function(L){return L.map(function(x){return '<div class="f2bd"><span>'+x[0]+'</span><b>'+num(Math.round(x[1]))+'</b></div>'}).join('')},
@@ -3151,6 +3169,7 @@ function f2BalH(){var c=fCap(),N=f2Net(),D={lent:[],owe:[],adv:[]},S2={lent:0,ow
       return '<div class="f2br'+(op?' op':'')+'"'+(can?' data-r="'+k+'"':'')+'><div class="f2bl'+(can?' f2l':'')+(cls?' '+cls:'')+'"><div><span>'+t+(can?'<svg class="f2chev" viewBox="0 0 16 16"><path d="M5 6l3 3 3-3"/></svg>':'')+'</span></div><i>'+code+'</i><b>'+(cls==='tot'?numT(v):num(v))+'</b></div>'+(op?'<div class="f2bx">'+det(dl)+'</div>':'')+'</div>'},
     sec=function(t){return '<div class="f2bs">'+t+'</div>'},
     tot=function(t,code,v){return row(t,code,v,null,'sum')};
+  var N=c.own-cards-loans+S2.lent-S2.owe-S2.adv;
   var A2=c.own+S2.lent,P3=N,P4=loans,B1510=cards+S2.owe,P5=B1510+S2.adv;
   var hd='<div class="f2bhd"><span>Показатель</span><i>Код</i><b>₽</b></div>';
   return '<div class="f2bal"><div class="f2bc"><div class="f2bh">Актив</div>'+hd
@@ -3170,7 +3189,7 @@ function f2BalH(){var c=fCap(),N=f2Net(),D={lent:[],owe:[],adv:[]},S2={lent:0,ow
     +row('Кредиторская задолженность','1520',S2.adv,D.adv)
     +tot('Итого по разделу V','1500',P5)
     +row('БАЛАНС','1700',P3+P4+P5,null,'tot')+'</div></div>'
-    +'<div class="f2bref"><div><span>Справочно: можно потратить сейчас</span><span class="small">собственные средства '+rubN(c.own)+' + неиспользованный кредитный лимит '+rubN(c.avail)+'. В баланс не входит: лимит — это ещё не взятые деньги банка.</span></div><b class="numeral-s">'+rubN(c.own+c.avail)+' ₽</b></div>';}
+    +'<div class="f2bref"><div><span>Справочно: '+(BD?'можно было потратить на '+dmon(BD):'можно потратить сейчас')+'</span><span class="small">собственные средства '+rubN(c.own)+' + неиспользованный кредитный лимит '+rubN(c.avail)+'. В баланс не входит: лимит — это ещё не взятые деньги банка.</span></div><b class="numeral-s">'+rubN(c.own+c.avail)+' ₽</b></div>';}
 
 /* ---------- форма счёта: собственные / заёмные ---------- */
 function accForm(a){var isNew=!a;a=a||{type:'own'};var b=isNew?0:accBal(a),g=a.type==='credit'?'bor':'own',sub=f2IsLoan(a)?'loan':'card';
@@ -3209,7 +3228,7 @@ function finRender(){if(!finOn)return;var box=$('#fin-body');if(!box)return;var 
     +'<section class="glass fcard card3d span12 f2dsec" style="--i:4"><div class="fhd"><div><span class="label">Собственные средства минус обязательства</span><h3>Капитал и резервы</h3></div><div class="fhr">'+f2Seg()+'</div></div>'+f2ChDay(m)+'</section>'
     +'<section class="glass fcard card3d span6" style="--i:5"><div class="fhd"><div><span class="label">По очереди</span><h3>Финансовые цели</h3></div><div class="fhr"><button class="btn sm" data-x="gnew">+ Цель</button></div></div>'+f2GoalsH(m)+'</section>'
     +'<section class="glass fcard card3d span6" style="--i:6"><div class="fhd"><div><span class="label">Собственные и заёмные средства</span><h3>Счета</h3></div><div class="fhr"><button class="btn sm" data-fx="tr">Перевод</button><button class="btn sm" data-fx="acc">+ Счёт</button></div></div>'+f2AccH(m)+'</section>'
-    +'<section class="glass fcard card3d span12" style="--i:7"><div class="fhd"><div><span class="label">Личное и бизнес вместе · на сегодня</span><h3>Сводный баланс</h3></div></div>'+f2BalH()+'</section>'
+    +'<section class="glass fcard card3d span12" style="--i:7"><div class="fhd"><div><span class="label">Личное и бизнес вместе</span><h3>Сводный баланс</h3></div><div class="fhr">'+f2BalNav()+'</div></div>'+f2BalH()+'</section>'
     +'<section class="glass fcard card3d span12" style="--i:8"><div class="fhd"><div><span class="label">По периодам</span><h3>Доходы</h3></div></div>'+f2ChInc(f2Plan(0))+'</section>';
   box.innerHTML=html;$('#fin').scrollTop=sy;[].forEach.call(document.querySelectorAll('#fin .f2list'),function(e,i){if(ls[i])e.scrollTop=ls[i];});
   $$('#fin [data-cnt]').forEach(function(el){var v=+el.dataset.cnt,key0='fc'+[].indexOf.call(document.querySelectorAll('#fin [data-cnt]'),el);el.dataset.v=FMC[key0]||0;countTo(el,v);FMC[key0]=v;});}
@@ -3318,6 +3337,7 @@ $('#fin').addEventListener('click',function(e){if(e.target.closest('[data-fx],[d
   var x=b.dataset.x,m=f2PlanV(),k=row?row.dataset.r:'',f=f2Find(k),t=todayKey();
   if(x==='sc'){f2scale=b.dataset.s||'d';finRender();return;}
   if(x==='pprev'||x==='pnext'){f2off=Math.max(-6,Math.min(3,f2off+(x==='pnext'?1:-1)));finRender();return;}
+  if(x==='bprev'||x==='bnext'){var tb=todayKey(),cb=f2bd||tb,nb=addK(cb,x==='bnext'?1:-1);if(nb<f2BMin())nb=f2BMin();f2bd=nb>=tb?'':nb;finRender();return;}
   if(x==='gnew'){goalForm(null);return;}
   if(x==='gback'){var gb=S.fin.item[b.dataset.gid||f.id];if(gb&&gb.item0){var base=Object.assign({},gb.item0,{title:gb.title,updated:Date.now()});if(gb.item0.sum!=null&&gb.item0.sum!=='')base.sum=+gb.sum||0;fSave('item',base);delete f2open[k];toast('«'+gb.title+'» снова в плане');}return;}
   if(x==='greopen'){var gr=S.fin.item[b.dataset.gid];if(gr)fSave('item',Object.assign({},gr,{done:false,updated:Date.now()}));return;}
@@ -3367,6 +3387,8 @@ $('#fin').addEventListener('click',function(e){if(e.target.closest('[data-fx],[d
 });
 window.__f2Plan=function(o){return f2Plan(o)};
 ['pointermove','pointerdown'].forEach(function(ev){$('#fin').addEventListener(ev,f2DayHov);});
+
+$('#fin').addEventListener('change',function(e){var el=e.target;if(!el.matches||!el.matches('[data-bdate]'))return;var v=el.value,tb=todayKey();if(!v)return;if(v<f2BMin())v=f2BMin();f2bd=v>=tb?'':v;finRender();});
 
 /* ---- v108 уведомления на iPhone: план → зашифрованные уведомления в _db (push/ios) → Apps Script раз в минуту отправляет ---- */
 var PUSH={on:false,sub:null,vk:null,timer:null,busy:false,stat:null,test:null,err:''};
