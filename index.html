@@ -15,7 +15,7 @@
 <link rel="apple-touch-icon" href="icon.png">
 <link id="sp-img" rel="apple-touch-startup-image" media="screen and (device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="splash-dark.png">
 
-<script>window.APP_VER='1795678231';(function(){var r=document.documentElement;try{if(Date.now()-(+sessionStorage.getItem('kc-unl')||0)>300000)r.classList.add('lk-on');}catch(e){r.classList.add('lk-on');}})();(function(){var r=document.documentElement;r.setAttribute('data-calm','');try{var L=JSON.parse(localStorage.getItem('kc-look')||'null');if(L)['font','bg','pat','date','hov','fly','xhov','open','ico'].forEach(function(k){if(typeof L[k]==='string'&&/^[a-z0-9]{1,12}$/.test(L[k]))r.setAttribute('data-'+k,L[k]);});}catch(e){}})()</script>
+<script>window.APP_VER='1795678418';(function(){var r=document.documentElement;try{if(Date.now()-(+sessionStorage.getItem('kc-unl')||0)>300000)r.classList.add('lk-on');}catch(e){r.classList.add('lk-on');}})();(function(){var r=document.documentElement;r.setAttribute('data-calm','');try{var L=JSON.parse(localStorage.getItem('kc-look')||'null');if(L)['font','bg','pat','date','hov','fly','xhov','open','ico'].forEach(function(k){if(typeof L[k]==='string'&&/^[a-z0-9]{1,12}$/.test(L[k]))r.setAttribute('data-'+k,L[k]);});}catch(e){}})()</script>
 <script>(function(){var r=document.documentElement,sa=navigator.standalone===true||(window.matchMedia&&matchMedia('(display-mode: standalone),(display-mode: fullscreen),(display-mode: minimal-ui)').matches)||/[#&]k=/.test(location.hash)||/[?&]splash/.test(location.search);if(!sa)return;var pt=function(dt){var h=dt.getHours();return (h>=5&&h<17)?'light':'dark';},th=pt(new Date());try{var man=localStorage.getItem('kc-theme'),at=+localStorage.getItem('kc-theme-at')||0;if((man==='light'||man==='dark')&&at&&pt(new Date(at))===th)th=man;}catch(e){}if(!r.getAttribute('data-theme'))r.setAttribute('data-theme',th);r.classList.add('sp-on');var li=document.getElementById('sp-img');if(li)li.setAttribute('href','splash-'+th+'.png');})()</script>
 <style>:root.lk-on body>*:not(#lock):not(#splash):not(.scene):not(script):not(svg){visibility:hidden!important}:root.sp-on .shell,:root.sp-on .scene,:root.sp-on .bottomrail{visibility:hidden!important}:root.sp-on{background:#090b12}:root.sp-on[data-theme="light"]{background:#eef0f5}</style>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Onest:wght@400;500;600;700&family=Nunito:wght@400;500;600;700;800&display=swap">
@@ -1076,6 +1076,21 @@ html,body{touch-action:manipulation;-webkit-text-size-adjust:100%;text-size-adju
 .f2jt .f2jtt{font-size:15px;font-weight:700;color:var(--ink)}
 @media (max-width:760px){.f2jsec .f2r .f2t em,.f2jsec .f2r.op .f2t em{display:none}}
 .f2jlist{max-height:min(60vh,560px)}
+
+/* v142 журнал: как в банке */
+.f2jw{max-width:820px;margin:0 auto}
+.f2jd{display:flex;justify-content:space-between;gap:12px;padding:18px 12px 6px;font-size:14px;font-weight:700;color:var(--ink)}
+.f2jd span:last-child{font-variant-numeric:tabular-nums;color:var(--ink-muted);font-weight:600}
+.f2jlist>.f2jd:first-child{padding-top:6px}
+.f2jr .f2l{gap:12px;padding:10px 12px;min-height:44px}
+.f2ji{flex:none;width:38px;height:38px;border-radius:50%;display:grid;place-items:center;background:color-mix(in srgb,var(--c) 15%,transparent)}
+.f2ji svg{width:19px;height:19px;fill:none;stroke:var(--c);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.f2jm{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.f2jm b{font-size:15px;font-weight:600;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.f2jm small{font-size:12.5px;color:var(--ink-muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.f2jr .f2s{font-size:15.5px}
+.f2jr .f2x{padding-left:62px}
+@media (max-width:560px){.f2ji{width:34px;height:34px}.f2ji svg{width:17px;height:17px}.f2jr .f2x{padding-left:12px}}
 
 /* ================= v112: внешний вид ================= */
 /* шрифты */
@@ -3201,13 +3216,25 @@ function f2JRange(){var t=todayKey(),p=f2j.p||('p:'+f2Per(t).mk);
   if(p==='range')return [f2j.a||'0000',f2j.b||'9999'];var mk=p.slice(2),P=f2Per(mk+'-25');return [P.a,P.b];}
 function f2JPerOpts(){var t=todayKey(),cur=f2Per(t),first=f2Per(fset().start||t),L=[],P=cur,g=0;while(g<24){L.push(P);if(P.mk<=first.mk)break;P=f2Per(addK(P.a,-1));g++;}
   return L.map(function(P,i){return ['p:'+P.mk,(i===0?'Этот период ':'Период ')+ddmm(P.a)+'–'+ddmm(P.b)]}).concat([['today','Сегодня'],['yest','Вчера'],['range','Свои даты'],['all','Всё время']]);}
+var F2JI={work:'<rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M3 13h18"/>',
+  biz:'<path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/>',
+  tutor:'<path d="M2 9l10-5 10 5-10 5z"/><path d="M6 11v5c3 2 9 2 12 0v-5"/>',
+  home:'<path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/>',
+  pers:'<circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 5-6 8-6s6.5 2 8 6"/>',
+  gift:'<rect x="3" y="8" width="18" height="5" rx="1"/><path d="M5 13v8h14v-8M12 8v13"/><path d="M12 8c-2-4-6-4-6-1.5S10 8 12 8zM12 8c2-4 6-4 6-1.5S14 8 12 8z"/>',
+  tr:'<path d="M4 8h14l-3-3M20 16H6l3 3"/>',
+  goal:'<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r="0.5"/>',
+  trip:'<path d="M12 21s-6-5.5-6-11a6 6 0 0 1 12 0c0 5.5-6 11-6 11z"/><circle cx="12" cy="10" r="2"/>'},
+  F2JC={work:'var(--act)',biz:'var(--neon)',tutor:'var(--wait)',home:'var(--violet)',pers:'var(--ink-muted)',gift:'var(--crit)',tr:'var(--ink-faint)',goal:'var(--ok)',trip:'var(--ink-muted)'};
+function f2JIco(e){var k=e.t==='tr'?'tr':e.t==='goal'?'goal':e.trip?'trip':(F2JI[e.g]?e.g:'pers');return '<span class="f2ji" style="--c:'+F2JC[k]+'"><svg viewBox="0 0 24 24" aria-hidden="true">'+F2JI[k]+'</svg></span>';}
 function f2JList(){var R=f2JRange(),q=(f2j.q||'').toLowerCase(),L=f2JAll().filter(function(e){if(e.d<R[0]||e.d>R[1])return false;
     if(f2j.k==='in'&&e.t!=='in')return false;if(f2j.k==='out'&&e.t!=='out')return false;if(f2j.g&&e.g!==f2j.g)return false;
     if(q&&((e.title||'')+' '+(e.note||'')).toLowerCase().indexOf(q)<0)return false;return true;});
   var inS=0,outS=0,nIn=0,nOut=0;L.forEach(function(e){if(e.t==='in'){inS+=e.sum;nIn++;}else if(e.t==='out'){outS+=e.sum;nOut++;}});
   var t=todayKey(),y=addK(t,-1),h='',last='',main=mainAcc();
   if(!L.length)h='<div class="empty">Операций нет'+(q||f2j.g||f2j.k!=='all'?' по этим фильтрам':' за этот срок')+'.</div>';
-  L.slice(0,f2j.n).forEach(function(e){if(e.d!==last){last=e.d;h+='<div class="f2gh"><span>'+(e.d===t?'Сегодня, ':e.d===y?'Вчера, ':'')+dmon(e.d)+(e.d===t||e.d===y?'':' · '+W[pdk(e.d).getDay()].toLowerCase())+'</span></div>';}
+  var DS={};L.forEach(function(e){if(e.t==='in')DS[e.d]=(DS[e.d]||0)+e.sum;else if(e.t==='out')DS[e.d]=(DS[e.d]||0)-e.sum;});
+  L.slice(0,f2j.n).forEach(function(e){if(e.d!==last){last=e.d;var ds=DS[e.d];h+='<div class="f2jd"><span>'+(e.d===t?'Сегодня, ':e.d===y?'Вчера, ':'')+dmon(e.d)+(e.d===t||e.d===y?'':', '+W[pdk(e.d).getDay()].toLowerCase())+'</span>'+(ds?'<span>'+(ds>0?'+':'')+rubN(ds)+' ₽</span>':'')+'</div>';}
     var sign=e.t==='in'?'+':e.t==='out'?'−':'',cls=e.t==='in'?' f2jin':e.t==='out'?'':' f2jtr';
     var tag=e.t==='tr'?esc(e.acc):e.t==='goal'?'в цель':[FG2N[e.g]||'',esc(e.acc)].filter(Boolean).join(' · ');
     var o=e.o,body=f2Line('Дата',dmon(e.d))+f2Line('Вид',f2JKind(e))+(e.acc?f2Line(e.t==='tr'?'Откуда → куда':'Счёт',esc(e.acc)):'')+(e.g?f2Line('Группа',FG2N[e.g]):'')+f2Line('Комментарий',e.note?esc(e.note):'—');
@@ -3216,7 +3243,8 @@ function f2JList(){var R=f2JRange(),q=(f2j.q||'').toLowerCase(),L=f2JAll().filte
     if(o&&o.kind!=='goal'){var ac=S.fin.acc[o.kind==='tr'?o.from:(o.acc||main)];if(ac&&ac.asOf&&(+o.ts||0)<=ac.asOf)hint+=(hint?' ':'')+'Запись сделана до сверки счёта: правка не изменит остаток, он уже сверен с банком.';}
     if(hint)body+='<div class="small f2n">'+hint+'</div>';
     var acts=e.trip?'':e.loan?f2B('jedit','Править комментарий'):f2B('jedit','Править')+f2B('jdel','Удалить','del');
-    h+=f2R('jo:'+e.id,e.title,e.sum,{tag:tag,sums:'<span class="f2s'+cls+'">'+sign+rubN(e.sum)+' ₽</span>',body:body,acts:acts});});
+    var rk='jo:'+e.id,op=!!f2open[rk];
+    h+='<div class="f2r f2jr'+(op?' op':'')+'" data-r="'+esc(rk)+'"><div class="f2l">'+f2JIco(e)+'<span class="f2jm"><b>'+esc(e.title)+'</b><small>'+tag+'</small></span><span class="f2s'+cls+'">'+sign+rubN(e.sum)+' ₽</span></div>'+(op?'<div class="f2x">'+body+(acts?'<div class="acts">'+acts+'</div>':'')+'</div>':'')+'</div>';});
   if(L.length>f2j.n)h+='<div class="f2add"><button class="btn sm" data-x="jmore">Показать ещё · '+(L.length-f2j.n)+'</button></div>';
   h='<div class="f2list f2jlist">'+h+'</div>';
   var n=L.length,cnt=n+' '+plural(n,'операция','операции','операций');
@@ -3324,7 +3352,7 @@ function finRender(){if(!finOn)return;var box=$('#fin-body');if(!box)return;var 
     +'<div class="glass fcard card3d kpi fk" style="--i:1"><div class="top"><span class="label">Итог плана</span></div><div class="val"><span class="numeral-s '+(m.res<0?'neg':m.surplus>0?'pos':'')+'">'+(m.res>0?'+':'')+rubN(m.res)+'</span><span class="small u">₽</span></div><span class="small d'+(m.res<0?' crit':'')+'">'+(m.normal?(m.surplus>0?'сверху остаётся, можно направить в цель':'план сходится в ноль'):(short>0?'не хватает '+rub(short)+', это '+f2LesT(f2Les(short)):'сходится только в режиме минимальных трат'))+'</span></div>'
     +'<div class="glass fcard card3d kpi fk" style="--i:2"><div class="top"><span class="label">Капитал за период</span></div><div class="val"><span class="numeral-s '+(m.capD<0?'neg':'pos')+'">'+(m.capD>0?'+':'')+rubN(m.capD)+'</span><span class="small u">₽</span></div><span class="small d">'+(m.fut?'период начнётся '+ddmm(P.a):'получено '+rub(m.dIn)+' − оплачено '+rub(m.dOut))+'</span></div>'
     +'<div class="glass fcard card3d kpi fk" style="--i:3"><div class="top"><span class="label">'+(m.isCur?'На себя сегодня':'На себя в день')+'</span></div><div class="val"><span class="numeral-s" data-cnt="'+Math.max(0,Math.round(m.isCur?m.today:m.perDay))+'">0</span><span class="small u">₽</span></div><span class="small d'+(m.today<0?' crit':'')+'">'+(m.today<0?'перерасход '+rub(-m.today)+' · ':'')+(m.isCur?rub(m.perDay)+' в день до '+ddmm(P.b):'по плану периода')+(m.normal?'':' · минимум')+'</span></div></section>'
-    +'<section class="glass fcard card3d span12 f2jsec" style="--i:4"><div class="fhd"><div><span class="label">Каждая запись, как в банке</span><h3>Операции</h3></div></div>'+f2JH()+'</section>'
+    +'<section class="glass fcard card3d span12 f2jsec" style="--i:4"><div class="f2jw"><div class="fhd"><div><span class="label">Каждая запись, как в банке</span><h3>Операции</h3></div></div>'+f2JH()+'</div></section>'
     +'<section class="glass fcard card3d span6" style="--i:5"><div class="fhd"><div><span class="label">По очереди</span><h3>Финансовые цели</h3></div><div class="fhr"><button class="btn sm" data-x="gnew">+ Цель</button></div></div>'+f2GoalsH(m)+'</section>'
     +'<section class="glass fcard card3d span6" style="--i:6"><div class="fhd"><div><span class="label">Собственные и заёмные средства</span><h3>Счета</h3></div><div class="fhr"><button class="btn sm" data-fx="tr">Перевод</button><button class="btn sm" data-fx="acc">+ Счёт</button></div></div>'+f2AccH(m)+'</section>'
     +'<section class="glass fcard card3d span12" style="--i:7"><div class="fhd"><div><span class="label">Личное и бизнес вместе</span><h3>Сводный баланс</h3></div><div class="fhr">'+f2BalNav()+'</div></div>'+f2BalH()+'</section>'
