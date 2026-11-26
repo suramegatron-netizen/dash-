@@ -15,7 +15,7 @@
 <link rel="apple-touch-icon" href="icon.png">
 <link id="sp-img" rel="apple-touch-startup-image" media="screen and (device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="splash-dark.png">
 
-<script>window.APP_VER='1795677907';(function(){var r=document.documentElement;try{if(Date.now()-(+sessionStorage.getItem('kc-unl')||0)>300000)r.classList.add('lk-on');}catch(e){r.classList.add('lk-on');}})();(function(){var r=document.documentElement;r.setAttribute('data-calm','');try{var L=JSON.parse(localStorage.getItem('kc-look')||'null');if(L)['font','bg','pat','date','hov','fly','xhov','open','ico'].forEach(function(k){if(typeof L[k]==='string'&&/^[a-z0-9]{1,12}$/.test(L[k]))r.setAttribute('data-'+k,L[k]);});}catch(e){}})()</script>
+<script>window.APP_VER='1795678231';(function(){var r=document.documentElement;try{if(Date.now()-(+sessionStorage.getItem('kc-unl')||0)>300000)r.classList.add('lk-on');}catch(e){r.classList.add('lk-on');}})();(function(){var r=document.documentElement;r.setAttribute('data-calm','');try{var L=JSON.parse(localStorage.getItem('kc-look')||'null');if(L)['font','bg','pat','date','hov','fly','xhov','open','ico'].forEach(function(k){if(typeof L[k]==='string'&&/^[a-z0-9]{1,12}$/.test(L[k]))r.setAttribute('data-'+k,L[k]);});}catch(e){}})()</script>
 <script>(function(){var r=document.documentElement,sa=navigator.standalone===true||(window.matchMedia&&matchMedia('(display-mode: standalone),(display-mode: fullscreen),(display-mode: minimal-ui)').matches)||/[#&]k=/.test(location.hash)||/[?&]splash/.test(location.search);if(!sa)return;var pt=function(dt){var h=dt.getHours();return (h>=5&&h<17)?'light':'dark';},th=pt(new Date());try{var man=localStorage.getItem('kc-theme'),at=+localStorage.getItem('kc-theme-at')||0;if((man==='light'||man==='dark')&&at&&pt(new Date(at))===th)th=man;}catch(e){}if(!r.getAttribute('data-theme'))r.setAttribute('data-theme',th);r.classList.add('sp-on');var li=document.getElementById('sp-img');if(li)li.setAttribute('href','splash-'+th+'.png');})()</script>
 <style>:root.lk-on body>*:not(#lock):not(#splash):not(.scene):not(script):not(svg){visibility:hidden!important}:root.sp-on .shell,:root.sp-on .scene,:root.sp-on .bottomrail{visibility:hidden!important}:root.sp-on{background:#090b12}:root.sp-on[data-theme="light"]{background:#eef0f5}</style>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Onest:wght@400;500;600;700&family=Nunito:wght@400;500;600;700;800&display=swap">
@@ -1075,6 +1075,7 @@ html,body{touch-action:manipulation;-webkit-text-size-adjust:100%;text-size-adju
 .f2jt b{font-weight:800;color:var(--ink);font-variant-numeric:tabular-nums}
 .f2jt .f2jtt{font-size:15px;font-weight:700;color:var(--ink)}
 @media (max-width:760px){.f2jsec .f2r .f2t em,.f2jsec .f2r.op .f2t em{display:none}}
+.f2jlist{max-height:min(60vh,560px)}
 
 /* ================= v112: внешний вид ================= */
 /* шрифты */
@@ -3177,7 +3178,7 @@ function f2LSAt(L,D){if(!D||D>=todayKey())return f2LS(L);if(!(L.d<=D))return {le
 function f2BalNav(){var t=todayKey(),D=f2bd||t,mn=f2BMin();
   return '<div class="f2bnav"><button class="btn sm" data-x="bprev"'+(D<=mn?' disabled':'')+' aria-label="Назад"><svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3L5 8l5 5"/></svg></button><label class="f2bdate"><span>'+(D===t?'Сегодня, ':'')+dmon(D)+'</span><input type="date" data-bdate value="'+D+'" min="'+mn+'" max="'+t+'"></label><button class="btn sm" data-x="bnext"'+(D>=t?' disabled':'')+' aria-label="Вперёд"><svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3l5 5-5 5"/></svg></button></div>';}
 /* ---------- журнал операций (v140) ---------- */
-var f2j={k:'all',p:'',g:'',q:'',a:'',b:'',n:60};
+var f2j={k:'all',p:'',g:'',q:'',a:'',b:'',n:200};
 function f2JGo(o){if(o.loan||o.src==='loan'){var L=S.fin.inc[o.loan];return L&&FG2N[L.grp]?L.grp:'pers';}if(o.kind==='pay'&&o.item&&S.fin.item[o.item])return f2g(S.fin.item[o.item]);return FG2N[o.grp]?o.grp:'pers';}
 function f2JGi(o){if(o.loan||o.src==='loan'){var L=S.fin.inc[o.loan];return L&&FG2N[L.grp]?L.grp:'pers';}if(o.src==='salary'||(o.occ||'').indexOf('sal@')===0)return 'work';if((o.occ||'').indexOf('grp@')===0)return 'biz';if(FG2N[o.src])return o.src;var oc=o.occ||'';if(oc.indexOf('in@')===0){var i=S.fin.inc[oc.slice(3)];if(i&&FG2N[i.src])return i.src;if(i&&i.src==='salary')return 'work';}return 'pers';}
 function f2JKind(e){var o=e.o;if(e.ev)return 'Занятие';if(e.trip)return 'Поездка';if(e.t==='tr')return 'Перевод между счетами';if(e.t==='goal')return 'Отложено в цель';
@@ -3217,6 +3218,7 @@ function f2JList(){var R=f2JRange(),q=(f2j.q||'').toLowerCase(),L=f2JAll().filte
     var acts=e.trip?'':e.loan?f2B('jedit','Править комментарий'):f2B('jedit','Править')+f2B('jdel','Удалить','del');
     h+=f2R('jo:'+e.id,e.title,e.sum,{tag:tag,sums:'<span class="f2s'+cls+'">'+sign+rubN(e.sum)+' ₽</span>',body:body,acts:acts});});
   if(L.length>f2j.n)h+='<div class="f2add"><button class="btn sm" data-x="jmore">Показать ещё · '+(L.length-f2j.n)+'</button></div>';
+  h='<div class="f2list f2jlist">'+h+'</div>';
   var n=L.length,cnt=n+' '+plural(n,'операция','операции','операций');
   if(f2j.k==='in')h+='<div class="f2jt"><div class="f2jtt"><span>Итого · '+cnt+'</span><b class="f2jin">+'+rubN(inS)+' ₽</b></div></div>';
   else if(f2j.k==='out')h+='<div class="f2jt"><div class="f2jtt"><span>Итого · '+cnt+'</span><b>−'+rubN(outS)+' ₽</b></div></div>';
@@ -3432,7 +3434,7 @@ $('#fin').addEventListener('click',function(e){if(e.target.closest('[data-fx],[d
   var b=e.target.closest('[data-x]'),row=e.target.closest('[data-r]');
   if(!b){if(row&&e.target.closest('.f2l,.f2bar')&&!e.target.closest('button,a,input,select,summary')){var k0=row.dataset.r;if(f2open[k0])delete f2open[k0];else f2open[k0]=1;finRender();}return;}
   var x=b.dataset.x,m=f2PlanV(),k=row?row.dataset.r:'',f=f2Find(k),t=todayKey();
-  if(x==='jk'){f2j.k=b.dataset.k||'all';f2j.n=60;finRender();return;}if(x==='jmore'){f2j.n+=60;finRender();return;}
+  if(x==='jk'){f2j.k=b.dataset.k||'all';f2j.n=200;finRender();return;}if(x==='jmore'){f2j.n+=200;finRender();return;}
   if((x==='jedit'||x==='jdel')&&k.indexOf('jo:')===0){var je=f2JFind(k);if(!je)return;if(x==='jedit')f2JEdit(je);else f2JDel(je,k);return;}
   if(x==='sc'){f2scale=b.dataset.s||'d';finRender();return;}
   if(x==='pprev'||x==='pnext'){f2off=Math.max(-6,Math.min(3,f2off+(x==='pnext'?1:-1)));finRender();return;}
@@ -3490,9 +3492,9 @@ window.__f2Plan=function(o){return f2Plan(o)};
 $('#fin').addEventListener('change',function(e){var el=e.target;if(!el.matches||!el.matches('[data-bdate]'))return;var v=el.value,tb=todayKey();if(!v)return;if(v<f2BMin())v=f2BMin();f2bd=v>=tb?'':v;finRender();});
 
 $('#fin').addEventListener('change',function(e){var el=e.target;if(!el.matches)return;
-  if(el.matches('[data-jp]')){f2j.p=el.value;f2j.n=60;finRender();}else if(el.matches('[data-jg]')){f2j.g=el.value;f2j.n=60;finRender();}
+  if(el.matches('[data-jp]')){f2j.p=el.value;f2j.n=200;finRender();}else if(el.matches('[data-jg]')){f2j.g=el.value;f2j.n=200;finRender();}
   else if(el.matches('[data-ja]')){f2j.a=el.value;finRender();}else if(el.matches('[data-jb]')){f2j.b=el.value;finRender();}});
-$('#fin').addEventListener('input',function(e){var el=e.target;if(!el.matches||!el.matches('[data-jq]'))return;f2j.q=el.value;f2j.n=60;var bx=document.getElementById('f2jl');if(bx)bx.innerHTML=f2JList();});
+$('#fin').addEventListener('input',function(e){var el=e.target;if(!el.matches||!el.matches('[data-jq]'))return;f2j.q=el.value;f2j.n=200;var bx=document.getElementById('f2jl');if(bx)bx.innerHTML=f2JList();});
 
 /* ---- v108 уведомления на iPhone: план → зашифрованные уведомления в _db (push/ios) → Apps Script раз в минуту отправляет ---- */
 var PUSH={on:false,sub:null,vk:null,timer:null,busy:false,stat:null,test:null,err:''};
