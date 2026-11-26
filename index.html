@@ -15,7 +15,7 @@
 <link rel="apple-touch-icon" href="icon.png">
 <link id="sp-img" rel="apple-touch-startup-image" media="screen and (device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="splash-dark.png">
 
-<script>window.APP_VER='1795674851';(function(){var r=document.documentElement;try{if(Date.now()-(+sessionStorage.getItem('kc-unl')||0)>300000)r.classList.add('lk-on');}catch(e){r.classList.add('lk-on');}})();(function(){var r=document.documentElement;r.setAttribute('data-calm','');try{var L=JSON.parse(localStorage.getItem('kc-look')||'null');if(L)['font','bg','pat','date','hov','fly','xhov','open','ico'].forEach(function(k){if(typeof L[k]==='string'&&/^[a-z0-9]{1,12}$/.test(L[k]))r.setAttribute('data-'+k,L[k]);});}catch(e){}})()</script>
+<script>window.APP_VER='1795675751';(function(){var r=document.documentElement;try{if(Date.now()-(+sessionStorage.getItem('kc-unl')||0)>300000)r.classList.add('lk-on');}catch(e){r.classList.add('lk-on');}})();(function(){var r=document.documentElement;r.setAttribute('data-calm','');try{var L=JSON.parse(localStorage.getItem('kc-look')||'null');if(L)['font','bg','pat','date','hov','fly','xhov','open','ico'].forEach(function(k){if(typeof L[k]==='string'&&/^[a-z0-9]{1,12}$/.test(L[k]))r.setAttribute('data-'+k,L[k]);});}catch(e){}})()</script>
 <script>(function(){var r=document.documentElement,sa=navigator.standalone===true||(window.matchMedia&&matchMedia('(display-mode: standalone),(display-mode: fullscreen),(display-mode: minimal-ui)').matches)||/[#&]k=/.test(location.hash)||/[?&]splash/.test(location.search);if(!sa)return;var pt=function(dt){var h=dt.getHours();return (h>=5&&h<17)?'light':'dark';},th=pt(new Date());try{var man=localStorage.getItem('kc-theme'),at=+localStorage.getItem('kc-theme-at')||0;if((man==='light'||man==='dark')&&at&&pt(new Date(at))===th)th=man;}catch(e){}if(!r.getAttribute('data-theme'))r.setAttribute('data-theme',th);r.classList.add('sp-on');var li=document.getElementById('sp-img');if(li)li.setAttribute('href','splash-'+th+'.png');})()</script>
 <style>:root.lk-on body>*:not(#lock):not(#splash):not(.scene):not(script):not(svg){visibility:hidden!important}:root.sp-on .shell,:root.sp-on .scene,:root.sp-on .bottomrail{visibility:hidden!important}:root.sp-on{background:#090b12}:root.sp-on[data-theme="light"]{background:#eef0f5}</style>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Onest:wght@400;500;600;700&family=Nunito:wght@400;500;600;700;800&display=swap">
@@ -2923,7 +2923,8 @@ function f2Sal(P){var st=fset(),sal=+st.salary||0,av=+st.avans||Math.round(sal/2
 function f2Tut(P){var t=todayKey(),st=fset(),price=+S.settings.lessonPrice||1500,pct=(+st.lessonPct||70)/100,r={got:0,gotN:0,exp:0,n:0,full:0,pct:pct};
   for(var k=P.a;k<=P.b;k=addK(k,1)){if(k<=t)lessonsLogged(k).forEach(function(e){r.got+=+e.sum||0;r.gotN++;});
     if(k>=t){var ls=lessonsOn(k),m=ls.length,ps=ls.reduce(function(x,l){return x+(+l[5]||price)},0);if(k===t&&m){var m2=Math.max(0,m-lessonsLogged(k).length);ps=ps*m2/m;m=m2;}r.n+=m;r.full+=ps;r.exp+=ps*pct;}}
-  r.exp=Math.round(r.exp);return r;}
+  var plan=0;for(var q=P.a;q<=P.b;q=addK(q,1))plan+=lessonsOn(q).reduce(function(x,l){return x+(+l[5]||price)},0);plan=Math.round(plan*pct);
+  var tot=Math.max(r.got,Math.min(plan,r.got+r.full));r.plan=plan;r.exp=Math.round(tot-r.got);r.rate=r.full?r.exp/r.full:0;return r;}
 function f2Grp(P){var out=[],seen={};fOps().forEach(function(o){if(o.kind!=='inc'||!o.occ||o.occ.indexOf('grp@')!==0||seen[o.occ])return;var I=f2IS(o.occ,+o.sum||0),f=I.ops[0];if(f.d<P.a||f.d>P.b)return;seen[o.occ]=1;out.push({k:'g:'+o.occ,title:f.title,sum:I.val,got:I.done,I:I,d:f.d,occ:o.occ,op:I.last});});
   grpIncomes(P.a,P.b).forEach(function(x){var I=f2IS(x.occ,x.sum);out.push({k:'g:'+x.occ,title:x.title,sum:I.val,got:false,I:I,d:x.orig,occ:x.occ,late:x.late&&!I.off});});return out;}
 
@@ -2986,7 +2987,7 @@ function f2Act(){var F={},st=fset(),tc=+st.tripCost||0,add=function(d,v){F[d]=(F
 function f2Fc(mm,t,F){var T1=addK(t,1),P=mm.P,add=function(d,v,lab){if(!v)return;if(!d||d<T1)d=T1;if(d<P.a)d=P.a;if(d>P.b)return;var x=F[d]=F[d]||{v:0,sal:0,pay:0};x.v+=v;if(lab==='sal')x.sal+=v;if(v<0&&lab==='pay')x.pay-=v;};
   mm.sal.forEach(function(x){if(!x.pre&&!x.I.done&&!x.I.off)add(x.d,x.I.left,'sal')});
   mm.grp.concat(mm.incs).forEach(function(x){if(!x.I.done&&!x.I.off)add(x.d,x.I.left)});
-  var price=+S.settings.lessonPrice||1500,pct=mm.tut.pct;for(var k=P.a>t?P.a:t;k<=P.b;k=addK(k,1)){var ls=lessonsOn(k),n=ls.length,ps=ls.reduce(function(a,l){return a+(+l[5]||price)},0);if(k===t&&n){var n2=Math.max(0,n-lessonsLogged(k).length);ps=ps*n2/n;}add(k,ps*pct);}
+  var price=+S.settings.lessonPrice||1500,pct=mm.tut.rate!=null?mm.tut.rate:mm.tut.pct;for(var k=P.a>t?P.a:t;k<=P.b;k=addK(k,1)){var ls=lessonsOn(k),n=ls.length,ps=ls.reduce(function(a,l){return a+(+l[5]||price)},0);if(k===t&&n){var n2=Math.max(0,n-lessonsLogged(k).length);ps=ps*n2/n;}add(k,ps*pct);}
   mm.rows.forEach(function(r){r.oc.forEach(function(o){if(!o.paid)add(o.d,-o.sum,'pay')});if(r.tr&&r.tr.fut&&+r.it.perTrip)trips(P.a>t?P.a:t,P.b).forEach(function(d){add(d,-(+r.it.perTrip))});});
   mm.gp.forEach(function(r){if(!r.done)add(P.a,-r.sum,'pay')});
   if(mm.isCur){if(mm.today>0)add(T1,-mm.today);for(var j=T1;j<=P.b;j=addK(j,1))add(j,-mm.perDay);}
@@ -3084,7 +3085,7 @@ function f2LoanGrp(m,kind){var h='';[[false,'Долг'],[true,kind==='owe'?'Кр
 function f2IncCol(m){var t=m.t,G={},add=function(g,html,v){G[g]=G[g]||{h:'',s:0};G[g].h+=html;G[g].s+=v||0;},h='';
   m.sal.forEach(function(x){if(x.pre){add('work',f2R(x.k,x.title,x.sum,{done:true,tag:'до начала учёта',body:'<div class="small f2n">Пришло '+dmon(x.d)+', до того как ты начал вести финансы здесь. В итогах не считается.</div>',acts:f2B('got','Отметить получение')}),0);return;}add('work',f2IncRow(x,{shift:x.d.slice(8)!==(x.k==='sal:1'?'25':'10'),note:x.k==='sal:1'?'Сумма аванса примерная. Пришло меньше — впиши сколько пришло, остаток останется в ожидаемых.':'Остаток = зарплата за месяц минус аванс.'}),x.I.val);});
   var tu=m.tut;add('tutor',f2R('tut','Ученики',tu.got+tu.exp,{tag:tu.got?'получено '+rubN(tu.got):'',bar:tu.got+tu.exp?tu.got/(tu.got+tu.exp)*100:0,
-    body:f2Line('Уже получено',rub(tu.got)+(tu.gotN?' · '+f2LesT(tu.gotN):''))+f2Line('Ещё по расписанию',f2LesT(tu.n)+' на '+rub(tu.full))+f2Line('Ждём с учётом '+Math.round((1-tu.pct)*100)+'% отмен',rub(tu.exp))+'<div class="small f2n">Провёл занятие — нажми «Провёл» в плане, деньги посчитаются сами.</div>',
+    body:f2Line('Уже получено',rub(tu.got)+(tu.gotN?' · '+f2LesT(tu.gotN):''))+f2Line('Ещё по расписанию',f2LesT(tu.n)+' на '+rub(tu.full))+f2Line('План на период с учётом '+Math.round((1-tu.pct)*100)+'% отмен',rub(tu.plan||0))+f2Line('Ждём ещё',rub(tu.exp))+'<div class="small f2n">Отмены закладываются на весь период: если сейчас все занятия состоялись, план не растёт, отмены могут быть позже.</div>'+'<div class="small f2n">Провёл занятие — нажми «Провёл» в плане, деньги посчитаются сами.</div>',
     acts:f2B('tutgot','Получено','pri')+f2B('incset','Править допущение')}),tu.got+tu.exp);
   var sg=function(src){return src==='salary'?'work':FG2N[src]?src:'pers'};
   m.grp.forEach(function(x){add('biz',f2IncRow(x),x.I.val);});
