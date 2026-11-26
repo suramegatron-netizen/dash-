@@ -15,7 +15,7 @@
 <link rel="apple-touch-icon" href="icon.png">
 <link id="sp-img" rel="apple-touch-startup-image" media="screen and (device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="splash-dark.png">
 
-<script>window.APP_VER='1795684069';(function(){var r=document.documentElement;try{if(Date.now()-(+sessionStorage.getItem('kc-unl')||0)>300000)r.classList.add('lk-on');}catch(e){r.classList.add('lk-on');}})();(function(){var r=document.documentElement;r.setAttribute('data-calm','');try{var L=JSON.parse(localStorage.getItem('kc-look')||'null');if(L)['font','bg','pat','date','hov','fly','xhov','open','ico'].forEach(function(k){if(typeof L[k]==='string'&&/^[a-z0-9]{1,12}$/.test(L[k]))r.setAttribute('data-'+k,L[k]);});}catch(e){}})()</script>
+<script>window.APP_VER='1795684344';(function(){var r=document.documentElement;try{if(Date.now()-(+sessionStorage.getItem('kc-unl')||0)>300000)r.classList.add('lk-on');}catch(e){r.classList.add('lk-on');}})();(function(){var r=document.documentElement;r.setAttribute('data-calm','');try{var L=JSON.parse(localStorage.getItem('kc-look')||'null');if(L)['font','bg','pat','date','hov','fly','xhov','open','ico'].forEach(function(k){if(typeof L[k]==='string'&&/^[a-z0-9]{1,12}$/.test(L[k]))r.setAttribute('data-'+k,L[k]);});}catch(e){}})()</script>
 <script>(function(){var r=document.documentElement,sa=navigator.standalone===true||(window.matchMedia&&matchMedia('(display-mode: standalone),(display-mode: fullscreen),(display-mode: minimal-ui)').matches)||/[#&]k=/.test(location.hash)||/[?&]splash/.test(location.search);if(!sa)return;var pt=function(dt){var h=dt.getHours();return (h>=5&&h<17)?'light':'dark';},th=pt(new Date());try{var man=localStorage.getItem('kc-theme'),at=+localStorage.getItem('kc-theme-at')||0;if((man==='light'||man==='dark')&&at&&pt(new Date(at))===th)th=man;}catch(e){}if(!r.getAttribute('data-theme'))r.setAttribute('data-theme',th);r.classList.add('sp-on');var li=document.getElementById('sp-img');if(li)li.setAttribute('href','splash-'+th+'.png');})()</script>
 <style>:root.lk-on body>*:not(#lock):not(#splash):not(.scene):not(script):not(svg){visibility:hidden!important}:root.sp-on .shell,:root.sp-on .scene,:root.sp-on .bottomrail{visibility:hidden!important}:root.sp-on{background:#090b12}:root.sp-on[data-theme="light"]{background:#eef0f5}</style>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Onest:wght@400;500;600;700&family=Nunito:wght@400;500;600;700;800&display=swap">
@@ -3395,7 +3395,7 @@ function f2Cands(b,C,mem,skip){var out=[],desc=b.desc||'',L=(mem&&mem.link)||{},
   if(b.dir==='in'){var salW=F2SALW.test(desc);
     C.inc.forEach(function(x){var D=dd(x.d),sc=0,why;
       if(x.t==='sal'){if(D>6&&!salW&&L.t!=='sal')return;var r=s/(x.left||1);if(r<0.75||r>1.25)return;sc=80-D*2-Math.round(Math.abs(1-r)*60)+(salW?15:0);why='ожидали '+rub(x.left)+' '+ddmm(x.d);}
-      else{if(near(s,x.left,0.005))sc=84-Math.min(D,14);else if(near(s,x.exp,0.005))sc=78-Math.min(D,14);else if(near(s,x.left,0.1)&&D<=7)sc=62-D;else return;why='ожидали '+rub(x.left)+(x.d?' '+ddmm(x.d):'');}
+      else{if(near(s,x.left,0.005))sc=84-Math.min(D,14);else if(near(s,x.exp,0.005))sc=78-Math.min(D,14);else if(near(s,x.left,0.1)&&D<=7)sc=62-D;else if(x.t==='grp'&&near(s,x.left,0.15)&&D<=10)sc=58-D;else return;why='ожидали '+rub(x.left)+(x.d?' '+ddmm(x.d):'');}
       if(L.occ===x.occ)sc+=20;else if(L.t===x.t&&(x.t==='sal'||x.t==='grp'))sc+=12;
       out.push({t:x.t,x:x,sc:sc,label:x.title,why:why});});
     Object.keys(C.pup).forEach(function(n){var p=C.pup[n],k=Math.round(s/p.price),ex=k>=1&&k<=8&&Math.abs(s-k*p.price)<0.01,memo=L.t==='les'&&L.who===n;if(!ex&&!memo)return;
@@ -3455,7 +3455,7 @@ function f2ImpDlg(LS){var jm=fset().jmap||{},C=f2SmartCtx(),used={},skipL=Object
     C.loans.forEach(function(z){if((b.dir==='out')===z.owe)lst.push({t:'loan',x:z,sc:0,label:z.title,why:'осталось '+rub(z.left)})});
     lst=lst.filter(function(c){return !seen[f2CKey(c)]});b.nTop=top.length;b.nMore=more.length;b.all=top.concat(more,lst);
     /* что выбрать по умолчанию: сначала память, потом уверенная догадка */
-    var M=b.mem,L=(M&&M.link)||{},pick=-1,mer=f2Mer(b.desc),oa=f2OtherAcc(b.desc,x.A);
+    var M=b.mem,L=(M&&M.link)||{},pick=-1,mer=f2Mer(b.desc),oa=f2OtherAcc(b.desc,x.A),twA='';x.accO.forEach(function(o){if(!twA&&f2Twin(b,o[0]))twA=o[0];});if(twA&&(TW.test(b.desc)||x.cr||(S.fin.acc[twA]||{}).type==='credit'))oa=twA;
     if(M&&M.k==='c')b.all.forEach(function(c,j){if(pick>=0||c.t!==L.t)return;if((c.t==='les'&&c.who===L.who)||(c.t==='item'&&c.x.it.id===L.item)||(c.t==='loan'&&c.x.L.id===L.loan)||(c.t==='sal')||(c.x&&c.x.occ&&c.x.occ===L.occ)||(c.t==='grp'))pick=j;});
     if(pick<0&&!(M&&M.k&&M.k!=='c')){var okc=top.filter(function(c){return !(c.x&&c.x.occ&&!c.x.any&&used[c.x.occ])&&!(c.t==='own'&&used['own'+c.e.id])});if(okc.length&&okc[0].sc>=70&&!(okc[1]&&okc[0].sc-okc[1].sc<6))pick=b.all.indexOf(okc[0]);}
     if(pick>=0){var pc=b.all[pick];b.k='c'+pick;if(pc.x&&pc.x.occ&&!pc.x.any)used[pc.x.occ]=1;if(pc.t==='own')used['own'+pc.e.id]=1;if(pc.t==='les')(pc.due||[]).slice(-pc.k).forEach(function(q){skipL[pc.who+'|'+q]=1});}
@@ -3467,7 +3467,7 @@ function f2ImpDlg(LS){var jm=fset().jmap||{},C=f2SmartCtx(),used={},skipL=Object
     b.a2=(M&&M.acc2)||oa||(x.cr&&b.dir==='in'&&mainAcc()!==x.A?mainAcc():'')||((x.accO[0]||[])[0]||'');b.note=(M&&M.note)||(b.dir==='out'&&mer&&/процент|комисси|обслуживан/i.test(mer.t)?mer.t:f2ShortDesc(b.desc));});});
   var hintFor=function(x,b,k,a2){var c=k.charAt(0)==='c'?b.all[+k.slice(1)]:null,mer=f2Mer(b.desc),M=b.mem;
     if(c)return 'Почему: '+c.why+'.'+(c.t==='own'?'':' После «Применить» отметится в плане.');
-    if(k==='tr'){if(x.cr&&b.dir==='in'&&!(M&&M.k)&&!f2OtherAcc(b.desc,x.A))return 'На кредитку деньги обычно приходят с твоего же счёта, поэтому предлагаю перевод. Проверь, с какого счёта.';if(ids.indexOf(a2)<0&&a2)return 'Выписки «'+accName(a2)+'» в этой загрузке нет. Перевод запишется без проверки второй стороны.';var tw=f2Twin(b,a2);return tw?'На счёте «'+accName(a2)+'» эта сумма уже записана как «'+(tw.title||'операция')+'» '+ddmm(tw.d)+'. Станет переводом, задвоения не будет.':'Деньги между своими счетами: доходы и расходы не меняются.';}
+    if(k==='tr'){if(x.cr&&b.dir==='in'&&!(M&&M.k)&&!f2OtherAcc(b.desc,x.A))return 'На кредитку деньги обычно приходят с твоего же счёта, поэтому предлагаю перевод. Проверь, с какого счёта.';var tw=f2Twin(b,a2);if(!tw&&ids.indexOf(a2)<0&&a2)return 'Выписки «'+accName(a2)+'» в этой загрузке нет. Перевод запишется без проверки второй стороны.';return tw?'На счёте «'+accName(a2)+'» эта сумма уже записана как «'+(tw.title||'операция')+'» '+ddmm(tw.d)+'. Станет переводом, задвоения не будет.':'Деньги между своими счетами: доходы и расходы не меняются.';}
     if(k==='skip')return 'Не записывать.';
     if(M&&(M.k===k||(M.k==='exp'&&M.g==='pers'&&k==='self')))return 'Как в прошлый раз.';
     if(k==='self')return (mer?'Похоже на «'+mer.t+'». ':'')+'Пойдёт в траты «на себя».';
