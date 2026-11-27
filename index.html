@@ -15,7 +15,7 @@
 <link rel="apple-touch-icon" href="icon.png">
 <link id="sp-img" rel="apple-touch-startup-image" media="screen and (device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="splash-dark.png">
 
-<script>window.APP_VER='1795773906';(function(){var r=document.documentElement;try{if(Date.now()-(+sessionStorage.getItem('kc-unl')||0)>300000)r.classList.add('lk-on');}catch(e){r.classList.add('lk-on');}})();(function(){var r=document.documentElement;r.setAttribute('data-calm','');try{var L=JSON.parse(localStorage.getItem('kc-look')||'null');if(L)['font','bg','pat','date','hov','fly','xhov','open','ico'].forEach(function(k){if(typeof L[k]==='string'&&/^[a-z0-9]{1,12}$/.test(L[k]))r.setAttribute('data-'+k,L[k]);});}catch(e){}})()</script>
+<script>window.APP_VER='1795774333';(function(){var r=document.documentElement;try{if(Date.now()-(+sessionStorage.getItem('kc-unl')||0)>300000)r.classList.add('lk-on');}catch(e){r.classList.add('lk-on');}})();(function(){var r=document.documentElement;r.setAttribute('data-calm','');try{var L=JSON.parse(localStorage.getItem('kc-look')||'null');if(L)['font','bg','pat','date','hov','fly','xhov','open','ico'].forEach(function(k){if(typeof L[k]==='string'&&/^[a-z0-9]{1,12}$/.test(L[k]))r.setAttribute('data-'+k,L[k]);});}catch(e){}})()</script>
 <script>(function(){var r=document.documentElement,sa=navigator.standalone===true||(window.matchMedia&&matchMedia('(display-mode: standalone),(display-mode: fullscreen),(display-mode: minimal-ui)').matches)||/[#&]k=/.test(location.hash)||/[?&]splash/.test(location.search);if(!sa)return;var pt=function(dt){var h=dt.getHours();return (h>=5&&h<17)?'light':'dark';},th=pt(new Date());try{var man=localStorage.getItem('kc-theme'),at=+localStorage.getItem('kc-theme-at')||0;if((man==='light'||man==='dark')&&at&&pt(new Date(at))===th)th=man;}catch(e){}if(!r.getAttribute('data-theme'))r.setAttribute('data-theme',th);r.classList.add('sp-on');var li=document.getElementById('sp-img');if(li)li.setAttribute('href','splash-'+th+'.png');})()</script>
 <style>:root.lk-on body>*:not(#lock):not(#splash):not(.scene):not(script):not(svg){visibility:hidden!important}:root.sp-on .shell,:root.sp-on .scene,:root.sp-on .bottomrail{visibility:hidden!important}:root.sp-on{background:#090b12}:root.sp-on[data-theme="light"]{background:#eef0f5}</style>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Onest:wght@400;500;600;700&family=Nunito:wght@400;500;600;700;800&display=swap">
@@ -2317,13 +2317,14 @@ function fOpDel(m,ts){var doc=S.fin.ops[m];if(!doc)return;S.fin.ops[m]={m:m,item
 function accName(id){var a=S.fin.acc[id];return a?a.title:'—'}
 function incAcc(){var a=fset().incAcc;return S.fin.acc[a]&&!S.fin.acc[a].closed&&!S.fin.acc[a].deleted?a:mainAcc()}
 function mainAcc(){var m=fset().mainAcc;return S.fin.acc[m]&&!S.fin.acc[m].closed?m:((fAccs()[0]||{}).id||m)}
+function tripAcc(){var it=fItems('',true).filter(function(i){var A=i.acc&&S.fin.acc[i.acc];return +i.perTrip>0&&A&&!A.deleted&&!A.closed})[0];return it?it.acc:mainAcc()}
 
 /* ---------- balances and capital ---------- */
 function accBal(a){var v=accBal0(a);if(f2IntR(a)){var x=f2IntSum(a,'');if(x>0)v=Math.round((v-x)*100)/100;}return v;}
 function accBal0(a){var v=a.type==='credit'?-(+a.debt||0):(+a.bal||0),t0=a.asOf||0,main=mainAcc();
   fOps().forEach(function(o){if(o.base||(o.ts||0)<=t0||o.kind==='goal')return;if(o.kind==='tr'){if(o.from===a.id)v-=+o.sum||0;if(o.to===a.id)v+=+o.sum||0;return;}if((o.acc||main)!==a.id)return;v+=o.kind==='inc'?(+o.sum||0):-(+o.sum||0);});
   var ia=incAcc();Object.keys(S.events).forEach(function(d){((S.events[d]||{}).items||[]).forEach(function(e){if(e.kind==='lesson'&&!e.unpaid&&(e.ts||0)>t0&&((e.acc&&S.fin.acc[e.acc]&&!S.fin.acc[e.acc].deleted)?e.acc:ia)===a.id)v+=+e.sum||0;});});
-  if(a.id===main){var tc=+fset().tripCost||0,ak=key(new Date(t0||0)),tk=todayKey();Object.keys(S.visits).forEach(function(d){if(d>ak&&d<=tk)v-=tc;});}
+  if(a.id===tripAcc()){var tc=+fset().tripCost||0,ak=key(new Date(t0||0)),tk=todayKey();Object.keys(S.visits).forEach(function(d){if(d>ak&&d<=tk)v-=tc;});}
   return v;}
 function fCap(){var own=0,debt=0,avail=0,lim=0,cards=[];fAccs().forEach(function(a){var b=accBal(a);if(a.type==='credit'){var dbt=Math.max(0,-b);debt+=dbt;own+=Math.max(0,b);avail+=f2Free(a,b);lim+=+a.limit||0;cards.push({a:a,debt:dbt,free:f2Free(a,b)});}else own+=b;});
   var man=0;fItems('obl').forEach(function(it){if(it.status==='wait')return;man+=+it.total||(it.freq==='once'&&!fOpFind(it.id+'@'+(it.next||''))?+it.sum||0:0);});
@@ -3031,6 +3032,7 @@ function f2IntPend(a){return a&&a.type==='credit'?(+a.intPend||0)+f2IntSum(a,'')
 function f2Free(a,b){var lim=+a.limit||0,d=Math.max(0,-b);return Math.max(0,lim-Math.max(0,d-f2IntPend(a)))}
 function f2IntSum(a,k0){var r=f2IntR(a);if(!r||!a.asOf)return 0;var ak=key(new Date(a.asOf)),t=todayKey(),main=mainAcc(),v0=accBal0(a),ch=[],sum=0;if(!k0||k0<ak)k0=ak;
   fOps().forEach(function(o){if(o.base||(o.ts||0)<=a.asOf||o.kind==='goal'||!o.d)return;var dv=0;if(o.kind==='tr'){if(o.from===a.id)dv-=+o.sum||0;if(o.to===a.id)dv+=+o.sum||0;}else if((o.acc||main)===a.id)dv=o.kind==='inc'?(+o.sum||0):-(+o.sum||0);if(dv)ch.push([o.d,dv]);});
+  if(a.id===tripAcc()){var tc0=+fset().tripCost||0;if(tc0)Object.keys(S.visits||{}).forEach(function(d){if(d>ak&&d<=t)ch.push([d,-tc0]);});}
   for(var k=k0;k<t;k=addK(k,1)){var b=v0;ch.forEach(function(c){if(c[0]>k)b-=c[1];});if(b<0)sum+=-b*r;}return sum;}
 function f2IntP(P,t,isCur,fut){var R0={sum:0,paid:0,left:0,act:0,acc:0,daily:0,n:0,cards:[]};
   fOps().forEach(function(o){if(o.kind==='exp'&&o.grp==='int'&&!o.base&&o.d>=P.a&&o.d<=P.b){R0.act+=+o.sum||0;R0.n++;}});
@@ -3251,7 +3253,7 @@ function f2BMin(){var s=fset().start||todayKey();return s>todayKey()?todayKey():
 function accBalAt(a,D){var v=accBal(a),t=todayKey();if(!D||D>=t)return v;var t0=a.asOf||0,main=mainAcc();
   fOps().forEach(function(o){if(o.base||o.kind==='goal'||!(o.d>D))return;if(o.kind==='tr'){if(o.from===a.id)v+=+o.sum||0;if(o.to===a.id)v-=+o.sum||0;return;}if((o.acc||main)!==a.id)return;v-=o.kind==='inc'?(+o.sum||0):-(+o.sum||0);});
   var ia=incAcc();Object.keys(S.events).forEach(function(d){((S.events[d]||{}).items||[]).forEach(function(e){if(e.kind==='lesson'&&!e.unpaid&&(e.paidD||d)>D&&((e.acc&&S.fin.acc[e.acc]&&!S.fin.acc[e.acc].deleted)?e.acc:ia)===a.id)v-=+e.sum||0;});});
-  if(a.id===main){var tc=+fset().tripCost||0;Object.keys(S.visits||{}).forEach(function(d){if(d>D&&d<=t)v+=tc;});}
+  if(a.id===tripAcc()){var tc=+fset().tripCost||0;Object.keys(S.visits||{}).forEach(function(d){if(d>D&&d<=t)v+=tc;});}
   return v;}
 function f2LSAt(L,D){if(!D||D>=todayKey())return f2LS(L);if(!(L.d<=D))return {left:0};var I=f2LS(L),back=I.ops.filter(function(o){return o.d<=D}).reduce(function(s,o){return s+(+o.sum||0)},0),sv=I.svcs.filter(function(x){return x.d<=D}).reduce(function(s,x){return s+(+x.sum||0)},0);return {left:Math.max(0,(+L.sum||0)-back-sv)};}
 function f2BalNav(){var t=todayKey(),D=f2bd||t,mn=f2BMin();
@@ -3273,7 +3275,7 @@ function f2JAll(){var out=[],main=mainAcc(),ia=incAcc(),st=fset(),t=todayKey();
     out.push(e);});
   Object.keys(S.events||{}).forEach(function(d){((S.events[d]||{}).items||[]).forEach(function(x){if(x.kind!=='lesson'||x.unpaid)return;var a=(x.acc&&S.fin.acc[x.acc]&&!S.fin.acc[x.acc].deleted)?x.acc:ia;
     out.push({id:'l|'+d+'|'+x.ts,ev:x,ai:a,d:d,ts:+x.ts||0,t:'in',title:x.title||'Занятие',note:x.note||'',sum:+x.sum||0,acc:accName(a),g:'tutor'});});});
-  var tc=+st.tripCost||0,ma=S.fin.acc[main];if(tc&&ma){var ak=key(new Date(ma.asOf||0));Object.keys(S.visits||{}).forEach(function(d){if(d>ak&&d<=t)out.push({id:'v|'+d,trip:true,d:d,ts:0,t:'out',title:'Поездка в офис',note:'',sum:tc,acc:accName(main),g:''});});}
+  var tc=+st.tripCost||0,tA=tripAcc(),ma=S.fin.acc[tA];if(tc&&ma){var ak=key(new Date(ma.asOf||0));Object.keys(S.visits||{}).forEach(function(d){if(d>ak&&d<=t)out.push({id:'v|'+d,trip:true,d:d,ts:0,t:'out',title:'Поездка в офис',note:'',sum:tc,acc:accName(tA),ai:tA,g:''});});}
   return out.sort(function(a,b){return a.d<b.d?1:a.d>b.d?-1:b.ts-a.ts});}
 function f2JRange(){var t=todayKey(),p=f2j.p||('p:'+f2Per(t).mk);
   if(p==='today')return [t,t];if(p==='yest'){var y=addK(t,-1);return [y,y];}if(p==='all')return ['0000','9999'];
@@ -3302,7 +3304,7 @@ function f2JList(){var R=f2JRange(),q=(f2j.q||'').toLowerCase(),L=f2JAll().filte
     var sign=e.t==='in'?'+':e.t==='out'?'−':'',cls=e.t==='in'?' f2jin':e.t==='out'?'':' f2jtr';
     var tag=e.t==='tr'?esc(e.acc):e.t==='goal'?'в цель':[FG2N[e.g]||'',esc(e.acc)].filter(Boolean).join(' · ');
     var o=e.o,body=f2Line('Дата',dmon(e.d))+f2Line('Вид',f2JKind(e))+(e.acc?f2Line(e.t==='tr'?'Откуда → куда':'Счёт',esc(e.acc)):'')+(e.g?f2Line('Группа',FG2N[e.g]):'')+f2Line('Комментарий',e.note?esc(e.note):'—');
-    var hint='';if(e.trip)hint='Считается сам: каждый день в офисе списывает стоимость дороги с основного счёта. Меняется в настройках.';
+    var hint='';if(e.trip)hint='Считается сам: каждый день в офисе списывает стоимость дороги со счёта статьи «Проезд». Сумма меняется в настройках, счёт — в статье.';
     else if(e.loan)hint='Сумму, дату и счёт долга правь в самом долге, здесь только комментарий.';
     if(o&&o.kind!=='goal'){var ac=S.fin.acc[o.kind==='tr'?o.from:(o.acc||main)];if(ac&&ac.asOf&&(+o.ts||0)<=ac.asOf)hint+=(hint?' ':'')+'Запись сделана до сверки счёта: правка не изменит остаток, он уже сверен с банком.';}
     if(hint)body+='<div class="small f2n">'+hint+'</div>';
